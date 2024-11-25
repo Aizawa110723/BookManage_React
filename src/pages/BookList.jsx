@@ -1,7 +1,6 @@
 import { useState, useEffect } from 'react';
 import axios from 'axios';
 import { Box, Typography } from '@mui/material';
-import { Link, Route } from 'react-router-dom';
 
 export const BookList = () => {
     const [books, setBooks] = useState([]);
@@ -23,7 +22,7 @@ export const BookList = () => {
         };
 
         fetchBooks();
-    }, []);
+    }, []); // 初回のみ実行
 
     return (
         <>
@@ -48,7 +47,6 @@ export const BookList = () => {
                                 </Box>
                             ))
                         ) : (
-                            // {/* 書籍がない場合 */ }
                             <Typography>書籍がありません。</Typography>
                         )}
                     </Box>

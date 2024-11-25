@@ -4,7 +4,7 @@ import axios from "axios";
 import { Box, Button, TextField, CircularProgress, Typography, FormControl, InputLabel } from "@mui/material";
 
 
-export const BookForm = ({ setBooks, setError }) => {
+export const BookForm = ({ setBooks, setError, error }) => {
 
     const [title, setTitle] = useState('');
     const [author, setAuthor] = useState('');
@@ -48,7 +48,7 @@ export const BookForm = ({ setBooks, setError }) => {
             setPublisher('');
             setYear('');
             setGenre('');
-            setError(null);
+            setError(null); // エラーをリセット
 
 
         } catch (error) {
@@ -67,7 +67,7 @@ export const BookForm = ({ setBooks, setError }) => {
             setError("すべてのフィールドを入力してください");
             return;
         }
-        postData();
+        postData(); // フォーム送信のデフォルト動作（ページのリロード）を防ぐ処理
     };
 
     return (
@@ -203,7 +203,7 @@ export const BookForm = ({ setBooks, setError }) => {
                     </Box>
 
                     {/* エラーメッセージの表示 */}
-                    {setError && (
+                    {error && (
                         <Typography variant="body2" color="error" sx={{ marginTop: "10px" }}>
                             {error}
                         </Typography>
