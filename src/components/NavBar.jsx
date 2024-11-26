@@ -11,7 +11,8 @@ const buttonStyle = {
     boxShadow: 'none', // ボタンの影を消す
     fontSize: '1.1rem',  // フォントサイズを少し大きく
     padding: '12px 24px', // ボタンのパディング（大きさ調整）
-    width: '200px',  // 幅を統一
+    width: 'auto',  // 幅を統一
+    minWidth: '200px',
     height: '50px', // 高さを統一
     '&:hover': {
         backgroundColor: '#6495ED',
@@ -27,12 +28,17 @@ export const NavBar = ({ isVertical }) => {
             flexDirection={isVertical ? 'column' : 'row'}  // isVerticalによって縦並び・横並びを変更
             alignItems="center"  // どちらの方向でも中央揃えにする
             justifyContent="center"  // 横並びの場合は中央揃えにする
+            
             sx={{
                 width: '100%',
-                maxWidth: '100%',  // 最大幅を500pxにして横幅を制限
                 margin: '0 auto',  // 中央に配置
                 boxShadow: '5px 5px 15px rgba(0, 0, 0, 0.2)', // 影を右下に設定（BookFormの影に合わせる）
                 borderRadius: '10px', // 角丸
+                '@media (max-width: 600px)': {
+                    flexDirection: 'column', // 画面が小さくなったら縦並びに変更
+                    width: '100%',
+                    padding: '10px',
+                },
             }}
         >
             <Button component={Link} to="/" variant="contained" sx={{ ...buttonStyle }}>
