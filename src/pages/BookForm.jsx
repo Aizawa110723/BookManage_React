@@ -79,9 +79,10 @@ export const BookForm = ({ setBooks, setError, error }) => {
                 flexDirection: 'column',
                 padding: "20px",
                 borderRadius: "10px",
-                boxShadow: 3,
-                backgroundColor: '#AEE0FF', // 薄い水色
-                minHeight: '100vh'  // 画面全体に広げる
+                boxShadow: '5px 5px 15px rgba(0, 0, 0, 0.2)', // 影を右下に設定（BookFormの影に合わせる）
+                backgroundColor: '#AEE0FF', // 背景色
+                maxWidth: '100%',  // 最大幅を500pxにして横幅を制限
+                margin: '0 auto',  // 中央に配置
             }}>
 
                 <Typography
@@ -188,16 +189,23 @@ export const BookForm = ({ setBooks, setError, error }) => {
                                 fontSize: '1.rem',
                                 fontFamily: '"Roboto", sans-serif', // フォント変更
                                 fontWeight: 'bold',  // 入力フィールド内のテキストを太字に
+                                boxShadow: 'none', // ボタンの影を消す
                                 width: '40%', // ボタンの幅をフォームのフィールドに合わせる
                                 maxWidth: '400px', // 最大幅を設定
                                 borderRadius: '20px',      // 角を丸く
                                 '&:hover': {
-                                    backgroundColor: '#F5F5F5', // グレー
-                                    color: '#B0B0B0',
-                                }
+                                    backgroundColor: '#6495ED',
+                                    color: 'white',
+                                },
                             }}>
 
-                            {loading ? <CircularProgress size={24} /> : "登 録"}
+                            {loading ? (
+                                <CircularProgress size={24} />
+                            ) : (
+                                <Typography sx={{ fontSize: '1.3rem', fontWeight: 'bold', display: 'inline-block' }}>
+                                    登　録
+                                </Typography>  // 登録文字のサイズを大きく
+                            )}
 
                         </Button>
                     </Box>
