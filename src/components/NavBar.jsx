@@ -7,10 +7,11 @@ const buttonStyle = {
     fontFamily: '"Roboto", sans-serif', // フォント変更
     backgroundColor: '#003366',
     color: 'white',
-    borderRadius: '20px', // ボタンを丸く
+    borderRadius: '50px', // ボタンを丸く
     boxShadow: 'none', // ボタンの影を消す
-    fontSize: '1.1rem',  // フォントサイズを少し大きく
-    padding: '12px 24px', // ボタンのパディング（大きさ調整）
+    alignItems: 'center',
+    fontSize: '1.2rem',  // フォントサイズを少し大きく
+    padding: '25px 24px', // ボタンのパディング（大きさ調整）
     width: 'auto',  // 幅を統一
     minWidth: '200px',
     height: '50px', // 高さを統一
