@@ -1,6 +1,7 @@
 import { useState } from "react";
 import axios from "axios";
 import { Box, Button, TextField, CircularProgress, Typography, FormControl, InputLabel } from "@mui/material";
+import { buttonStyles } from "../components/Styles";
 
 
 export const BookForm = ({ setBooks, setError, error }) => {
@@ -99,12 +100,13 @@ export const BookForm = ({ setBooks, setError, error }) => {
                 justifyContent: 'center',
                 alignItems: 'center',
                 flexDirection: 'column',
-                padding: "20px",
-                borderRadius: "10px",
+                padding: '20px',
+                borderRadius: '10px',
                 boxShadow: '5px 5px 15px rgba(0, 0, 0, 0.2)', // 影を右下に設定（BookFormの影に合わせる）
                 backgroundColor: '#AEE0FF',
                 maxWidth: '100%',
                 margin: '0 auto',  // 中央に配置
+                height: '100vh',
                 '@media (max-width: 600px)': {  // 画面が600px以下になった場合
                     padding: '10px',
                     width: '100%',
@@ -139,6 +141,7 @@ export const BookForm = ({ setBooks, setError, error }) => {
                     }}
                 >
                     詳細を入力してください
+
                 </Typography>
 
                 <form onSubmit={handleSubmit} style={{ width: '100%', maxWidth: '500px' }}>
@@ -185,7 +188,7 @@ export const BookForm = ({ setBooks, setError, error }) => {
                                         },
                                         '& input': {
                                             boxShadow: 'none',
-                                            padding: '10px',  // 影を完全に取り除く
+                                            padding: '10px',
                                         },
                                     },
                                 }}
@@ -207,31 +210,9 @@ export const BookForm = ({ setBooks, setError, error }) => {
                             variant="contained"
                             color={isFormValid ? "primary" : "default"} // フィールドが入力されている場合に色を変更
                             disabled={!isFormValid || loading} // フィールドが未入力またはローディング中は無効
-                            sx={{
-                                marginTop: "16px",
-                                padding: "15px 20px",
-                                backgroundColor: '#003366', // ネイビー色
-                                color: 'white',
-                                fontSize: '1.rem',
-                                fontFamily: '"Roboto", sans-serif', // フォント変更
-                                fontWeight: 'bold',  // 入力フィールド内のテキストを太字に
-                                boxShadow: 'none', // ボタンの影を消す
-                                width: '40%', // ボタンの幅をフォームのフィールドに合わせる
-                                maxWidth: '400px', // 最大幅を設定
-                                borderRadius: '50px',      // 角を丸く
-                                '&:hover': {
-                                    backgroundColor: '#6495ED',
-                                    color: 'white',
-                                },
-                            }}>
+                            sx={{ ...buttonStyles }}>
 
-                            {loading ? (
-                                <CircularProgress size={24} />
-                            ) : (
-                                <Typography sx={{ fontSize: '1.3rem', fontWeight: 'bold', display: 'inline-block' }}>
-                                    登　録
-                                </Typography>  // 登録文字のサイズを大きく
-                            )}
+                            {loading ? <CircularProgress size={24} /> : "登　録"}
 
                         </Button>
                     </Box>
