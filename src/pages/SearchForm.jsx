@@ -1,23 +1,33 @@
 // 書籍検索フォーム
 import { useState } from "react";
 import axios from "axios";
-import { Box, Button, TextField, Select, MenuItem, FormControl, InputLabel, CircularProgress, Typography } from "@mui/material";
-import { buttonStyles } from "../components/Styles";
-
+import { Box, Button, TextField, CircularProgress, Typography, FormControl, InputLabel, Select, MenuItem } from "@mui/material";
+import { bigStyles } from "../components/Styles";
+import { buttonStyle_a } from "../App";
 
 export const SearchForm = ({ setBooks, setError }) => {
 
-    const [query, setQuery] = useState("");  // 検索キーワード
-    const [searchField, setSearchField] = useState("title"); // 検索フィールドの状態
-    const [loading, setLoading] = useState(false); // ローディング状態
-    const [page, setPage] = useState(1); // ページネーションの状態
+    const [title, setTitle] = useState("");  // タイトル
+    const [author, setAuthor] = useState("");  // 著者
+    const [publisher, setPublisher] = useState("");  // 出版社
+    const [year, setYear] = useState("");  // 出版年
+    const [genre, setGenre] = useState("");  // ジャンル
+    const [loading, setLoading] = useState(false);  // ローディング状態
+    const [error, setErrorState] = useState(null);  // エラーメッセージを管理する状態
+
+    // 出版年の選択肢を1868年（明治）から2024年まで作成
+    const years = Array.from({ length: 2024 - 1868 + 1 }, (_, index) => 1868 + index);  // 1868年から2024年までの配列
+
+
+    // いずれかのフィールドに値が入っていれば検索可能
+    const isFormValid = title || author || publisher || year || genre;
 
     const handleSearch = async (e) => {
         e.preventDefault();
 
-        // 検索ワードが空で、かつ検索対象が選ばれていない場合
-        if (!query.trim() && !searchField) {
-            setError("少なくとも1つのフィールドを入力してください");
+        // いずれかのフィールドが入力されていない場合にエラー
+        if (!isFormValid) {
+            setError("少なくとも1つのフィールドに入力してください");
             return;
         }
 
@@ -25,15 +35,14 @@ export const SearchForm = ({ setBooks, setError }) => {
         setError(null);    // エラーメッセージをリセット
 
         try {
-
-            // 1ページに10件の本を表示
-            // query と searchField をAPIに渡す
+            // フィールドに入力された情報をまとめてAPIに渡す
             const { data } = await axios.get("http://127.0.0.1:8000/api/searchbooks", {
                 params: {
-                    query,
-                    searchField,
-                    page,
-                    limit: 10,  // 1ページに表示する件数
+                    title,
+                    author,
+                    publisher,
+                    year,
+                    genre,
                 }
             });
 
@@ -54,44 +63,15 @@ export const SearchForm = ({ setBooks, setError }) => {
         }
     };
 
-    const handleNextPage = () => {
-        setPage((prevPage) => prevPage + 1);
-    };
-
-    const handlePreviousPage = () => {
-        setPage((prevPage) => (prevPage > 1 ? prevPage - 1 : prevPage));
-    };
-
-    const searchFields = [
-        { value: "title", label: "タイトル" },
-        { value: "author", label: "著者" },
-        { value: "publisher", label: "出版社" },
-        { value: "year", label: "出版年" },
-        { value: "genre", label: "ジャンル" }
-    ];
-
     return (
-        <Box sx={{
-            padding: "20px",
-            borderRadius: "10px",
-            boxShadow: '5px 5px 15px rgba(0, 0, 0, 0.2)',
-            backgroundColor: '#AEE0FF',  // BookFormの背景色に一致
-            maxWidth: '100%',
-            margin: '0 auto',  // 中央に配置
-            height: '100vh',
-            '@media (max-width: 600px)': {  // 画面が600px以下になった場合
-                padding: '10px',
-                width: '100%',
-                maxWidth: '100%'
-            }
-        }}>
+        <Box sx={{ ...bigStyles }}>
 
             <Typography
-                variant="h4"
+                variant="h3"
                 sx={{
                     color: '#003366',
                     textAlign: 'center',
-                    letterSpacing: '1px',
+                    letterSpacing: '4px',
                     fontWeight: 'bold',
                     paddingTop: '20px',
                     paddingBottom: '10px',
@@ -113,76 +93,90 @@ export const SearchForm = ({ setBooks, setError }) => {
                 }}
             >
                 検索条件を入力してください
-
             </Typography>
 
             <form onSubmit={handleSearch} style={{ width: '100%', maxWidth: '500px' }}>
-
-                <Box sx={{
-                    display: 'flex',
-                    flexDirection: 'column',
-                    marginBottom: '16px',
-                    width: '100%'
-                }}>
-
-                    <TextField
-                        label="検索ワード"
-                        value={query}
-                        onChange={(e) => setQuery(e.target.value)}
-                        fullWidth
-                        variant="outlined"
-                        sx={{
-                            backgroundColor: 'white',
-                            borderRadius: '10px',
-                            fontFamily: '"Roboto", sans-serif',
-                            fontWeight: 'bold',
-                            height: '40px',
-                            padding: '4px 12px',
-                            '& .MuiOutlinedInput-root': {
-                                '& fieldset': {
-                                    border: 'none',
-                                },
-                                '& input': {
-                                    boxShadow: 'none',
-                                    padding: '10px',
-                                },
-                            },
-                        }}
-                    />
-                </Box>
-
-                <Box sx={{
-                    display: 'flex',
-                    flexDirection: 'column',
-                    marginBottom: '16px',
-                    width: '100%',
-                    paddingTop: '20px'
-                }}>
-
-                    <FormControl sx={{ marginBottom: '16px' }}>
-                        <InputLabel htmlFor="searchField"
+                {[{ label: "タイトル", value: title, setter: setTitle, type: "text" },
+                { label: "著者", value: author, setter: setAuthor, type: "text" },
+                { label: "出版社", value: publisher, setter: setPublisher, type: "text" },
+                { label: "出版年", value: year, setter: setYear, type: "select", options: years },
+                { label: "ジャンル", value: genre, setter: setGenre, type: "text" }]
+                    .map(({ label, value, setter, type }) => (
+                        <Box
                             sx={{
-                                fontWeight: 'bold',
-                                fontSize: '1.2rem',
-                                color: '#003366'
-                            }}>
-                            検索対象
-                        </InputLabel>
+                                display: 'flex',
+                                flexDirection: 'column',
+                                marginBottom: '16px',
+                                width: '100%'
+                            }} key={label}>
 
-                        <Select
-                            value={searchField}
-                            onChange={(e) => setSearchField(e.target.value)}
-                            label="検索対象"
-                            id="searchField"
-                        >
-                            {searchFields.map((field) => (
-                                <MenuItem key={field.value} value={field.value}>
-                                    {field.label}
-                                </MenuItem>
-                            ))}
-                        </Select>
-                    </FormControl>
-                </Box>
+                            <FormControl fullWidth sx={{ marginBottom: '16px' }}>
+                                <InputLabel htmlFor={label} sx={{
+                                    fontWeight: 'bold',
+                                    fontSize: '1.2rem',
+                                    color: '#003366'
+                                }} shrink>{label}</InputLabel>
+                            </FormControl>
+
+                            {type === "select" ? (
+                                <Select
+                                    value={value}
+                                    onChange={(e) => setter(e.target.value)}
+                                    fullWidth
+                                    variant="outlined"
+                                    sx={{
+                                        backgroundColor: 'white',
+                                        borderRadius: '10px',
+                                        border: 'none',
+                                        fontFamily: '"Roboto", sans-serif',
+                                        fontWeight: 'bold',
+                                        height: '45px',
+                                        padding: '4px 12px',
+                                        '& .MuiOutlinedInput-root': {
+                                            '& fieldset': {
+                                                border: 'none',  // 枠線を非表示にする
+                                            },
+                                            '& input': {
+                                                boxShadow: 'none',
+                                                padding: '10px',
+                                            },
+                                        },
+                                    }}
+                                >
+                                    {years && years.map((year) => (
+                                        <MenuItem key={year} value={year}>{year}</MenuItem>
+                                    ))}
+                                </Select>
+
+                            ) : (
+                                <TextField
+                                    id={label}
+                                    value={value}
+                                    onChange={(e) => setter(e.target.value)}
+                                    type={type}
+                                    fullWidth
+                                    variant="outlined"
+                                    sx={{
+                                        backgroundColor: 'white',
+                                        borderRadius: '10px',
+                                        fontFamily: '"Roboto", sans-serif',
+                                        fontWeight: 'bold',
+                                        height: '40px',
+                                        padding: '4px 12px',
+                                        '& .MuiOutlinedInput-root': {
+                                            '& fieldset': {
+                                                border: 'none'
+                                            },
+                                            '& input': {
+                                                boxShadow: 'none',
+                                                padding: '10px'
+                                            },
+                                        },
+                                    }}
+                                />
+                            )}
+                        </Box>
+                    ))}
 
                 <Box sx={{
                     display: 'flex',
@@ -191,37 +185,37 @@ export const SearchForm = ({ setBooks, setError }) => {
                     width: '100%',
                     paddingTop: '20px',
                 }}>
-
+                    <Button
+                        type="submit"
+                        variant="contained"
+                        color={isFormValid ? "primary" : "default"}  // 入力がある場合はボタンを青に
+                        disabled={!isFormValid || loading}  // いずれかが入力されていないとボタン無効
+                        sx={{
+                            ...buttonStyle_a,
+                            padding: '35px 15px',
+                        }}
+                    >
+                        {loading ? <CircularProgress size={24} /> : (
+                            <Typography
+                                variant="button"
+                                sx={{
+                                    fontSize: '1.998rem',
+                                    fontWeight: 'bold',
+                                }}
+                            >
+                                検　索
+                            </Typography>
+                        )}
+                    </Button>
                 </Box>
-                <Button
-                    type="submit"
-                    variant="contained"
-                    color="primary"
-                    disabled={loading}
-                    sx={{ ...buttonStyles }}>
 
-                    {loading ? <CircularProgress size={24} /> : "検 索"}
-
-                </Button>
-
-                {/* ローディング表示 */}
-                {
-                    loading && (
-                        <Typography variant="body2" color="textSecondary" sx={{ marginTop: "10px" }}>
-                            検索中...
-                        </Typography>
-                    )
-                }
-
-                {/* エラーメッセージ表示 */}
-                {
-                    setError && (
-                        <Typography variant="body2" color="error" sx={{ marginTop: "10px" }}>
-                            {setError}
-                        </Typography>
-                    )
-                }
-            </form >
-        </Box >
+                {/* エラーメッセージの表示 */}
+                {error && (
+                    <Typography variant="body2" color="error" sx={{ marginTop: "10px" }}>
+                        {error}
+                    </Typography>
+                )}
+            </form>
+        </Box>
     );
 };

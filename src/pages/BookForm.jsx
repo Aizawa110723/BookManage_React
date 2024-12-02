@@ -1,7 +1,8 @@
 import { useState } from "react";
 import axios from "axios";
 import { Box, Button, TextField, CircularProgress, Typography, FormControl, InputLabel } from "@mui/material";
-import { buttonStyles } from "../components/Styles";
+import { bigStyles } from "../components/Styles";
+import { buttonStyle_a } from "../App";
 
 
 export const BookForm = ({ setBooks, setError, error }) => {
@@ -94,32 +95,14 @@ export const BookForm = ({ setBooks, setError, error }) => {
                 </Box>
             )}
 
-
-            <Box sx={{
-                display: 'flex',
-                justifyContent: 'center',
-                alignItems: 'center',
-                flexDirection: 'column',
-                padding: '20px',
-                borderRadius: '10px',
-                boxShadow: '5px 5px 15px rgba(0, 0, 0, 0.2)', // 影を右下に設定（BookFormの影に合わせる）
-                backgroundColor: '#AEE0FF',
-                maxWidth: '100%',
-                margin: '0 auto',  // 中央に配置
-                height: '100vh',
-                '@media (max-width: 600px)': {  // 画面が600px以下になった場合
-                    padding: '10px',
-                    width: '100%',
-                    maxWidth: '100%'
-                }
-            }} >
+            <Box sx={{ ...bigStyles }} >
 
                 <Typography
-                    variant="h4"
+                    variant="h3"
                     sx={{
                         color: '#003366',
                         textAlign: 'center',  // タイトルを中央揃えにする
-                        letterSpacing: '1px',  // 文字間隔を広めにして清潔感を出す
+                        letterSpacing: '4px',  // 文字間隔を広めにして清潔感を出す
                         fontWeight: 'bold',
                         paddingTop: '20px',  // 上にスペースを加える
                         paddingBottom: '10px',  // 下に少しスペース
@@ -176,12 +159,12 @@ export const BookForm = ({ setBooks, setError, error }) => {
                                 fullWidth
                                 variant="outlined"
                                 sx={{
-                                    backgroundColor: 'white',  // 背景を白く
-                                    borderRadius: '10px',      // 角を丸く
-                                    fontFamily: '"Roboto", sans-serif', // フォント変更
-                                    fontWeight: 'bold',  // 入力フィールド内のテキストを太字に
-                                    height: '40px',       // 入力フィールドの高さを固定
-                                    padding: '4px 12px',      // 内部のパディング調整
+                                    backgroundColor: 'white',
+                                    borderRadius: '10px',
+                                    fontFamily: '"Roboto", sans-serif',
+                                    fontWeight: 'bold', 
+                                    height: '40px',
+                                    padding: '4px 12px',
                                     '& .MuiOutlinedInput-root': {
                                         '& fieldset': {
                                             border: 'none',  // 枠線を非表示にする
@@ -202,7 +185,6 @@ export const BookForm = ({ setBooks, setError, error }) => {
                         marginTop: '16px',
                         width: '100%', // 親の幅に合わせる
                         paddingTop: '20px',  // 上にスペースを加える
-
                     }}>
 
                         <Button
@@ -210,10 +192,22 @@ export const BookForm = ({ setBooks, setError, error }) => {
                             variant="contained"
                             color={isFormValid ? "primary" : "default"} // フィールドが入力されている場合に色を変更
                             disabled={!isFormValid || loading} // フィールドが未入力またはローディング中は無効
-                            sx={{ ...buttonStyles }}>
+                            sx={{
+                                ...buttonStyle_a,  // ボタンの基本スタイル
+                                padding: '35px 15px',
+                            }}>
 
-                            {loading ? <CircularProgress size={24} /> : "登　録"}
-
+                            {loading ? <CircularProgress size={24} /> : (
+                                <Typography
+                                    variant="button"
+                                    sx={{
+                                        fontSize: '1.998rem',
+                                        fontWeight: 'bold',
+                                    }}
+                                >
+                                    登　録
+                                </Typography>
+                            )}
                         </Button>
                     </Box>
 
