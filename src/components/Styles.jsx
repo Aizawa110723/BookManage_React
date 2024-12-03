@@ -1,5 +1,4 @@
-import { display, height, lineHeight, maxWidth } from '@mui/system';
-import { Link } from 'react-router-dom';
+import { fontSize, textAlign } from "@mui/system";
 
 // トップ以外のボタン(バナー)
 export const buttonStyles = {
@@ -102,5 +101,56 @@ export const bigStyles = {
         padding: '15px 15px', // パディングを最小限に
         width: 'auto',  // 幅を70%に調整
         height: 'auto', // 高さを調整
+    },
+};
+
+// 選択項目
+export const fieldItem= {
+    display: 'flex',
+    backgroundColor: 'white',
+    borderRadius: '10px',
+    fontFamily: '"Roboto", sans-serif',
+    height: '55px',
+    // padding: '4px',
+    fontWeight: 'bold',
+    alignItems: 'center',
+    '& .MuiSelect-icon': {
+        top: '50%',
+        right: '8px',
+        transform: 'translateY(-50%)',
+    },
+    // FormControlの枠線も消す
+    '& .MuiSelect-root': {
+        border: 'none', // 親要素の枠線を消す
+    },
+    // この部分が重要: outlineを消す
+    '& .MuiSelect-outlined': {
+        border: 'none', // Selectの枠線を消す
+    },
+    '& .MuiSelect-select': {
+        textAlign: 'left', // 選択した文字を左揃え
+    },
+    '& .MuiOutlinedInput-notchedOutline': {
+        border: 'none',
+        fontSize: '1.3rem',
+    },
+}
+
+export const formFrame = {
+    backgroundColor: 'white',
+    borderRadius: '10px',
+    fontFamily: '"Roboto", sans-serif',
+    height: '45px',
+    padding: '4px 12px',
+    '& .MuiOutlinedInput-root': {
+        '& fieldset': {
+            border: 'none'
+        },
+        '& input': {
+            boxShadow: 'none',
+            padding: '10px',
+            fontSize: '1.3rem',
+            fontWeight: 'bold',
+        },
     },
 };

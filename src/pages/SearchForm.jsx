@@ -4,6 +4,8 @@ import axios from "axios";
 import { Box, Button, TextField, CircularProgress, Typography, FormControl, InputLabel, Select, MenuItem } from "@mui/material";
 import { bigStyles } from "../components/Styles";
 import { buttonStyle_a } from "../App";
+import { fieldItem } from "../components/Styles";
+import { formFrame } from "../components/Styles";
 
 export const SearchForm = ({ setBooks, setError }) => {
 
@@ -17,6 +19,9 @@ export const SearchForm = ({ setBooks, setError }) => {
 
     // 出版年の選択肢を1868年（明治）から2024年まで作成
     const years = Array.from({ length: 2024 - 1868 + 1 }, (_, index) => 1868 + index);  // 1868年から2024年までの配列
+
+    // ジャンルの選択肢を定義（必要に応じて変更可能）
+    const genres = ["文学", "ビジネス", "科学", "歴史", "アート", "コンピュータ", "自己啓発", "趣味"];
 
 
     // いずれかのフィールドに値が入っていれば検索可能
@@ -107,7 +112,7 @@ export const SearchForm = ({ setBooks, setError }) => {
                                 display: 'flex',
                                 flexDirection: 'column',
                                 marginBottom: '16px',
-                                width: '100%'
+                                width: '100%',
                             }} key={label}>
 
                             <FormControl fullWidth sx={{ marginBottom: '16px' }}>
@@ -122,26 +127,8 @@ export const SearchForm = ({ setBooks, setError }) => {
                                 <Select
                                     value={value}
                                     onChange={(e) => setter(e.target.value)}
-                                    fullWidth
-                                    variant="outlined"
-                                    sx={{
-                                        backgroundColor: 'white',
-                                        borderRadius: '10px',
-                                        border: 'none',
-                                        fontFamily: '"Roboto", sans-serif',
-                                        fontWeight: 'bold',
-                                        height: '45px',
-                                        padding: '4px 12px',
-                                        '& .MuiOutlinedInput-root': {
-                                            '& fieldset': {
-                                                border: 'none',  // 枠線を非表示にする
-                                            },
-                                            '& input': {
-                                                boxShadow: 'none',
-                                                padding: '10px',
-                                            },
-                                        },
-                                    }}
+                                    sx={{...fieldItem}}
+
                                 >
                                     {years && years.map((year) => (
                                         <MenuItem key={year} value={year}>{year}</MenuItem>
@@ -154,25 +141,8 @@ export const SearchForm = ({ setBooks, setError }) => {
                                     value={value}
                                     onChange={(e) => setter(e.target.value)}
                                     type={type}
-                                    fullWidth
                                     variant="outlined"
-                                    sx={{
-                                        backgroundColor: 'white',
-                                        borderRadius: '10px',
-                                        fontFamily: '"Roboto", sans-serif',
-                                        fontWeight: 'bold',
-                                        height: '40px',
-                                        padding: '4px 12px',
-                                        '& .MuiOutlinedInput-root': {
-                                            '& fieldset': {
-                                                border: 'none'
-                                            },
-                                            '& input': {
-                                                boxShadow: 'none',
-                                                padding: '10px'
-                                            },
-                                        },
-                                    }}
+                                    sx={{...formFrame}}
                                 />
                             )}
                         </Box>

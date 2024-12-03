@@ -3,6 +3,8 @@ import axios from "axios";
 import { Box, Button, TextField, CircularProgress, Typography, FormControl, InputLabel } from "@mui/material";
 import { bigStyles } from "../components/Styles";
 import { buttonStyle_a } from "../App";
+import { formFrame } from "../components/Styles";
+
 
 
 export const BookForm = ({ setBooks, setError, error }) => {
@@ -151,31 +153,28 @@ export const BookForm = ({ setBooks, setError, error }) => {
                                 }} shrink>{label}</InputLabel>
                             </FormControl>
 
-                            <TextField
-                                id={label}
-                                value={value}
-                                onChange={(e) => setter(e.target.value)}
-                                type={type}
-                                fullWidth
-                                variant="outlined"
-                                sx={{
-                                    backgroundColor: 'white',
-                                    borderRadius: '10px',
-                                    fontFamily: '"Roboto", sans-serif',
-                                    fontWeight: 'bold', 
-                                    height: '40px',
-                                    padding: '4px 12px',
-                                    '& .MuiOutlinedInput-root': {
-                                        '& fieldset': {
-                                            border: 'none',  // 枠線を非表示にする
-                                        },
-                                        '& input': {
-                                            boxShadow: 'none',
-                                            padding: '10px',
-                                        },
-                                    },
-                                }}
-                            />
+                            {type === "select" ? (
+                                <Select
+                                    value={value}
+                                    onChange={(e) => setter(e.target.value)}
+                                    sx={{...fieldItem}}
+
+                                >
+                                    {years && years.map((year) => (
+                                        <MenuItem key={year} value={year}>{year}</MenuItem>
+                                    ))}
+                                </Select>
+
+                            ) : (
+                                <TextField
+                                    id={label}
+                                    value={value}
+                                    onChange={(e) => setter(e.target.value)}
+                                    type={type}
+                                    variant="outlined"
+                                    sx={{...formFrame}}
+                                />
+                            )}
                         </Box>
                     ))}
 
