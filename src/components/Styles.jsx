@@ -1,4 +1,4 @@
-import { fontSize, textAlign } from "@mui/system";
+import { MarginTwoTone } from "@mui/icons-material";
 
 // トップ以外のボタン(バナー)
 export const buttonStyles = {

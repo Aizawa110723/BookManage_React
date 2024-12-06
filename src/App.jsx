@@ -1,5 +1,5 @@
 // import { useState } from 'react';
-import { NavBar } from './components/NavBar';
+import { Root } from './components/Root';
 import { BrowserRouter, Route, Routes, Link } from 'react-router-dom';
 import { BookForm } from './pages/BookForm';
 import { SearchForm } from './pages/SearchForm';
@@ -54,7 +54,7 @@ export const App = () => {
   return (
     <>
       <BrowserRouter>
-        {/* トップページ以外のページにはNavBarを表示 */}
+        {/* トップページ以外のページにはRootを表示 */}
 
 
         <Routes>
@@ -62,7 +62,7 @@ export const App = () => {
             path="/"
             element={
               <div>
-                {/* トップページのみNavBarを縦並び（中央配置）で表示 */}
+                {/* トップページのみRootをタテ並び（中央配置）で表示 */}
                 <Box
                   sx={{
                     display: "flex",
@@ -174,13 +174,13 @@ export const App = () => {
             }
           />
 
-          {/* トップページ以外のページにはNavBarを横並び（上部配置）で表示 */}
+          {/* トップページ以外のページにはRootを横並び（上部配置）で表示 */}
 
           <Route
             path="/SearchForm"
             element={
               <>
-                <NavBar isVertical={false} />
+                <Root isVertical={false} />
                 <SearchForm />
               </>
             }
@@ -189,7 +189,7 @@ export const App = () => {
             path="/BookForm"
             element={
               <>
-                <NavBar isVertical={false} />
+                <Root isVertical={false} />
                 <BookForm />
               </>
             }
@@ -199,7 +199,7 @@ export const App = () => {
             path="/BookList"
             element={
               <>
-                <NavBar isVertical={false} />
+                <Root isVertical={false} />
                 <BookList />
               </>
             }

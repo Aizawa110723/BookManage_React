@@ -1,8 +1,8 @@
 import { Link } from 'react-router-dom';
-import { Box, Button, Typography } from '@mui/material';
+import { Box, Button } from '@mui/material';
 import { navStyles, buttonStyles } from './Styles';
 
-export const NavBar = ({ isVertical }) => {
+export const Root = ({ isVertical }) => {
 
     return (
         <div>
@@ -15,9 +15,6 @@ export const NavBar = ({ isVertical }) => {
                 sx={{ ...navStyles }}
 
             >
-                <Button component={Link} to="/" variant="contained" sx={{ ...buttonStyles }}>
-                    トップページ
-                </Button>
                 <Button component={Link} to="/BookForm" variant="outlined" sx={{ ...buttonStyles }}>
                     書籍登録フォーム
                 </Button>

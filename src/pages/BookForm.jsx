@@ -1,8 +1,9 @@
 import { useState } from "react";
 import axios from "axios";
-import { Box, Button, TextField, CircularProgress, Typography, FormControl, InputLabel } from "@mui/material";
-import { bigStyles } from "../components/Styles";
+import { Box, Button, TextField, CircularProgress, Typography, FormControl, InputLabel, Select, MenuItem } from "@mui/material";
 import { buttonStyle_a } from "../App";
+import { bigStyles } from "../components/Styles";
+import { fieldItem } from "../components/Styles";
 import { formFrame } from "../components/Styles";
 
 
@@ -15,6 +16,12 @@ export const BookForm = ({ setBooks, setError, error }) => {
     const [year, setYear] = useState('');
     const [genre, setGenre] = useState('');
     const [loading, setLoading] = useState(false);
+
+    // 出版年の選択肢を1868年（明治）から2024年まで作成
+    const years = Array.from({ length: 2024 - 1868 + 1 }, (_, index) => 1868 + index);  // 1868年から2024年までの配列
+
+    // ジャンルの選択肢を定義（必要に応じて変更可能）
+    const genres = ["文学・評論", "ノンフィクション", "ビジネス・経済", "歴史・社会", "芸能・エンターテインメント", "アート・建築・デザイン", "人文・思想・宗教"];
 
 
     const postData = async () => {
@@ -81,7 +88,7 @@ export const BookForm = ({ setBooks, setError, error }) => {
     return (
         <>
             {/* エラーメッセージの表示（画面上部に固定） */}
-            {error && (
+            {setError && (
                 <Box sx={{
                     position: 'fixed',
                     top: 0,
@@ -106,8 +113,10 @@ export const BookForm = ({ setBooks, setError, error }) => {
                         textAlign: 'center',  // タイトルを中央揃えにする
                         letterSpacing: '4px',  // 文字間隔を広めにして清潔感を出す
                         fontWeight: 'bold',
-                        paddingTop: '20px',  // 上にスペースを加える
-                        paddingBottom: '10px',  // 下に少しスペース
+                        paddingTop: '30px',  // 上にスペースを加える
+                        // paddingBottom: '10px',  // 下に少しスペース
+                        marginTop: '10px',
+                        height: '70px'
                     }}
                 >
                     書籍登録
@@ -122,7 +131,8 @@ export const BookForm = ({ setBooks, setError, error }) => {
                         fontSize: '1.2rem',  // サブタイトルを小さく
                         color: '#003366',
                         textAlign: 'center',
-                        marginBottom: '40px', // 入力フォームとの間に広めのスペース
+                        marginTop: '0',
+                        marginBottom: '60px', // 入力フォームとの間に広めのスペース
                     }}
                 >
                     詳細を入力してください
@@ -134,10 +144,10 @@ export const BookForm = ({ setBooks, setError, error }) => {
                         { label: "タイトル", value: title, setter: setTitle, type: "text" },
                         { label: "著者", value: author, setter: setAuthor, type: "text" },
                         { label: "出版社", value: publisher, setter: setPublisher, type: "text" },
-                        { label: "出版年", value: year, setter: setYear, type: "number" },
-                        { label: "ジャンル", value: genre, setter: setGenre, type: "text" }
+                        { label: "出版年", value: year, setter: setYear, type: "select", options: years },
+                        { label: "ジャンル", value: genre, setter: setGenre, type: "select", options: genres }
 
-                    ].map(({ label, value, setter, type }) => (
+                    ].map(({ label, value, setter, type, options}) => (
                         <Box sx={{
                             display: 'flex',
                             flexDirection: 'column',  // ラベルをフィールドの上に配置
@@ -157,11 +167,11 @@ export const BookForm = ({ setBooks, setError, error }) => {
                                 <Select
                                     value={value}
                                     onChange={(e) => setter(e.target.value)}
-                                    sx={{...fieldItem}}
+                                    sx={{ ...fieldItem }}
 
                                 >
-                                    {years && years.map((year) => (
-                                        <MenuItem key={year} value={year}>{year}</MenuItem>
+                                    {options && options.map((option, index) => (
+                                        <MenuItem key={index} value={option}>{option}</MenuItem>
                                     ))}
                                 </Select>
 
@@ -172,7 +182,7 @@ export const BookForm = ({ setBooks, setError, error }) => {
                                     onChange={(e) => setter(e.target.value)}
                                     type={type}
                                     variant="outlined"
-                                    sx={{...formFrame}}
+                                    sx={{ ...formFrame }}
                                 />
                             )}
                         </Box>
@@ -209,13 +219,6 @@ export const BookForm = ({ setBooks, setError, error }) => {
                             )}
                         </Button>
                     </Box>
-
-                    {/* エラーメッセージの表示 */}
-                    {error && (
-                        <Typography variant="body2" color="error" sx={{ marginTop: "10px" }}>
-                            {error}
-                        </Typography>
-                    )}
                 </form>
             </Box >
         </>
