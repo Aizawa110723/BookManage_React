@@ -156,48 +156,48 @@ export const formFrame = {
     },
 };
 
-// リストの項目
-export const listIcon = {
-    width: '100%',
-    display: 'flex',
-    justifyContent: 'center',
-    flexWrap: 'wrap',
-    alignItems: 'center',
-    marginBottom: '10px',
-    padding: '10px',
-    border: '2px solid #cccccc',
-    borderRadius: '50px',
-    position: 'relative',  // 位置を調整するためにrelativeを追加
+// // リストの項目
+// export const listIcon = {
+//     width: '100%',
+//     display: 'flex',
+//     justifyContent: 'center',
+//     flexWrap: 'wrap',
+//     alignItems: 'center',
+//     marginBottom: '10px',
+//     padding: '10px',
+//     border: '2px solid #cccccc',
+//     borderRadius: '50px',
+//     position: 'relative',  // 位置を調整するためにrelativeを追加
 
-    // メディアクエリでレスポンシブデザイン対応
-    '@media (max-width: 1200px)': {
-        // 中くらいのデバイス（例: タブレット）
-        padding: '8px', // パディングを少し小さくする
-        marginBottom: '8px', // 各アイテムの間隔を縮める
-        marginLeft: '0', // モバイルビューでは左右のマージンをリセット
-        // flexDirection: 'column',  // 小さい画面では縦並びに
-        alignItems: 'center', // 左揃えに
-        width: '100%',  // 横幅を100%に設定して伸ばす
-        left: 'auto',
-    },
-    '@media (max-width: 900px)': {
-        // 小さめのデバイス（例: モバイル）
-        padding: '6px', // パディングをさらに小さく
-        marginBottom: '6px', // アイテム間の間隔をさらに縮める
-        // flexDirection: 'column', // 項目を縦並びに変更
-        alignItems: 'center', // 左揃えにする
-        width: '100%',
-        left: 'auto',  // 横幅を100%に設定して伸ばす
-    },
-    '@media (max-width: 600px)': {
-        // モバイル表示でさらに小さく
-        padding: '4px', // パディングをさらに小さくする
-        marginBottom: '4px', // アイテム間の間隔を縮める
-        fontSize: '14px', // フォントサイズを小さくする
-        marginLeft: '0', // モバイルビューでは左右のマージンをリセット
-        flexDirection: 'column',  // 小さい画面では縦並びに
-        alignItems: 'flex-start', // 左揃えに
-        width: '100%'  // 横幅を100%に設定して伸ばす
-    },
+//     // メディアクエリでレスポンシブデザイン対応
+//     '@media (max-width: 1200px)': {
+//         // 中くらいのデバイス（例: タブレット）
+//         padding: '8px', // パディングを少し小さくする
+//         marginBottom: '8px', // 各アイテムの間隔を縮める
+//         marginLeft: '0', // モバイルビューでは左右のマージンをリセット
+//         // flexDirection: 'column',  // 小さい画面では縦並びに
+//         alignItems: 'center', // 左揃えに
+//         width: '100%',  // 横幅を100%に設定して伸ばす
+//         left: 'auto',
+//     },
+//     '@media (max-width: 900px)': {
+//         // 小さめのデバイス（例: モバイル）
+//         padding: '6px', // パディングをさらに小さく
+//         marginBottom: '6px', // アイテム間の間隔をさらに縮める
+//         // flexDirection: 'column', // 項目を縦並びに変更
+//         alignItems: 'center', // 左揃えにする
+//         width: '100%',
+//         left: 'auto',  // 横幅を100%に設定して伸ばす
+//     },
+//     '@media (max-width: 600px)': {
+//         // モバイル表示でさらに小さく
+//         padding: '4px', // パディングをさらに小さくする
+//         marginBottom: '4px', // アイテム間の間隔を縮める
+//         fontSize: '14px', // フォントサイズを小さくする
+//         marginLeft: '0', // モバイルビューでは左右のマージンをリセット
+//         flexDirection: 'column',  // 小さい画面では縦並びに
+//         alignItems: 'flex-start', // 左揃えに
+//         width: '100%'  // 横幅を100%に設定して伸ばす
+//     },
 
-};
+// };

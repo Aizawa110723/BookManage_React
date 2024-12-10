@@ -1,7 +1,8 @@
 import { useState, useEffect } from 'react';
 import axios from 'axios';
 import { Box, Typography, CircularProgress } from '@mui/material';
-import { bigStyles, listIcon } from "../components/Styles";
+import { bigStyles } from "../components/Styles";
+import { padding } from '@mui/system';
 
 
 export const BookList = () => {
@@ -50,25 +51,20 @@ export const BookList = () => {
             {/* bigStylesの中にリストを配置 */}
             <Box sx={{
                 ...bigStyles,
-                height: 'auto',
-
             }}>
                 <Typography
                     variant="h3"
                     sx={{
                         color: '#003366',
-                        textAlign: 'center',  // タイトルを中央揃えにする
-                        letterSpacing: '3px',  // 文字間隔を広めにして清潔感を出す
+                        textAlign: 'center',
+                        letterSpacing: '3px',
                         fontWeight: 'bold',
-                        paddingTop: '50px',  // 上にスペースを加える
-                        // paddingBottom: '10px',  // 下に少しスペース
+                        paddingTop: '50px',
                         marginTop: '25px',
-                        // marginBottom: '60px',
                         height: '70px'
                     }}
                 >
                     書籍リスト
-
                 </Typography>
 
                 {/* ローディング表示 */}
@@ -78,122 +74,90 @@ export const BookList = () => {
                         display: 'block',
                     }} />
                 ) : (
-
-                    // 白Box
                     <Box sx={{
-                        width: '90%',
-                        margin: '0 auto', // 中央揃え
-                        display: 'flex',
-                        justifyContent: 'flex-start',
-                        flexWrap: 'wrap',
-                        marginTop: '60px', // 白Box全体のTop
-                        marginBottom: 'auto', // 白Box全体のBottom
-                        gap: '5px',
+                        width: '80%',
+                        margin: '0 auto',  // テーブル自体を中央揃え
+                        marginTop: '60px',
+                        display: 'flex',     // フレックスボックス
+                        justifyContent: 'center',  // 横方向に中央揃え
+                        alignItems: 'center',  // 縦方向に中央揃え
+                        flexDirection: 'column',  // 子要素を縦に並べる
                     }}>
 
-                        {/* 本のリスト */}
+                        {/* 書籍データがある場合のテーブル */}
                         {books.length === 0 ? (
-                            <Typography
-                                variant="body1"
-                                sx={{ textAlign: 'center' }}>書籍が登録されていません。</Typography>
+                            <Typography variant="body1" sx={{ textAlign: 'center' }}>
+                                書籍が登録されていません。
+                            </Typography>
                         ) : (
-                            books.map((book) => (
-                                <Box
-                                    key={book.id} // book.idをkeyに使って、一意の識別子として設定
-                                    id={`book-${book.id}`} // id属性にbook.idを追加
+                            <table style={{
+                                width: '100%',
+                                borderCollapse: 'collapse',  // セルのボーダーを分ける
+                                borderRadius: '50px',         // 外枠だけ角を丸くする
+                                border: '3px solid #003366',  // 外枠のボーダー
+                                margin: '0 auto',
+                                overflow: 'hidden',           // 角が丸くなるように隠す
+                            }}>
 
-                                    // 白Box内の調整
-                                    sx={{
-                                        display: 'flex',
-                                        flexDirection: 'column',
-                                        width: '30%',
-                                        margin: '0 auto',
-                                        borderRadius: '50px',
-                                        color: '#003366',
-                                        border: '2px solid #ddd',// 白Box外側の線
+                                <thead>
+                                    <tr style={{
+                                        backgroundColor: '#003366',
+                                        color: 'white',
+                                        textAlign: 'center',
                                         padding: '10px',
-                                        backgroundColor: '#fff',
-                                        marginBottom: '10px', // 各本のBox間に隙間を追加
-                                        height: '100%',
-                                        alignItems: 'center',
-                                        '@media (max-width: 900px)': {
-                                            width: '45%', // 中くらいの画面サイズでは2列にする
-                                        },
-                                        '@media (max-width: 600px)': {
-                                            width: '100%', // モバイルでは1列にする
-                                        },
-                                        // レスポンシブの際に著者とタイトルを一列に並べる
-                                        '@media (max-width: 600px)': {
-                                            // アイテムが横並びになるように調整
-                                            display: 'flex',
-                                            flexDirection: 'row',  // 横並びに変更
-                                            justifyContent: 'space-between',  // 左右にスペースを確保
-                                            alignItems: 'center', // 高さを揃える
-                                            gap: '10px',  // アイテム間の隙間
-                                        },
-                                    }}
-                                >
+                                    }}>
+                                        <th style={{ padding: '15px' }}>管理ID</th>
+                                        <th style={{ padding: '15px' }}>タイトル</th>
+                                        <th style={{ padding: '15px' }}>著者</th>
+                                        <th style={{ padding: '15px' }}>出版社</th>
+                                        <th style={{ padding: '15px' }}>出版年</th>
+                                        <th style={{ padding: '15px' }}>ジャンル</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
 
-                                    {/* 本のタイトル */}
-                                    <Typography
-                                        variant="h4" sx={{
-                                            fontWeight: 'bold',
-                                            color: '#003366',
-                                            marginBottom: '20px', // タイトル下の隙間
-                                            marginTop: '20px',
-                                            textAlign: 'center'
+                                    {/* 動的に書籍データを表示 */}
+                                    {books.map((book, index) => (
+                                        <tr key={book.id} style={{
+                                            backgroundColor: '#fff',
+                                            textAlign: 'center',
+                                            borderBottom: index === books.length - 1 ? 'none' : '5px dotted #cccccc',  // 最後の行のボーダーを消す
                                         }}>
-                                        {book.title}
-                                    </Typography>
+                                            <td style={{
+                                                padding: '15px',
+                                                borderRight: '5px solid transparent',  // セル間のボーダー（透明）
+                                            }}>{book.id}</td>
+                                            <td style={{
+                                                padding: '15px',
+                                                borderRight: '5px solid transparent',  // セル間のボーダー（透明）
+                                            }}>{book.title}</td>
+                                            <td style={{
+                                                padding: '15px',
+                                                borderRight: '5px solid transparent',  // セル間のボーダー（透明）
+                                            }}>{book.author}</td>
+                                            <td style={{
+                                                padding: '15px',
+                                                borderRight: '5px solid transparent',  // セル間のボーダー（透明）
+                                            }}>{book.publisher}</td>
+                                            <td style={{
+                                                padding: '15px',
+                                                borderRight: '5px solid transparent',  // セル間のボーダー（透明）
+                                            }}>{book.year}</td>
+                                            <td style={{
+                                                padding: '15px',
+                                                borderRight: 'none',  // 最後のセルには右のボーダーを消す
+                                            }}>
+                                                {book.genre}
+                                            </td>
+                                        </tr>
+                                    ))}
+                                </tbody>
 
-
-                                    <Box>
-                                        {/* 本の情報（著者、出版社、出版年、ジャンル） */}
-
-                                        {/* 著者 */}
-                                        <Box sx={{ ...listIcon }}>
-                                            <Typography variant="body1" sx={{ fontWeight: 'bold', fontSize: '1.1rem' }}>著者：　</Typography>
-                                            <Typography variant="body1" sx={{ fontSize: '1.1rem' }}>{book.author}</Typography>
-                                        </Box>
-
-
-                                        {/* 出版社 */}
-                                        <Box sx={{ ...listIcon }}>
-                                            <Typography variant="body1" sx={{ fontWeight: 'bold', fontSize: '1.1rem' }}>出版社：　</Typography>
-                                            <Typography variant="body1" sx={{ fontSize: '1.1rem' }}>{book.publisher}</Typography>
-                                        </Box>
-
-                                        
-                                        <Box sx={{ ...listIcon }}>
-                                            <Typography variant="body1" sx={{ fontWeight: 'bold', fontSize: '1.1rem' }}>出版年：　</Typography>
-                                            <Typography variant="body1" sx={{ fontSize: '1.1rem' }}>{book.year}</Typography>
-                                        </Box>
-
-                                        {/* ジャンル */}
-                                        <Box sx={{ ...listIcon }}>
-                                            <Typography variant="body1" sx={{ fontWeight: 'bold', fontSize: '1.1rem' }}>ジャンル：　</Typography>
-                                            <Typography variant="body1" sx={{  fontSize: '1.1rem' }}>{book.genre}</Typography>
-                                        </Box>
-
-                                        {/* ID */}
-                                        <Box sx={{
-                                            display: 'flex',
-                                            justifyContent: 'flex-end', // IDとその値を横並びに
-                                            color: '#003366',
-                                            marginTop: 'auto',
-                                            alignItems: 'center',
-                                        }}>
-                                            <Typography variant="body1" sx={{ marginRight: '10px' }}>管理ID:</Typography>
-                                            <Typography variant="body1">{book.id}</Typography>
-                                        </Box>
-
-                                    </Box>
-                                </Box>
-                            ))
+                            </table>
                         )}
                     </Box>
                 )}
-            </Box >
+            </Box>
         </>
     );
 };
