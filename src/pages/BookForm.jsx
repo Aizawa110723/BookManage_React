@@ -1,10 +1,7 @@
 import { useState } from "react";
 import axios from "axios";
 import { Box, Button, TextField, CircularProgress, Typography, FormControl, InputLabel, Select, MenuItem } from "@mui/material";
-import { buttonStyle_a } from "../App";
-import { bigStyles } from "../components/Styles";
-import { fieldItem } from "../components/Styles";
-import { formFrame } from "../components/Styles";
+import { buttonStyle_a, bigStyles, fieldItem, formFrame } from "../components/Styles";
 
 
 
@@ -17,11 +14,12 @@ export const BookForm = ({ setBooks, setError, error }) => {
     const [genre, setGenre] = useState('');
     const [loading, setLoading] = useState(false);
 
+
     // 出版年の選択肢を1868年（明治）から2024年まで作成
     const years = Array.from({ length: 2024 - 1868 + 1 }, (_, index) => 1868 + index);  // 1868年から2024年までの配列
 
     // ジャンルの選択肢を定義（必要に応じて変更可能）
-    const genres = ["文学・評論", "ノンフィクション", "ビジネス・経済", "歴史・社会", "芸能・エンターテインメント", "アート・建築・デザイン", "人文・思想・宗教"];
+    const genres = ["文学・評論", "自伝・伝記", "ノンフィクション", "ファンタジー・SF", "ミステリー・推理", "教育・学習", "ビジネス・経済", "歴史・社会", "芸能・エンターテインメント", "アート・建築・デザイン", "人文・思想・宗教", "科学・テクノロジー・プログラミング", "健康・ライフスタイル", "旅行・ガイド", "料理・グルメ"];
 
 
     const postData = async () => {
@@ -51,14 +49,13 @@ export const BookForm = ({ setBooks, setError, error }) => {
             // レスポンスがあれば新しい本をセット
             setBooks((prevBooks) => [...prevBooks, response.data]);
 
-
             // フォーム送信後にリセット
             setTitle('');
             setAuthor('');
             setPublisher('');
             setYear('');
             setGenre('');
-            setError(null); // エラーをリセット
+            setError(null); // フォーム送信後にエラーをリセット
 
 
         } catch (error) {
@@ -87,17 +84,17 @@ export const BookForm = ({ setBooks, setError, error }) => {
 
     return (
         <>
-            {/* エラーメッセージの表示（画面上部に固定） */}
-            {setError && (
+            {/* エラーメッセージを表示 */}
+            {error && (
                 <Box sx={{
                     position: 'fixed',
                     top: 0,
                     left: 0,
                     right: 0,
-                    backgroundColor: 'white',
-                    color: 'red',
-                    textAlign: 'center',
+                    backgroundColor: '#FFDDC1',
+                    color: '#D8000C',
                     padding: '10px 0',
+                    textAlign: 'center',
                     zIndex: 1000
                 }}>
                     <Typography variant="body2">{error}</Typography>
@@ -147,7 +144,7 @@ export const BookForm = ({ setBooks, setError, error }) => {
                         { label: "出版年", value: year, setter: setYear, type: "select", options: years },
                         { label: "ジャンル", value: genre, setter: setGenre, type: "select", options: genres }
 
-                    ].map(({ label, value, setter, type, options}) => (
+                    ].map(({ label, value, setter, type, options }) => (
                         <Box sx={{
                             display: 'flex',
                             flexDirection: 'column',  // ラベルをフィールドの上に配置

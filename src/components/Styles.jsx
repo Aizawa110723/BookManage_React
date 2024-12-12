@@ -1,5 +1,66 @@
-import { ForkLeft, MarginTwoTone } from "@mui/icons-material";
-import { fontSize, textAlign, width } from "@mui/system";
+
+// トップのみボタンスタイル
+export const buttonStyle_a = {
+    margin: '20px',
+    fontWeight: 'bold',
+    fontFamily: '"Roboto", sans-serif', // フォント変更
+    backgroundColor: '#003366',
+    color: 'white',
+    borderRadius: '50px', // ボタンを丸く
+    alignItems: 'center',
+    fontSize: '1.8rem',  // フォントサイズを少し大きく
+    padding: '45px 45px', // ボタンのパディング（大きさ調整）
+    width: '23%',  // 幅を統一
+    minWidth: '200px',
+    height: '60px', // 高さを統一
+    lineHeight: '1.2',
+    boxShadow: 'none !important', // 影を削除
+    '&:hover': {
+        backgroundColor: '#6495ED',
+        color: 'white',
+    },
+    '@media (max-width: 1024px)': { // タブレットや中型スクリーン向け
+        fontSize: '1.5rem',  // フォントサイズを少し小さく
+        padding: '35px 35px', // パディングを少し小さく
+        width: '30%',  // 幅を30%に調整
+        height: '50px', // 高さを調整
+    },
+    '@media (max-width: 768px)': { // スマートフォン向け
+        fontSize: '1.2rem',  // フォントサイズをさらに小さく
+        padding: '25px 25px', // パディングをさらに小さく
+        width: '50%',  // 幅を50%に調整
+        height: '45px', // 高さを調整
+    },
+    '@media (max-width: 480px)': { // より小さな画面向け
+        fontSize: '1rem',  // フォントサイズを最小限に
+        padding: '15px 15px', // パディングを最小限に
+        width: '70%',  // 幅を70%に調整
+        height: '40px', // 高さを調整
+    },
+};
+
+// トップページのみボタン（タテ並び）
+export const topButton = {
+    display: "flex",
+    boxShadow: 'none',
+    flexDirection: "row",
+    justifyContent: "center",
+    alignItems: "center",
+    fontFamily: '"Roboto", sans-serif',
+    fontWeight: "bold",
+    color: '#003366',
+    textAlign: 'center',
+    borderRadius: "10px",
+    border: "1px solid rgba(0, 0, 0, 0.1)",
+    height: '60px',
+    backgroundColor: '#AEE0FF',
+    width: '90%',
+    paddingTop: '30px',
+    paddingBottom: '30px',
+    margin: '0 auto',
+
+}
+
 
 // トップ以外のボタン(バナー)
 export const buttonStyles = {
@@ -156,48 +217,20 @@ export const formFrame = {
     },
 };
 
-// // リストの項目
-// export const listIcon = {
-//     width: '100%',
-//     display: 'flex',
-//     justifyContent: 'center',
-//     flexWrap: 'wrap',
-//     alignItems: 'center',
-//     marginBottom: '10px',
-//     padding: '10px',
-//     border: '2px solid #cccccc',
-//     borderRadius: '50px',
-//     position: 'relative',  // 位置を調整するためにrelativeを追加
-
-//     // メディアクエリでレスポンシブデザイン対応
-//     '@media (max-width: 1200px)': {
-//         // 中くらいのデバイス（例: タブレット）
-//         padding: '8px', // パディングを少し小さくする
-//         marginBottom: '8px', // 各アイテムの間隔を縮める
-//         marginLeft: '0', // モバイルビューでは左右のマージンをリセット
-//         // flexDirection: 'column',  // 小さい画面では縦並びに
-//         alignItems: 'center', // 左揃えに
-//         width: '100%',  // 横幅を100%に設定して伸ばす
-//         left: 'auto',
-//     },
-//     '@media (max-width: 900px)': {
-//         // 小さめのデバイス（例: モバイル）
-//         padding: '6px', // パディングをさらに小さく
-//         marginBottom: '6px', // アイテム間の間隔をさらに縮める
-//         // flexDirection: 'column', // 項目を縦並びに変更
-//         alignItems: 'center', // 左揃えにする
-//         width: '100%',
-//         left: 'auto',  // 横幅を100%に設定して伸ばす
-//     },
-//     '@media (max-width: 600px)': {
-//         // モバイル表示でさらに小さく
-//         padding: '4px', // パディングをさらに小さくする
-//         marginBottom: '4px', // アイテム間の間隔を縮める
-//         fontSize: '14px', // フォントサイズを小さくする
-//         marginLeft: '0', // モバイルビューでは左右のマージンをリセット
-//         flexDirection: 'column',  // 小さい画面では縦並びに
-//         alignItems: 'flex-start', // 左揃えに
-//         width: '100%'  // 横幅を100%に設定して伸ばす
-//     },
-
-// };
+// メッセージ
+export const messages = {
+    top: '-80px', // 初期位置は上部外
+    left: 0,
+    right: 0,
+    backgroundColor: 'white',
+    color: '#003366',
+    textAlign: 'center',
+    padding: '20px 0', // パディングを大きくして高さを増す
+    zIndex: 1000,
+    height: '80px', // 高さを大きく設定
+    display: 'flex',
+    justifyContent: 'center',
+    alignItems: 'center', // テキストを中央に配置
+    boxShadow: '0 4px 6px rgba(0, 0, 0, 0.1)', // 少し影を付けて目立たせる
+    animation: 'slideIn 1s ease-out, slideOut 1s ease-in 5s', // アニメーションを追加
+}

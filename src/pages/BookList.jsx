@@ -1,33 +1,46 @@
 import { useState, useEffect } from 'react';
 import axios from 'axios';
-import { Box, Typography, CircularProgress } from '@mui/material';
+import { Box, Typography, CircularProgress, Grid, Card, CardMedia, CardContent, Link } from '@mui/material';
 import { bigStyles } from "../components/Styles";
-import { padding } from '@mui/system';
 
+// APIから書籍データを取得する関数
+const fetchBooks = async () => {
+    try {
+        // 自分のAPIエンドポイントにデータを取得
+        const response = await axios.get('http://127.0.0.1:8000/api/books'); // データを取得するAPIのURL
+        return response.data; // APIレスポンスのデータを返す
+    } catch (error) {
+        console.error('Error fetching books:', error);
+        throw new Error('書籍情報の取得に失敗しました。');
+    }
+};
 
 export const BookList = () => {
-    const [books, setBooks] = useState([]);
+    const [books, setBooks] = useState([]); // 書籍データを格納するstate
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState(null);  // エラーステートを定義
+    const [viewMode, setViewMode] = useState('table'); // viewMode: 'table' or 'card'
 
+    // コンポーネントがマウントされた時に書籍情報を取得
     useEffect(() => {
-        const fetchBooks = async () => {
+        const loadBooks = async () => {
             setLoading(true);  // ローディング開始
-            setError(null);     // エラーをリセット
 
             try {
-                const response = await axios.get('http://127.0.0.1:8000/api/books');
-                setBooks(response.data);
-            } catch (error) {
-                console.error('Error fetching books:', error);
-                setError(error.response ? error.response.data.message : '書籍情報の取得に失敗しました。');
-            } finally {
-                setLoading(false); // ローディング終了
+                const bookData = await fetchBooks();
+                setBooks(bookData);  // 書籍データをセット
+                setLoading(false);
+            } catch (err) {
+                setError(err.message); // エラーメッセージをセット
+                setLoading(false);
             }
         };
 
-        fetchBooks();
-    }, []); // 初回のみ実行
+        loadBooks();
+    }, []);
+
+    // Amazonの共通リンク (ベースURL)を生成
+    const amazonBaseUrl = "https://www.amazon.com/dp/";
 
     return (
         <>
@@ -48,9 +61,9 @@ export const BookList = () => {
                 </Box>
             )}
 
-            {/* bigStylesの中にリストを配置 */}
             <Box sx={{
                 ...bigStyles,
+                height: 'auto',
             }}>
                 <Typography
                     variant="h3"
@@ -74,88 +87,156 @@ export const BookList = () => {
                         display: 'block',
                     }} />
                 ) : (
-                    <Box sx={{
-                        width: '80%',
-                        margin: '0 auto',  // テーブル自体を中央揃え
-                        marginTop: '60px',
-                        display: 'flex',     // フレックスボックス
-                        justifyContent: 'center',  // 横方向に中央揃え
-                        alignItems: 'center',  // 縦方向に中央揃え
-                        flexDirection: 'column',  // 子要素を縦に並べる
-                    }}>
+                    <>
+                        {/* モード切り替えボタン */}
+                        <Box sx={{
+                            display: 'flex',
+                            justifyContent: 'center',
+                            marginBottom: '20px',
+                            gap: '20px', // ボタン間のスペースを確保
+                        }}>
+                            <button onClick={() => setViewMode('table')}
+                                style={{
+                                    backgroundColor: viewMode === 'table' ? '#6495ED' : '#003366',
+                                    color: 'white',
+                                    borderRadius: '50px',
+                                    fontSize: '1.1rem',
+                                    padding: '12px 18px',
+                                    width: '150px',
+                                    height: '50px',
+                                    fontWeight: 'bold',
+                                    cursor: 'pointer',
+                                    transition: 'all 0.3s ease',
+                                    display: 'flex',
+                                    alignItems: 'center',
+                                    justifyContent: 'center',
+                                    boxShadow: 'none',
+                                    outline: 'none',
+                                    border: 'none',
+                                    '&:hover': {
+                                        backgroundColor: '#6495ED',
+                                    },
+                                    '&:active': {
+                                        backgroundColor: '#6495ED',
+                                    },
+                                    '&:focus': {
+                                        outline: 'none',
+                                    },
+                                }}
+                            >
+                                テーブル表示
+                            </button>
+                            <button onClick={() => setViewMode('card')}
+                                style={{
+                                    backgroundColor: viewMode === 'card' ? '#6495ED' : '#003366',
+                                    color: 'white',
+                                    borderRadius: '50px',
+                                    fontSize: '1.1rem',
+                                    padding: '12px 18px',
+                                    width: '150px',
+                                    height: '50px',
+                                    fontWeight: 'bold',
+                                    cursor: 'pointer',
+                                    transition: 'all 0.3s ease',
+                                    display: 'flex',
+                                    alignItems: 'center',
+                                    justifyContent: 'center',
+                                    boxShadow: 'none',
+                                    outline: 'none',
+                                    border: 'none',
+                                    '&:hover': {
+                                        backgroundColor: '#6495ED',
+                                    },
+                                    '&:active': {
+                                        backgroundColor: '#6495ED',
+                                    },
+                                    '&:focus': {
+                                        outline: 'none',
+                                    },
+                                }}
+                            >
+                                カード表示
+                            </button>
+                        </Box>
 
-                        {/* 書籍データがある場合のテーブル */}
-                        {books.length === 0 ? (
-                            <Typography variant="body1" sx={{ textAlign: 'center' }}>
-                                書籍が登録されていません。
-                            </Typography>
-                        ) : (
-                            <table style={{
-                                width: '100%',
-                                borderCollapse: 'collapse',  // セルのボーダーを分ける
-                                borderRadius: '50px',         // 外枠だけ角を丸くする
-                                border: '3px solid #003366',  // 外枠のボーダー
-                                margin: '0 auto',
-                                overflow: 'hidden',           // 角が丸くなるように隠す
-                            }}>
-
-                                <thead>
-                                    <tr style={{
-                                        backgroundColor: '#003366',
-                                        color: 'white',
-                                        textAlign: 'center',
-                                        padding: '10px',
-                                    }}>
-                                        <th style={{ padding: '15px' }}>管理ID</th>
-                                        <th style={{ padding: '15px' }}>タイトル</th>
-                                        <th style={{ padding: '15px' }}>著者</th>
-                                        <th style={{ padding: '15px' }}>出版社</th>
-                                        <th style={{ padding: '15px' }}>出版年</th>
-                                        <th style={{ padding: '15px' }}>ジャンル</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-
-                                    {/* 動的に書籍データを表示 */}
-                                    {books.map((book, index) => (
-                                        <tr key={book.id} style={{
-                                            backgroundColor: '#fff',
-                                            textAlign: 'center',
-                                            borderBottom: index === books.length - 1 ? 'none' : '5px dotted #cccccc',  // 最後の行のボーダーを消す
-                                        }}>
-                                            <td style={{
-                                                padding: '15px',
-                                                borderRight: '5px solid transparent',  // セル間のボーダー（透明）
-                                            }}>{book.id}</td>
-                                            <td style={{
-                                                padding: '15px',
-                                                borderRight: '5px solid transparent',  // セル間のボーダー（透明）
-                                            }}>{book.title}</td>
-                                            <td style={{
-                                                padding: '15px',
-                                                borderRight: '5px solid transparent',  // セル間のボーダー（透明）
-                                            }}>{book.author}</td>
-                                            <td style={{
-                                                padding: '15px',
-                                                borderRight: '5px solid transparent',  // セル間のボーダー（透明）
-                                            }}>{book.publisher}</td>
-                                            <td style={{
-                                                padding: '15px',
-                                                borderRight: '5px solid transparent',  // セル間のボーダー（透明）
-                                            }}>{book.year}</td>
-                                            <td style={{
-                                                padding: '15px',
-                                                borderRight: 'none',  // 最後のセルには右のボーダーを消す
-                                            }}>
-                                                {book.genre}
-                                            </td>
+                        {/* テーブル表示 */}
+                        {viewMode === 'table' && (
+                            <Box sx={{ width: '80%', margin: '0 auto', marginTop: '60px', marginBottom: '100px' }}>
+                                <table style={{ width: '100%', borderCollapse: 'collapse', borderRadius: '50px', overflow: 'hidden' }}>
+                                    <thead>
+                                        <tr style={{ backgroundColor: '#003366', color: 'white', textAlign: 'center' }}>
+                                            <th style={{ padding: '20px' }}>管理ID</th>
+                                            <th style={{ padding: '20px' }}>タイトル</th>
+                                            <th style={{ padding: '20px' }}>著者</th>
+                                            <th style={{ padding: '20px' }}>出版社</th>
+                                            <th style={{ padding: '20px' }}>出版年</th>
+                                            <th style={{ padding: '20px' }}>ジャンル</th>
                                         </tr>
-                                    ))}
-                                </tbody>
-
-                            </table>
+                                    </thead>
+                                    <tbody>
+                                        {books.map((book, index) => (
+                                            <tr key={book.id} style={{ backgroundColor: '#fff', textAlign: 'center' }}>
+                                                <td style={{ padding: '18px' }}>{book.id}</td>
+                                                <td style={{ padding: '18px' }}>{book.title}</td>
+                                                <td style={{ padding: '18px' }}>{book.author}</td>
+                                                <td style={{ padding: '18px' }}>{book.publisher}</td>
+                                                <td style={{ padding: '18px' }}>{book.year}</td>
+                                                <td style={{ padding: '18px' }}>{book.genre}</td>
+                                            </tr>
+                                        ))}
+                                    </tbody>
+                                </table>
+                            </Box>
                         )}
-                    </Box>
+
+                        {/* カード表示 */}
+                        {viewMode === 'card' && (
+                            <Grid container spacing={4} justifyContent="center" sx={{ width: '90%' }}>
+                                {books.map((book, index) => (
+                                    <Grid item xs={12} sm={6} md={4} key={index}>
+                                        <Card sx={{ width: '100%', borderRadius: 2, boxShadow: 3 }}>
+                                            {/* 書籍画像 */}
+                                            <CardMedia
+                                                component="img"
+                                                alt={book.title}
+                                                height="200"
+                                                image={book.imageUrl || ''} // 画像がない場合は空文字を指定
+                                                onError={(e) => e.target.style.display = 'none'} // 画像の読み込み失敗時に画像を非表示
+                                            />
+
+                                            {/* 画像が存在しない場合に代わりにテキストを表示 */}
+                                            {!book.imageUrl && (
+                                                <div
+                                                    style={{
+                                                        height: '200px',
+                                                        display: 'flex',
+                                                        justifyContent: 'center',
+                                                        alignItems: 'center',
+                                                        fontSize: '1.2rem',
+                                                        color: '#888',
+                                                        backgroundColor: '#f0f0f0',
+                                                    }}
+                                                >
+                                                    画像がありません
+                                                </div>
+                                            )}
+
+                                            <CardContent>
+                                                <Typography variant="h6" component="div">
+                                                    <Link href={`${amazonBaseUrl}${book.isbn}`} target="_blank" rel="noopener noreferrer" underline="hover">
+                                                        {book.title}
+                                                    </Link>
+                                                </Typography>
+                                                <Typography variant="body2" color="text.secondary">
+                                                    {book.author}
+                                                </Typography>
+                                            </CardContent>
+                                        </Card>
+                                    </Grid>
+                                ))}
+                            </Grid>
+                        )}
+                    </>
                 )}
             </Box>
         </>
