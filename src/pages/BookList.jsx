@@ -6,14 +6,19 @@ import { bigStyles } from "../components/Styles";
 // APIから書籍データを取得する関数
 const fetchBooks = async () => {
     try {
-        // 自分のAPIエンドポイントにデータを取得
-        const response = await axios.get('http://127.0.0.1:8000/api/books'); // データを取得するAPIのURL
-        return response.data; // APIレスポンスのデータを返す
+        const apiKey = process.env.REACT_APP_GOOGLE_BOOKS_API_KEY;  // 環境変数からAPIキーを取得
+        const response = await axios.get(`https://www.googleapis.com/books/v1/volumes?q=subject:fiction&key=${apiKey}`);
+
+        return response.data.items.map(book => ({
+            ...book,
+            imageUrl: book.volumeInfo?.imageLinks?.thumbnail || ''
+        }));
     } catch (error) {
         console.error('Error fetching books:', error);
         throw new Error('書籍情報の取得に失敗しました。');
     }
 };
+
 
 export const BookList = () => {
     const [books, setBooks] = useState([]); // 書籍データを格納するstate
@@ -162,7 +167,7 @@ export const BookList = () => {
                         {/* テーブル表示 */}
                         {viewMode === 'table' && (
                             <Box sx={{ width: '80%', margin: '0 auto', marginTop: '60px', marginBottom: '100px' }}>
-                                <table style={{ width: '100%', borderCollapse: 'collapse', borderRadius: '50px', overflow: 'hidden' }}>
+                                <table style={{ width: '100%', borderCollapse: 'collapse', borderRadius: '30px', overflow: 'hidden' }}>
                                     <thead>
                                         <tr style={{ backgroundColor: '#003366', color: 'white', textAlign: 'center' }}>
                                             <th style={{ padding: '20px' }}>管理ID</th>
@@ -200,8 +205,11 @@ export const BookList = () => {
                                                 component="img"
                                                 alt={book.title}
                                                 height="200"
-                                                image={book.imageUrl || ''} // 画像がない場合は空文字を指定
-                                                onError={(e) => e.target.style.display = 'none'} // 画像の読み込み失敗時に画像を非表示
+                                                image={book.imageUrl || 'default-image.jpg'} // デフォルト画像を指定する
+                                                onError={(e) => {
+                                                    console.error('Image load failed for:', book.title, e); // 詳細エラーメッセージを出力
+                                                    e.target.style.display = 'none'; // 画像の読み込み失敗時に画像を非表示
+                                                }}
                                             />
 
                                             {/* 画像が存在しない場合に代わりにテキストを表示 */}
