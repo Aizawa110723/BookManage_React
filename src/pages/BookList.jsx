@@ -19,6 +19,7 @@ const fetchGoogleBookImage = async (title) => {
     }
 };
 
+
 export const BookList = () => {
     const [books, setBooks] = useState([]); // 書籍データを格納するstate
     const [loading, setLoading] = useState(false);
