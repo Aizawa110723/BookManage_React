@@ -1,17 +1,21 @@
 import { useState, useEffect } from 'react';
 import axios from 'axios';
-import { Box, Typography, CircularProgress, Grid, Card, CardMedia, CardContent, Link } from '@mui/material';
-import { bigStyles } from "../components/Styles";
+import { Box, Typography, CircularProgress, Grid, Card, CardMedia, CardContent, Link, Table, TableHead, TableRow, TableCell, TableBody, TableContainer, Paper } from '@mui/material';
+import { bigStyles, getButtonStyles, titleCells, bodyCells } from "../components/Styles";
 
-// APIから書籍データを取得する関数
-const fetchBooks = async () => {
+
+// Google Books APIからサムネイル画像を取得する関数(カード表示)
+const fetchGoogleBookImage = async (title) => {
     try {
-        // 自分のAPIエンドポイントにデータを取得
-        const response = await axios.get('http://127.0.0.1:8000/api/books'); // データを取得するAPIのURL
-        return response.data; // APIレスポンスのデータを返す
+        const response = await axios.get(`https://www.googleapis.com/books/v1/volumes?q=intitle:${title}`);
+        const bookData = response.data.items && response.data.items[0];
+        if (bookData && bookData.volumeInfo && bookData.volumeInfo.imageLinks) {
+            return bookData.volumeInfo.imageLinks.thumbnail; // サムネイル画像のURLを返す
+        }
+        return ''; // 画像がない場合は空文字を返す
     } catch (error) {
-        console.error('Error fetching books:', error);
-        throw new Error('書籍情報の取得に失敗しました。');
+        console.error('Error fetching Google book image:', error);
+        return ''; // 画像取得失敗時は空文字を返す
     }
 };
 
@@ -27,20 +31,24 @@ export const BookList = () => {
             setLoading(true);  // ローディング開始
 
             try {
-                const bookData = await fetchBooks();
-                setBooks(bookData);  // 書籍データをセット
+                // 自分のAPIから書籍データを取得(テーブル表示)
+                const bookData = await axios.get('http://127.0.0.1:8000/api/books');
+
+                // 書籍情報にGoogle Books APIの画像を追加
+                const booksWithImages = await Promise.all(bookData.data.map(async (book) => {
+                    const imageUrl = await fetchGoogleBookImage(book.title); // タイトルで画像を取得
+                    return { ...book, imageUrl }; // 画像URLを追加
+                }));
+
+                setBooks(booksWithImages);  // 書籍データをセット
                 setLoading(false);
             } catch (err) {
                 setError(err.message); // エラーメッセージをセット
                 setLoading(false);
             }
         };
-
         loadBooks();
     }, []);
-
-    // Amazonの共通リンク (ベースURL)を生成
-    const amazonBaseUrl = "https://www.amazon.com/dp/";
 
     return (
         <>
@@ -92,68 +100,17 @@ export const BookList = () => {
                         <Box sx={{
                             display: 'flex',
                             justifyContent: 'center',
+                            marginTop: '40px',
                             marginBottom: '20px',
                             gap: '20px', // ボタン間のスペースを確保
                         }}>
                             <button onClick={() => setViewMode('table')}
-                                style={{
-                                    backgroundColor: viewMode === 'table' ? '#6495ED' : '#003366',
-                                    color: 'white',
-                                    borderRadius: '50px',
-                                    fontSize: '1.1rem',
-                                    padding: '12px 18px',
-                                    width: '150px',
-                                    height: '50px',
-                                    fontWeight: 'bold',
-                                    cursor: 'pointer',
-                                    transition: 'all 0.3s ease',
-                                    display: 'flex',
-                                    alignItems: 'center',
-                                    justifyContent: 'center',
-                                    boxShadow: 'none',
-                                    outline: 'none',
-                                    border: 'none',
-                                    '&:hover': {
-                                        backgroundColor: '#6495ED',
-                                    },
-                                    '&:active': {
-                                        backgroundColor: '#6495ED',
-                                    },
-                                    '&:focus': {
-                                        outline: 'none',
-                                    },
-                                }}
+                                style={getButtonStyles(viewMode === 'table')}
                             >
                                 テーブル表示
                             </button>
                             <button onClick={() => setViewMode('card')}
-                                style={{
-                                    backgroundColor: viewMode === 'card' ? '#6495ED' : '#003366',
-                                    color: 'white',
-                                    borderRadius: '50px',
-                                    fontSize: '1.1rem',
-                                    padding: '12px 18px',
-                                    width: '150px',
-                                    height: '50px',
-                                    fontWeight: 'bold',
-                                    cursor: 'pointer',
-                                    transition: 'all 0.3s ease',
-                                    display: 'flex',
-                                    alignItems: 'center',
-                                    justifyContent: 'center',
-                                    boxShadow: 'none',
-                                    outline: 'none',
-                                    border: 'none',
-                                    '&:hover': {
-                                        backgroundColor: '#6495ED',
-                                    },
-                                    '&:active': {
-                                        backgroundColor: '#6495ED',
-                                    },
-                                    '&:focus': {
-                                        outline: 'none',
-                                    },
-                                }}
+                                style={getButtonStyles(viewMode === 'card')}
                             >
                                 カード表示
                             </button>
@@ -161,69 +118,90 @@ export const BookList = () => {
 
                         {/* テーブル表示 */}
                         {viewMode === 'table' && (
-                            <Box sx={{ width: '80%', margin: '0 auto', marginTop: '60px', marginBottom: '100px' }}>
-                                <table style={{ width: '100%', borderCollapse: 'collapse', borderRadius: '50px', overflow: 'hidden' }}>
-                                    <thead>
-                                        <tr style={{ backgroundColor: '#003366', color: 'white', textAlign: 'center' }}>
-                                            <th style={{ padding: '20px' }}>管理ID</th>
-                                            <th style={{ padding: '20px' }}>タイトル</th>
-                                            <th style={{ padding: '20px' }}>著者</th>
-                                            <th style={{ padding: '20px' }}>出版社</th>
-                                            <th style={{ padding: '20px' }}>出版年</th>
-                                            <th style={{ padding: '20px' }}>ジャンル</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        {books.map((book, index) => (
-                                            <tr key={book.id} style={{ backgroundColor: '#fff', textAlign: 'center' }}>
-                                                <td style={{ padding: '18px' }}>{book.id}</td>
-                                                <td style={{ padding: '18px' }}>{book.title}</td>
-                                                <td style={{ padding: '18px' }}>{book.author}</td>
-                                                <td style={{ padding: '18px' }}>{book.publisher}</td>
-                                                <td style={{ padding: '18px' }}>{book.year}</td>
-                                                <td style={{ padding: '18px' }}>{book.genre}</td>
-                                            </tr>
-                                        ))}
-                                    </tbody>
-                                </table>
+                            <Box
+                                sx={{
+                                    width: '80%',
+                                    margin: '0 auto',
+                                    marginTop: '20px',
+                                    marginBottom: '60px',
+                                    whiteSpace: 'nowrap',
+                                }}>
+                                <TableContainer
+                                    component={Paper}
+                                    sx={{
+                                        width: '100%',
+                                        boxShadow: 'none',
+                                        borderRadius: '30px',
+                                        overflowX: 'hidden',  // 横スクロールを隠す
+                                        overflowY: 'auto',     // 縦スクロールを有効にする
+
+                                    }}>
+                                    <Table
+                                        sx={{
+                                            tableLayout: 'fixed',
+                                            fontWeight: 'bold',
+                                        }}
+                                        aria-label="simple table">
+                                        <TableHead>
+                                            <TableRow
+                                                sx={{
+                                                    backgroundColor: '#003366',
+                                                }}>
+                                                <TableCell sx={{ ...titleCells }}>管理ID</TableCell>
+                                                <TableCell sx={{ ...titleCells, width: '13.33%' }}>タイトル</TableCell>
+                                                <TableCell sx={{ ...titleCells }}>著者</TableCell>
+                                                <TableCell sx={{ ...titleCells }}>出版社</TableCell>
+                                                <TableCell sx={{ ...titleCells }}>出版年</TableCell>
+                                                <TableCell sx={{ ...titleCells, width: '15%' }}>ジャンル</TableCell>
+                                            </TableRow>
+                                        </TableHead>
+                                        <TableBody>
+                                            {books.map((book) => (
+                                                <TableRow key={book.id}>
+                                                    <TableCell sx={{ ...bodyCells }}>{book.id}</TableCell>
+                                                    <TableCell sx={{ ...bodyCells }}>{book.title}</TableCell>
+                                                    <TableCell sx={{ ...bodyCells }}>{book.author}</TableCell>
+                                                    <TableCell sx={{ ...bodyCells }}>{book.publisher}</TableCell>
+                                                    <TableCell sx={{ ...bodyCells }}>{book.year}</TableCell>
+                                                    <TableCell sx={{ ...bodyCells }}>{book.genre}</TableCell>
+                                                </TableRow>
+                                            ))}
+                                        </TableBody>
+                                    </Table>
+                                </TableContainer>
                             </Box>
                         )}
 
                         {/* カード表示 */}
                         {viewMode === 'card' && (
                             <Grid container spacing={4} justifyContent="center" sx={{ width: '90%' }}>
-                                {books.map((book, index) => (
-                                    <Grid item xs={12} sm={6} md={4} key={index}>
+                                {books.map((book) => (
+                                    <Grid item xs={12} sm={6} md={4} key={book.id}>
                                         <Card sx={{ width: '100%', borderRadius: 2, boxShadow: 3 }}>
-                                            {/* 書籍画像 */}
                                             <CardMedia
                                                 component="img"
                                                 alt={book.title}
                                                 height="200"
-                                                image={book.imageUrl || ''} // 画像がない場合は空文字を指定
-                                                onError={(e) => e.target.style.display = 'none'} // 画像の読み込み失敗時に画像を非表示
+                                                image={book.imageUrl || ''}
+                                                onError={(e) => e.target.style.display = 'none'}
                                             />
-
-                                            {/* 画像が存在しない場合に代わりにテキストを表示 */}
                                             {!book.imageUrl && (
-                                                <div
-                                                    style={{
-                                                        height: '200px',
-                                                        display: 'flex',
-                                                        justifyContent: 'center',
-                                                        alignItems: 'center',
-                                                        fontSize: '1.2rem',
-                                                        color: '#888',
-                                                        backgroundColor: '#f0f0f0',
-                                                    }}
-                                                >
+                                                <div style={{
+                                                    height: '200px',
+                                                    display: 'flex',
+                                                    justifyContent: 'center',
+                                                    alignItems: 'center',
+                                                    fontWeight: 'bold',
+                                                    fontSize: '1.2rem',
+                                                    color: '#003366',
+                                                    backgroundColor: '#f0f0f0',
+                                                }}>
                                                     画像がありません
                                                 </div>
                                             )}
-
                                             <CardContent>
                                                 <Typography variant="h6" component="div">
-                                                    <Link href={`${amazonBaseUrl}${book.isbn}`} target="_blank" rel="noopener noreferrer" underline="hover">
+                                                    <Link href={`https://www.google.com/search?q=${book.title}`} target="_blank" rel="noopener noreferrer" underline="hover">
                                                         {book.title}
                                                     </Link>
                                                 </Typography>
@@ -238,7 +216,7 @@ export const BookList = () => {
                         )}
                     </>
                 )}
-            </Box>
+            </Box >
         </>
     );
 };

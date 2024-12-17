@@ -1,3 +1,4 @@
+import { display } from "@mui/system";
 
 // トップのみボタンスタイル
 export const buttonStyle_a = {
@@ -234,3 +235,51 @@ export const messages = {
     boxShadow: '0 4px 6px rgba(0, 0, 0, 0.1)', // 少し影を付けて目立たせる
     animation: 'slideIn 1s ease-out, slideOut 1s ease-in 5s', // アニメーションを追加
 }
+
+// BookListボタンのスタイルを共通化する関数
+export const getButtonStyles = (isActive) => ({
+    backgroundColor: isActive ? '#6495ED' : '#003366',
+    color: 'white',
+    borderRadius: '50px',
+    fontSize: '1.1rem',
+    padding: '12px 18px',
+    width: '150px',
+    height: '50px',
+    fontWeight: 'bold',
+    cursor: 'pointer',
+    transition: 'all 0.3s ease',
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+    boxShadow: 'none',
+    outline: 'none',
+    border: 'none',
+    '&:hover': {
+        backgroundColor: '#6495ED',
+    },
+    '&:active': {
+        backgroundColor: '#6495ED',
+    },
+    '&:focus': {
+        outline: 'none',
+    },
+});
+
+export const titleCells = {
+    color: 'white',
+    padding: '20px',
+    textAlign: 'center',
+    fontSize: '1.1rem',
+    fontWeight: 'bold',
+    fontFamily: '"Roboto", sans-serif',
+
+};
+
+export const bodyCells = {
+    color: '#003366',
+    padding: '15px',
+    textAlign: 'center',
+    fontSize: '0.9rem',
+    fontWeight: 'bold',
+    fontFamily: '"Roboto", sans-serif',
+};
