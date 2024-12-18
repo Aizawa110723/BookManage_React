@@ -265,21 +265,28 @@ export const getButtonStyles = (isActive) => ({
     },
 });
 
+// テーブルタイトルのセルの設定
 export const titleCells = {
     color: 'white',
     padding: '20px',
     textAlign: 'center',
-    fontSize: '1.1rem',
+    fontSize: '1.2rem',
     fontWeight: 'bold',
     fontFamily: '"Roboto", sans-serif',
-
+    whiteSpace: 'normal',
+    wordWrap: 'break-word',
+    wordBreak: 'break-word'
 };
 
+// 内容のセルの設定
 export const bodyCells = {
     color: '#003366',
-    padding: '15px',
+    padding: '18px',
     textAlign: 'center',
-    fontSize: '0.9rem',
+    fontSize: '1.0rem',
     fontWeight: 'bold',
     fontFamily: '"Roboto", sans-serif',
+    whiteSpace: 'normal',
+    wordWrap: 'break-word',
+    wordBreak: 'break-word',
 };
