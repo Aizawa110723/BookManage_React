@@ -1,21 +1,28 @@
 import { useState, useEffect } from 'react';
 import axios from 'axios';
-import { Box, Typography, CircularProgress, Grid, Card, CardMedia, CardContent, Link, Table, TableHead, TableRow, TableCell, TableBody, TableContainer, Paper } from '@mui/material';
+import { Box, Typography, CircularProgress, Grid, Card, CardMedia, CardContent, Link, Table, TableHead, TableRow, TableCell, TableBody, TableContainer, Paper, TextareaAutosize } from '@mui/material';
+import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import { bigStyles, getButtonStyles, titleCells, bodyCells } from "../components/Styles";
+import { Link as RouterLink } from 'react-router-dom';
+import { display, textAlign } from '@mui/system';
 
 
 // Google Books APIからサムネイル画像を取得する関数(カード表示)
-const fetchGoogleBookImage = async (title) => {
+const fetchGoogleBookInfo = async (title) => {
     try {
-        const response = await axios.get(`https://www.googleapis.com/books/v1/volumes?q=intitle:${title}`);
+        const response = await axios.get(`https://www.googleapis.com/books/v1/volumes?q=intitle:${encodeURIComponent(title)}`);
+        console.log('Google Books API response:', response.data); // レスポンス内容を確認
+
         const bookData = response.data.items && response.data.items[0];
-        if (bookData && bookData.volumeInfo && bookData.volumeInfo.imageLinks) {
-            return bookData.volumeInfo.imageLinks.thumbnail; // サムネイル画像のURLを返す
+        if (bookData && bookData.volumeInfo) {
+            const imageUrl = bookData.volumeInfo.imageLinks ? bookData.volumeInfo.imageLinks.thumbnail : ''; // サムネイル画像のURL
+            const googleBooksId = bookData.id;  // Google BooksのID
+            return { imageUrl, googleBooksId }; // サムネイル画像とIDを返す
         }
-        return ''; // 画像がない場合は空文字を返す
+        return { imageUrl: '', googleBooksId: '' }; // 画像がない場合、IDも空文字を返す
     } catch (error) {
-        console.error('Error fetching Google book image:', error);
-        return ''; // 画像取得失敗時は空文字を返す
+        console.error('Error fetching Google book info:', error);
+        return { imageUrl: '', googleBooksId: '' }; // 取得失敗時
     }
 };
 
@@ -35,14 +42,14 @@ export const BookList = () => {
                 // 自分のAPIから書籍データを取得(テーブル表示)
                 const bookData = await axios.get('http://127.0.0.1:8000/api/books');
 
-                // 書籍情報にGoogle Books APIの画像を追加
-                const booksWithImages = await Promise.all(bookData.data.map(async (book) => {
-                    const imageUrl = await fetchGoogleBookImage(book.title); // タイトルで画像を取得
-                    return { ...book, imageUrl }; // 画像URLを追加
+                // 書籍情報にGoogle Books APIの画像とIDを追加
+                const booksWithDetails = await Promise.all(bookData.data.map(async (book) => {
+                    const { imageUrl, googleBooksId } = await fetchGoogleBookInfo(book.title); // タイトルで画像を取得
+                    return { ...book, imageUrl, googleBooksId }; // 画像URLを追加
                 }));
 
-                console.log('Books with images:', booksWithImages); // 画像が正しく追加されているか
-                setBooks(booksWithImages);  // 書籍データをセット
+                console.log('Books with details:', booksWithDetails); // 画像が正しく追加されているか
+                setBooks(booksWithDetails);  // 書籍データをセット
                 setLoading(false);
             } catch (err) {
                 setError(err.message); // エラーメッセージをセット
@@ -71,10 +78,12 @@ export const BookList = () => {
                 </Box>
             )}
 
+
             <Box sx={{
                 ...bigStyles,
                 height: 'auto',
             }}>
+                
                 <Typography
                     variant="h3"
                     sx={{
@@ -89,6 +98,9 @@ export const BookList = () => {
                 >
                     書籍リスト
                 </Typography>
+
+
+
 
                 {/* ローディング表示 */}
                 {loading ? (
@@ -184,12 +196,12 @@ export const BookList = () => {
                                 {books.map((book) => (
                                     <Grid item xs={12} sm={6} md={4} key={book.id}>
                                         <Link
-                                            href={`https://www.google.com/search?q=${book.title}`}
+                                            href={`https://books.google.com/books?id=${book.googleBooksId}`}  // Google Booksのリンク
                                             target="_blank"
                                             rel="noopener noreferrer"
                                             underline="none"
                                             sx={{
-                                                display: 'block', // Link全体をブロック要素として扱う
+                                                display: 'block', // Link全体をブロック要素にして、カード全体をクリック可能にする
                                                 '&:hover': {
                                                     transform: 'scale(1.05)', // ホバー時に少し大きくする
                                                     transition: 'transform 0.3s ease', // スムーズに変化させる
@@ -209,6 +221,7 @@ export const BookList = () => {
                                                         }}
                                                     />
                                                 ) : (
+                                                    // 画像がない場合でも表示される部分
                                                     <div
                                                         style={{
                                                             height: '200px',
@@ -249,6 +262,7 @@ export const BookList = () => {
                                 ))}
                             </Grid>
                         )}
+
 
                     </>
                 )}
