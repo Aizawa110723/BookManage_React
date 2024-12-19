@@ -2,9 +2,8 @@ import { useState, useEffect } from 'react';
 import axios from 'axios';
 import { Box, Typography, CircularProgress, Grid, Card, CardMedia, CardContent, Link, Table, TableHead, TableRow, TableCell, TableBody, TableContainer, Paper, TextareaAutosize } from '@mui/material';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
-import { bigStyles, getButtonStyles, titleCells, bodyCells } from "../components/Styles";
+import { bigStyles, getButtonStyles, titleCells, bodyCells, } from "../components/Styles";
 import { Link as RouterLink } from 'react-router-dom';
-import { display, textAlign } from '@mui/system';
 
 
 // Google Books APIからサムネイル画像を取得する関数(カード表示)
@@ -59,8 +58,14 @@ export const BookList = () => {
         loadBooks();
     }, []);
 
+    const TopPageLink = () => {
+
+
     return (
         <>
+            {/* トップページに戻るリンク */}
+            <TopPageLink />
+
             {/* エラーメッセージの表示 */}
             {error && (
                 <Box sx={{
@@ -83,7 +88,39 @@ export const BookList = () => {
                 ...bigStyles,
                 height: 'auto',
             }}>
-                
+
+                <Box
+                    sx={{
+                        position: 'absolute', // 絶対配置
+                        top: '17vh',  // 親の左上から17％の位置で下げる
+                        left: '6vw',  // 親の左から6％の位置
+                        zIndex: 10,    // 他の要素より前面に表示
+                    }}>
+                    <Link
+                        component={RouterLink}
+                        to="/"
+                        sx={{
+                            color: '#003366',
+                            fontSize: '1.1rem',
+                            fontWeight: 'bold',
+                            textDecoration: 'none', // 下線を削除
+                            padding: '5px 7px',
+                            borderRadius: '50px',
+                            border: '1px solid #003366',
+                            '&:hover': {
+                                color: '#6495ED', // ホバー時に色を変更
+                                border: '1px solid #6495ED',
+
+                            },
+                        }}
+                    >
+                        トップページへ戻る
+                    </Link>
+                </Box>
+                );
+                };
+
+
                 <Typography
                     variant="h3"
                     sx={{
@@ -91,8 +128,8 @@ export const BookList = () => {
                         textAlign: 'center',
                         letterSpacing: '3px',
                         fontWeight: 'bold',
-                        paddingTop: '50px',
-                        marginTop: '25px',
+                        paddingTop: '65px',
+                        marginTop: '40px',
                         height: '70px'
                     }}
                 >
@@ -192,7 +229,13 @@ export const BookList = () => {
 
                         {/* カード表示 */}
                         {viewMode === 'card' && (
-                            <Grid container spacing={4} justifyContent="flex-start" sx={{ width: '90%', marginBottom: '150px' }}>
+                            <Grid
+                                container spacing={4}
+                                justifyContent="flex-start"
+                                sx={{
+                                    width: '90%',
+                                    marginBottom: '150px',
+                                }}>
                                 {books.map((book) => (
                                     <Grid item xs={12} sm={6} md={4} key={book.id}>
                                         <Link
@@ -208,7 +251,14 @@ export const BookList = () => {
                                                 },
                                             }}
                                         >
-                                            <Card sx={{ width: '100%', borderRadius: '30px', boxShadow: '2px 3px 2px rgba(0, 0, 0, 0.1)' }}>
+                                            <Card
+                                                sx={{
+                                                    width: '100%',
+                                                    borderRadius: '30px',
+                                                    boxShadow: '2px 3px 2px rgba(0, 0, 0, 0.1)',
+                                                    height: '300px',
+
+                                                }}>
                                                 {book.imageUrl ? (
                                                     <CardMedia
                                                         component="img"
@@ -241,7 +291,9 @@ export const BookList = () => {
                                                         画像がありません
                                                     </div>
                                                 )}
-                                                <CardContent>
+
+                                                <CardContent sx={{ flexGrow: 1, }} // コンテンツが多くてもスペースを確保   
+                                                >
                                                     <Typography
                                                         variant="h6"
                                                         component="div"

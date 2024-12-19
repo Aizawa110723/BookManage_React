@@ -133,7 +133,7 @@ export const navStyles = {
     },
 }
 
-// 下の背景
+// トップページ以外の下の背景
 export const bigStyles = {
     display: "flex",
     flexDirection: "column",
@@ -150,6 +150,7 @@ export const bigStyles = {
     margin: '0 auto', // 中央に配置
     backgroundColor: '#AEE0FF',
     width: '90%',  // 幅を統一
+    position: 'relative',  // 親コンテナにrelativeを追加
     '@media (max-width: 1024px)': { // タブレットや中型スクリーン向け
         padding: '35px 35px', // パディングを少し小さく
         width: 'auto',  // 幅を30%に調整
@@ -165,6 +166,7 @@ export const bigStyles = {
         width: 'auto',  // 幅を70%に調整
         height: 'auto', // 高さを調整
     },
+
 };
 
 // 選択項目
