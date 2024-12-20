@@ -1,7 +1,7 @@
 import { useState } from "react";
 import axios from "axios";
 import { Box, Button, TextField, CircularProgress, Typography, FormControl, InputLabel, Select, MenuItem } from "@mui/material";
-import { buttonStyle_a, bigStyles, fieldItem, formFrame } from "../components/Styles";
+import { buttonStyle_a, bigStyles, fieldItem, formFrame, MyComponent } from "../components/Styles";
 
 
 
@@ -84,22 +84,9 @@ export const BookForm = ({ setBooks, setError, error }) => {
 
     return (
         <>
-            {/* エラーメッセージを表示 */}
-            {error && (
-                <Box sx={{
-                    position: 'fixed',
-                    top: 0,
-                    left: 0,
-                    right: 0,
-                    backgroundColor: '#FFDDC1',
-                    color: '#D8000C',
-                    padding: '10px 0',
-                    textAlign: 'center',
-                    zIndex: 1000
-                }}>
-                    <Typography variant="body2">{error}</Typography>
-                </Box>
-            )}
+
+            {/* エラーメッセージ、送信メッセージを表示 */}
+            <MyComponent />
 
             <Box sx={{ ...bigStyles }} >
 

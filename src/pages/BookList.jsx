@@ -1,9 +1,7 @@
 import { useState, useEffect } from 'react';
 import axios from 'axios';
-import { Box, Typography, CircularProgress, Grid, Card, CardMedia, CardContent, Link, Table, TableHead, TableRow, TableCell, TableBody, TableContainer, Paper, TextareaAutosize } from '@mui/material';
-import ArrowBackIcon from '@mui/icons-material/ArrowBack';
-import { bigStyles, getButtonStyles, titleCells, bodyCells, } from "../components/Styles";
-import { Link as RouterLink } from 'react-router-dom';
+import { Box, Typography, CircularProgress, Grid, Card, CardMedia, CardContent, Link, Table, TableHead, TableRow, TableCell, TableBody, TableContainer, Paper } from '@mui/material';
+import { bigStyles, getButtonStyles, titleCells, bodyCells } from "../components/Styles";
 
 
 // Google Books APIからサムネイル画像を取得する関数(カード表示)
@@ -58,14 +56,9 @@ export const BookList = () => {
         loadBooks();
     }, []);
 
-    const TopPageLink = () => {
-
-
     return (
         <>
-            {/* トップページに戻るリンク */}
-            <TopPageLink />
-
+            
             {/* エラーメッセージの表示 */}
             {error && (
                 <Box sx={{
@@ -88,38 +81,6 @@ export const BookList = () => {
                 ...bigStyles,
                 height: 'auto',
             }}>
-
-                <Box
-                    sx={{
-                        position: 'absolute', // 絶対配置
-                        top: '17vh',  // 親の左上から17％の位置で下げる
-                        left: '6vw',  // 親の左から6％の位置
-                        zIndex: 10,    // 他の要素より前面に表示
-                    }}>
-                    <Link
-                        component={RouterLink}
-                        to="/"
-                        sx={{
-                            color: '#003366',
-                            fontSize: '1.1rem',
-                            fontWeight: 'bold',
-                            textDecoration: 'none', // 下線を削除
-                            padding: '5px 7px',
-                            borderRadius: '50px',
-                            border: '1px solid #003366',
-                            '&:hover': {
-                                color: '#6495ED', // ホバー時に色を変更
-                                border: '1px solid #6495ED',
-
-                            },
-                        }}
-                    >
-                        トップページへ戻る
-                    </Link>
-                </Box>
-                );
-                };
-
 
                 <Typography
                     variant="h3"

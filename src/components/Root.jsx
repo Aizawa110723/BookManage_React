@@ -6,15 +6,29 @@ export const Root = ({ isVertical = true }) => {
 
     return (
         <div>
+
             <Box
+                sx={{ ...navStyles }}
+
                 display="flex"
                 flexDirection={isVertical ? 'column' : 'row'}  // isVerticalによって縦並び・横並びを変更
                 alignItems="center"  // どちらの方向でも中央揃えにする
                 justifyContent="center"  // 横並びの場合は中央揃えにする
 
-                sx={{ ...navStyles }}
-
             >
+                {/* トップページリンクボタン */}
+                <Button
+                    component={Link} // LinkコンポーネントとしてButtonを使用
+                    to="/"  // リンク先はトップページ
+                    variant="outlined"
+                    sx={{
+                        ...buttonStyles,
+                        marginRight: '10px',  // 他のボタンとの間隔を調整
+                    }}
+                >
+                    トップページ
+                </Button>
+
                 <Button component={Link} to="/BookForm" variant="outlined" sx={{ ...buttonStyles }}>
                     書籍登録フォーム
                 </Button>

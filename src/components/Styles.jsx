@@ -1,4 +1,5 @@
-import { display } from "@mui/system";
+import { fontFamily } from "@mui/system";
+
 
 // トップのみボタンスタイル
 export const buttonStyle_a = {
@@ -292,3 +293,125 @@ export const bodyCells = {
     wordWrap: 'break-word',
     wordBreak: 'break-word',
 };
+
+// メッセージ表示
+export const MyComponent = () => {
+    const [error, setError] = useState('');
+    const [success, setSuccess] = useState('');
+
+    // ダイアログを閉じる関数
+    const closeDialog = () => {
+        setError('');
+        setSuccess('');
+    };
+
+    // データ送信処理（仮）
+    const handleSubmit = () => {
+        // 仮のエラー発生例
+        const isError = false;
+
+        if (isError) {
+            setError("データ送信に失敗しました。もう一度お試しください。");
+            setSuccess(''); // 成功メッセージをクリア
+        } else {
+            setError(''); // エラーメッセージをクリア
+            setSuccess("データ送信に成功しました！");
+        }
+    };
+
+    return (
+        <div>
+            {/* オーバーレイ背景 */}
+            {(error || success) && (
+                <Box
+                    sx={{
+                        position: 'fixed',
+                        top: 0,
+                        left: 0,
+                        right: 0,
+                        bottom: 0,
+                        backgroundColor: 'rgba(0, 0, 0, 0.5)', // 背景に半透明黒
+                        zIndex: 999, // メッセージを前面に表示
+                    }}
+                />
+            )}
+
+            {/* エラーメッセージのダイアログ */}
+            {error && (
+                <Box
+                    sx={{
+                        position: 'fixed',
+                        top: '30%',
+                        left: '50%',
+                        transform: 'translateX(-50%)', // 中央に配置
+                        backgroundColor: '#FFDDC1',
+                        color: '#D8000C',
+                        padding: '20px',
+                        borderRadius: '8px',
+                        boxShadow: 3,
+                        zIndex: 1000,
+                        width: '80%',
+                        maxWidth: '400px',
+                        textAlign: 'center',
+                    }}
+                >
+                    <Typography variant="body1">{error}</Typography>
+                    <Button
+                        sx={{
+                            marginTop: '10px',
+                            backgroundColor: '#D8000C',
+                            color: 'white',
+                            '&:hover': {
+                                backgroundColor: '#B30000',
+                            },
+                        }}
+                        onClick={closeDialog}
+                    >
+                        閉じる
+                    </Button>
+                </Box>
+            )}
+
+            {/* 成功メッセージのダイアログ */}
+            {success && (
+                <Box
+                    sx={{
+                        position: 'fixed',
+                        top: '30%',
+                        left: '50%',
+                        transform: 'translateX(-50%)', // 中央に配置
+                        backgroundColor: '#D4EDDA',
+                        color: '#155724',
+                        padding: '20px',
+                        borderRadius: '8px',
+                        boxShadow: 3,
+                        zIndex: 1000,
+                        width: '80%',
+                        maxWidth: '400px',
+                        textAlign: 'center',
+                    }}
+                >
+                    <Typography variant="body1">{success}</Typography>
+                    <Button
+                        sx={{
+                            marginTop: '10px',
+                            backgroundColor: '#155724',
+                            color: 'white',
+                            '&:hover': {
+                                backgroundColor: '#0C4B19',
+                            },
+                        }}
+                        onClick={closeDialog}
+                    >
+                        閉じる
+                    </Button>
+                </Box>
+            )}
+
+            {/* フォームの送信ボタン（データ送信処理） */}
+            <button onClick={handleSubmit}>送信</button>
+        </div>
+    );
+};
+
+
