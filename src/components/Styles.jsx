@@ -1,4 +1,8 @@
-import { fontFamily } from "@mui/system";
+import { useState, useEffect } from 'react';
+import { Box, Typography, Button } from '@mui/material';
+import { fontFamily, fontWeight } from '@mui/system';
+
+
 
 
 // トップのみボタンスタイル
@@ -39,6 +43,7 @@ export const buttonStyle_a = {
         width: '70%',  // 幅を70%に調整
         height: '40px', // 高さを調整
     },
+
 };
 
 // トップページのみボタン（タテ並び）
@@ -152,23 +157,146 @@ export const bigStyles = {
     backgroundColor: '#AEE0FF',
     width: '90%',  // 幅を統一
     position: 'relative',  // 親コンテナにrelativeを追加
+
+
+    // // レスポンシブ
     '@media (max-width: 1024px)': { // タブレットや中型スクリーン向け
         padding: '35px 35px', // パディングを少し小さく
-        width: 'auto',  // 幅を30%に調整
+        width: 'auto',
         height: 'auto', // 高さを調整
     },
     '@media (max-width: 768px)': { // スマートフォン向け
         padding: '25px 25px', // パディングをさらに小さく
-        width: 'auto',  // 幅を50%に調整
+        width: 'auto',
         height: 'auto', // 高さを調整
     },
     '@media (max-width: 480px)': { // より小さな画面向け
         padding: '15px 15px', // パディングを最小限に
-        width: 'auto',  // 幅を70%に調整
+        width: 'auto',
         height: 'auto', // 高さを調整
     },
 
 };
+
+// ダイアログのスタイル（成功メッセージ、失敗メッセージ用）
+const dialogStyle = {
+    position: 'absolute',  // 固定位置で表示
+    top: '50px',  // 上部から少し余白を取る
+    left: '50%',
+    transform: 'translateX(-50%)',  // 横方向の中央揃え
+    backgroundColor: 'rgba(255, 255, 255, 0.9)',  // 少し透過した白,
+    borderRadius: '10px',
+    padding: '20px',
+    boxShadow: '0 4px 10px rgba(0, 0, 0, 0.1)',
+    zIndex: 8,  // ダイアログを最前面に表示
+    width: '50%', // 幅の設定
+    maxWidth: '400px', // 最大幅を400pxに制限
+    textAlign: 'center',
+
+    // レスポンシブ対応
+    '@media (max-width: 768px)': {
+        width: '90%',  // スマートフォン向けに幅を調整
+        padding: '15px',  // パディングも調整
+    },
+    '@media (max-width: 480px)': {
+        width: '100%',  // より小さな画面では全幅に調整
+        maxWidth: 'none',  // 最大幅制限を解除
+        padding: '10px',  // パディング調整
+    },
+
+};
+
+// 成功メッセージのスタイル
+const successDialogStyle = {
+    ...dialogStyle,
+    color: '#003366',
+};
+
+// 失敗メッセージのスタイル
+const errorDialogStyle = {
+    ...dialogStyle,
+    color: 'red',
+    fontFamily: '"Roboto", sans-serif',
+    fontWeight: 'bold',
+
+};
+
+// 閉じるボタンのスタイルを登録ボタンに合わせる
+const closeButtonStyle = {
+    marginTop: '20px',
+    backgroundColor: '#003366',  // ボタンの色
+    color: 'white',  // ボタン文字色
+    padding: '10px 10px',
+    fontWeight: 'bold',
+    border: 'none',
+    borderRadius: '5px',
+    cursor: 'pointer',
+    fontSize: '16px',
+    width: '100%',
+    textAlign: 'center',
+    '&:hover': {
+        backgroundColor: '#6495ED',
+    },
+};
+
+// 成功・失敗メッセージ表示用のコンポーネント
+export const MyComponent = ({ successMessage, errorMessage, onClose }) => {
+    const message = successMessage || errorMessage;
+    const color = successMessage ? '#003366' : 'red';
+    return (
+        message && (
+            <Box
+                sx={{
+                    position: 'absolute',
+                    top: '50px',
+                    left: '50%',
+                    transform: 'translateX(-50%)',
+                    backgroundColor: 'white',
+                    borderRadius: '20px',
+                    padding: '20px',
+                    boxShadow: '0 4px 10px rgba(0, 0, 0, 0.1)',
+                    zIndex: 8,
+                    width: '50%',
+                    maxWidth: '400px',
+                    textAlign: 'center',
+                    '@media (max-width: 768px)': { width: '90%', padding: '15px' },
+                    '@media (max-width: 480px)': { width: '100%', padding: '10px' },
+                }}
+            >
+                <Typography
+                    variant="h6"
+                    color={color}
+                    sx={{
+                        fontWeight: 'bold',
+                        fontSize: '1.5rem'
+                    }}>
+                    {message}
+                </Typography>
+                <Button
+                    onClick={() => {
+                        onClose();  // onCloseがフォームリセットを実行する
+                    }}
+                    variant="contained"
+                    color="primary"
+                    sx={{
+                        marginTop: '20px',
+                        backgroundColor: '#003366',
+                        color: 'white',
+                        padding: '8px 8px',
+                        fontWeight: 'bold',
+                        borderRadius: '50px',
+                        fontSize: '20px',
+                        width: '50%',
+                        '&:hover': { backgroundColor: '#6495ED' },
+                    }}
+                >
+                    閉じる
+                </Button>
+            </Box>
+        )
+    );
+};
+
 
 // 選択項目
 export const fieldItem = {
@@ -294,124 +422,6 @@ export const bodyCells = {
     wordBreak: 'break-word',
 };
 
-// メッセージ表示
-export const MyComponent = () => {
-    const [error, setError] = useState('');
-    const [success, setSuccess] = useState('');
 
-    // ダイアログを閉じる関数
-    const closeDialog = () => {
-        setError('');
-        setSuccess('');
-    };
-
-    // データ送信処理（仮）
-    const handleSubmit = () => {
-        // 仮のエラー発生例
-        const isError = false;
-
-        if (isError) {
-            setError("データ送信に失敗しました。もう一度お試しください。");
-            setSuccess(''); // 成功メッセージをクリア
-        } else {
-            setError(''); // エラーメッセージをクリア
-            setSuccess("データ送信に成功しました！");
-        }
-    };
-
-    return (
-        <div>
-            {/* オーバーレイ背景 */}
-            {(error || success) && (
-                <Box
-                    sx={{
-                        position: 'fixed',
-                        top: 0,
-                        left: 0,
-                        right: 0,
-                        bottom: 0,
-                        backgroundColor: 'rgba(0, 0, 0, 0.5)', // 背景に半透明黒
-                        zIndex: 999, // メッセージを前面に表示
-                    }}
-                />
-            )}
-
-            {/* エラーメッセージのダイアログ */}
-            {error && (
-                <Box
-                    sx={{
-                        position: 'fixed',
-                        top: '30%',
-                        left: '50%',
-                        transform: 'translateX(-50%)', // 中央に配置
-                        backgroundColor: '#FFDDC1',
-                        color: '#D8000C',
-                        padding: '20px',
-                        borderRadius: '8px',
-                        boxShadow: 3,
-                        zIndex: 1000,
-                        width: '80%',
-                        maxWidth: '400px',
-                        textAlign: 'center',
-                    }}
-                >
-                    <Typography variant="body1">{error}</Typography>
-                    <Button
-                        sx={{
-                            marginTop: '10px',
-                            backgroundColor: '#D8000C',
-                            color: 'white',
-                            '&:hover': {
-                                backgroundColor: '#B30000',
-                            },
-                        }}
-                        onClick={closeDialog}
-                    >
-                        閉じる
-                    </Button>
-                </Box>
-            )}
-
-            {/* 成功メッセージのダイアログ */}
-            {success && (
-                <Box
-                    sx={{
-                        position: 'fixed',
-                        top: '30%',
-                        left: '50%',
-                        transform: 'translateX(-50%)', // 中央に配置
-                        backgroundColor: '#D4EDDA',
-                        color: '#155724',
-                        padding: '20px',
-                        borderRadius: '8px',
-                        boxShadow: 3,
-                        zIndex: 1000,
-                        width: '80%',
-                        maxWidth: '400px',
-                        textAlign: 'center',
-                    }}
-                >
-                    <Typography variant="body1">{success}</Typography>
-                    <Button
-                        sx={{
-                            marginTop: '10px',
-                            backgroundColor: '#155724',
-                            color: 'white',
-                            '&:hover': {
-                                backgroundColor: '#0C4B19',
-                            },
-                        }}
-                        onClick={closeDialog}
-                    >
-                        閉じる
-                    </Button>
-                </Box>
-            )}
-
-            {/* フォームの送信ボタン（データ送信処理） */}
-            <button onClick={handleSubmit}>送信</button>
-        </div>
-    );
-};
 
 

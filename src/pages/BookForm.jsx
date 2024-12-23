@@ -13,6 +13,9 @@ export const BookForm = ({ setBooks, setError, error }) => {
     const [year, setYear] = useState('');
     const [genre, setGenre] = useState('');
     const [loading, setLoading] = useState(false);
+    const [successMessage, setSuccessMessage] = useState('');  // 成功メッセージ
+    const [errorMessage, setErrorMessage] = useState('');  // エラーメッセージ
+    const [isSubmitted, setIsSubmitted] = useState(false); // データ送信が完了したかどうかの判定
 
 
     // 出版年の選択肢を1868年（明治）から2024年まで作成
@@ -23,6 +26,9 @@ export const BookForm = ({ setBooks, setError, error }) => {
 
 
     const postData = async () => {
+
+        if (loading || isSubmitted) return;  // リクエストが送信中なら何もしない
+
         try {
             const url = 'http://127.0.0.1:8000/api/books'; // リクエストを送るURL
 
@@ -40,27 +46,39 @@ export const BookForm = ({ setBooks, setError, error }) => {
             // ローディング状態を開始
             setLoading(true);
 
+            // 成功メッセージをリセット（エラーメッセージ表示前にリセットする）
+            setSuccessMessage('');
+            setErrorMessage(''); // ★成功する前にエラーメッセージをクリア★
+
+            // APIリクエストを送る
             const response = await axios.post(url, data, {
                 headers: {
                     'Content-Type': 'application/json'
                 }
             });
 
+            // APIレスポンスをコンソールで表示
+            console.log(response.data); 
+
             // レスポンスがあれば新しい本をセット
             setBooks((prevBooks) => [...prevBooks, response.data]);
 
-            // フォーム送信後にリセット
-            setTitle('');
-            setAuthor('');
-            setPublisher('');
-            setYear('');
-            setGenre('');
-            setError(null); // フォーム送信後にエラーをリセット
-
+            // 成功メッセージをセット
+            setSuccessMessage('本の登録に成功しました');
+            setIsSubmitted(true);  // ●送信完了フラグ●
 
         } catch (error) {
-            setError('本の追加に失敗しました'); // エラーをstateに保存
-            console.error('Error', error);
+            if (error.response && error.response.data) {
+                // バリデーションエラーや他のエラーが発生した場合に詳細を表示
+                setErrorMessage(error.response.data.error || '本の追加に失敗しました'); // エラーをstateに保存
+            } else {
+                // ネットワークエラーなど
+                setErrorMessage('サーバーとの通信に失敗しました');
+            }
+
+            setSuccessMessage('');  // ★エラー時には成功メッセージをクリア★
+            setIsSubmitted(true);   // ●送信完了フラグ●
+
         } finally {
             // ローディング完了
             setLoading(false);
@@ -74,6 +92,8 @@ export const BookForm = ({ setBooks, setError, error }) => {
         // バリデーション: 必須フィールドのチェック
         if (!title || !author || !publisher || !year || !genre) {
             setError("すべてのフィールドを入力してください");
+            setSuccessMessage('');
+            setIsSubmitted(true); // バリデーション失敗時にも送信完了フラグを立てる
             return;
         }
         postData(); // バリデーション通過後にデータを送信
@@ -84,11 +104,27 @@ export const BookForm = ({ setBooks, setError, error }) => {
 
     return (
         <>
-
-            {/* エラーメッセージ、送信メッセージを表示 */}
-            <MyComponent />
-
             <Box sx={{ ...bigStyles }} >
+
+                {/* MyComponentに成功・失敗メッセージを渡す */}
+
+                {(isSubmitted && (successMessage || errorMessage)) && (
+                    <MyComponent
+                        successMessage={successMessage}
+                        errorMessage={errorMessage}
+                        onClose={() => {
+                            // フォームリセット
+                            setTitle('');
+                            setAuthor('');
+                            setPublisher('');
+                            setYear('');
+                            setGenre('');
+                            setSuccessMessage('');  // 成功メッセージをリセット
+                            setErrorMessage('');    // エラーメッセージをリセット
+                            setIsSubmitted(false);  // ダイアログが閉じられたら送信完了フラグをリセット
+                        }}
+                    />
+                )}
 
                 <Typography
                     variant="h3"
@@ -136,14 +172,15 @@ export const BookForm = ({ setBooks, setError, error }) => {
                             display: 'flex',
                             flexDirection: 'column',  // ラベルをフィールドの上に配置
                             marginBottom: '16px',
-                            width: '100%' // フィールド幅を100%に設定
+                            width: '100%', // フィールド幅を100%に設定
+
                         }} key={label}>
 
                             <FormControl fullWidth sx={{ marginBottom: '16px' }}>
                                 <InputLabel htmlFor={label} sx={{
                                     fontWeight: 'bold',
                                     fontSize: '1.2rem',
-                                    color: '#003366'
+                                    color: '#003366',
                                 }} shrink>{label}</InputLabel>
                             </FormControl>
 
@@ -166,7 +203,9 @@ export const BookForm = ({ setBooks, setError, error }) => {
                                     onChange={(e) => setter(e.target.value)}
                                     type={type}
                                     variant="outlined"
+                                    autoComplete="off"  // 予測変換をオフにする
                                     sx={{ ...formFrame }}
+
                                 />
                             )}
                         </Box>
