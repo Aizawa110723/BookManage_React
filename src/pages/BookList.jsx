@@ -4,24 +4,24 @@ import { Box, Typography, CircularProgress, Grid, Card, CardMedia, CardContent, 
 import { bigStyles, getButtonStyles, titleCells, bodyCells } from "../components/Styles";
 
 
-// Google Books APIからサムネイル画像を取得する関数(カード表示)
-const fetchGoogleBookInfo = async (title) => {
-    try {
-        const response = await axios.get(`https://www.googleapis.com/books/v1/volumes?q=intitle:${encodeURIComponent(title)}`);
-        console.log('Google Books API response:', response.data); // レスポンス内容を確認
+// // Google Books APIからサムネイル画像を取得する関数(カード表示)
+// const fetchGoogleBookInfo = async (title) => {
+//     try {
+//         const response = await axios.get(`https://www.googleapis.com/books/v1/volumes?q=intitle:${encodeURIComponent(title)}`);
+//         console.log('Google Books API response:', response.data); // レスポンス内容を確認
 
-        const bookData = response.data.items && response.data.items[0];
-        if (bookData && bookData.volumeInfo) {
-            const imageUrl = bookData.volumeInfo.imageLinks ? bookData.volumeInfo.imageLinks.thumbnail : ''; // サムネイル画像のURL
-            const googleBooksId = bookData.id;  // Google BooksのID
-            return { imageUrl, googleBooksId }; // サムネイル画像とIDを返す
-        }
-        return { imageUrl: '', googleBooksId: '' }; // 画像がない場合、IDも空文字を返す
-    } catch (error) {
-        console.error('Error fetching Google book info:', error);
-        return { imageUrl: '', googleBooksId: '' }; // 取得失敗時
-    }
-};
+//         const bookData = response.data.items && response.data.items[0];
+//         if (bookData && bookData.volumeInfo) {
+//             const imageUrl = bookData.volumeInfo.imageLinks ? bookData.volumeInfo.imageLinks.thumbnail : ''; // サムネイル画像のURL
+//             const googleBooksId = bookData.id;  // Google BooksのID
+//             return { imageUrl, googleBooksId }; // サムネイル画像とIDを返す
+//         }
+//         return { imageUrl: '', googleBooksId: '' }; // 画像がない場合、IDも空文字を返す
+//     } catch (error) {
+//         console.error('Error fetching Google book info:', error);
+//         return { imageUrl: '', googleBooksId: '' }; // 取得失敗時
+//     }
+// };
 
 
 export const BookList = () => {
@@ -40,9 +40,10 @@ export const BookList = () => {
                 const bookData = await axios.get('http://127.0.0.1:8000/api/books');
 
                 // 書籍情報にGoogle Books APIの画像とIDを追加
-                const booksWithDetails = await Promise.all(bookData.data.map(async (book) => {
-                    const { imageUrl, googleBooksId } = await fetchGoogleBookInfo(book.title); // タイトルで画像を取得
-                    return { ...book, imageUrl, googleBooksId }; // 画像URLを追加
+                const booksWithDetails = bookData.data.map((book) => ({
+                    ...book,
+                    imageUrl: `http://localhost:8000/storage/${book.image_path}`, // 画像のURL
+                    googleBooksId: book.google_books_url.split('=')[1], // Google BooksのIDを抽出
                 }));
 
                 console.log('Books with details:', booksWithDetails); // 画像が正しく追加されているか
@@ -53,12 +54,13 @@ export const BookList = () => {
                 setLoading(false);
             }
         };
+
+        // データをロード
         loadBooks();
     }, []);
 
     return (
         <>
-            
             {/* エラーメッセージの表示 */}
             {error && (
                 <Box sx={{
