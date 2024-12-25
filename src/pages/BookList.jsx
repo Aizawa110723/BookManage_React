@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import axios from 'axios';
-import { Box, Typography, CircularProgress, Grid, Card, CardMedia, CardContent, Link, Table, TableHead, TableRow, TableCell, TableBody, TableContainer, Paper } from '@mui/material';
+import { Box, Typography, CircularProgress, Grid, Card, CardMedia, CardContent, Link, Table, TableHead, TableRow, TableCell, TableBody, TableContainer, Paper, Pagination } from '@mui/material';
 import { bigStyles, getButtonStyles, titleCells, bodyCells } from "../components/Styles";
 
 
@@ -29,6 +29,8 @@ export const BookList = () => {
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState(null);  // エラーステートを定義
     const [viewMode, setViewMode] = useState('table'); // viewMode: 'table' or 'card'
+    const [currentPage, setCurrentPage] = useState(1); // 現在のページ
+    const [totalPages, setTotalPages] = useState(1); // 総ページ数
 
     // コンポーネントがマウントされた時に書籍情報を取得
     useEffect(() => {
@@ -36,28 +38,48 @@ export const BookList = () => {
             setLoading(true);  // ローディング開始
 
             try {
-                // 自分のAPIから書籍データを取得(テーブル表示)
-                const bookData = await axios.get('http://127.0.0.1:8000/api/books');
+                // 自分のAPIから書籍データを取得(テーブル表示・ページネーション対応)
+                const bookData = await axios.get(`http://127.0.0.1:8000/api/books?page=${currentPage}`);
+                console.log(bookData.data);  // レスポンス内容を確認
 
                 // 書籍情報にGoogle Books APIの画像とIDを追加
-                const booksWithDetails = bookData.data.map((book) => ({
-                    ...book,
-                    imageUrl: `http://localhost:8000/storage/${book.image_path}`, // 画像のURL
-                    googleBooksId: book.google_books_url.split('=')[1], // Google BooksのIDを抽出
-                }));
+                if (bookData.data && Array.isArray(bookData.data.data)) {
 
-                console.log('Books with details:', booksWithDetails); // 画像が正しく追加されているか
-                setBooks(booksWithDetails);  // 書籍データをセット
-                setLoading(false);
+                    const booksWithDetails = bookData.data.data.map((book) => {
+
+                        // google_books_urlが存在する場合にのみsplitを使用
+                        const googleBooksId = book.google_books_url
+                            ? book.google_books_url.split('=')[1]  // Google BooksのIDを抽出
+                            : null; // google_books_urlがない場合はnullを設定
+
+                        return {
+                            ...book,
+
+                            // 画像URLを設定（localhostを使用した完全なパス）
+                            imageUrl: `http://localhost:8000/storage/${book.image_path}`,
+                            googleBooksId: googleBooksId, // Google BooksのIDをセット
+                        };
+                    });
+
+                    setBooks(booksWithDetails);  // 書籍データをセット
+                    setTotalPages(bookData.data.last_page);  // 総ページ数をセット
+                } else {
+                    setError('データが正しくありません。'); // エラーをセット
+                }
             } catch (err) {
                 setError(err.message); // エラーメッセージをセット
-                setLoading(false);
+            } finally {
+                setLoading(false);  // ローディング終了
             }
         };
 
-        // データをロード
-        loadBooks();
-    }, []);
+        loadBooks();  // データをロード
+    }, [currentPage]);  // currentPageが変更されたら再度データを取得
+
+    // ページ切り替え処理
+    const handlePageChange = (event, value) => {
+        setCurrentPage(value);
+    };
 
     return (
         <>
@@ -187,6 +209,15 @@ export const BookList = () => {
                                         </TableBody>
                                     </Table>
                                 </TableContainer>
+
+                                {/* ページネーション
+                                <Box sx={{ display: 'flex', justifyContent: 'center', marginTop: '20px' }}>
+                                    <Pagination
+                                        count={totalPages}
+                                        page={currentPage}
+                                        onChange={handlePageChange}
+                                    />
+                                </Box> */}
                             </Box>
                         )}
 
