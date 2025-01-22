@@ -8,7 +8,7 @@ import { buttonStyle_a, bigStyles, fieldItem, formFrame, MyComponent } from "../
 export const BookForm = ({ setBooks, setError, error }) => {
 
     const [title, setTitle] = useState('');
-    const [author, setAuthor] = useState('');
+    const [authors, setAuthors] = useState('');
     const [publisher, setPublisher] = useState('');
     const [year, setYear] = useState('');
     const [genre, setGenre] = useState('');
@@ -37,7 +37,7 @@ export const BookForm = ({ setBooks, setError, error }) => {
 
             const data = {
                 title: title,
-                author: author,
+                authors: authors,
                 publisher: publisher,
                 year: parsedYear,
                 genre: genre
@@ -90,7 +90,7 @@ export const BookForm = ({ setBooks, setError, error }) => {
         e.preventDefault();
 
         // バリデーション: 必須フィールドのチェック
-        if (!title || !author || !publisher || !year || !genre) {
+        if (!title || !authors || !publisher || !year || !genre) {
             setError("すべてのフィールドを入力してください");
             setSuccessMessage('');
             setIsSubmitted(true); // バリデーション失敗時にも送信完了フラグを立てる
@@ -100,7 +100,7 @@ export const BookForm = ({ setBooks, setError, error }) => {
     };
 
     // フィールドがすべて入力されているか確認
-    const isFormValid = title && author && publisher && year && genre;
+    const isFormValid = title && authors && publisher && year && genre;
 
     return (
         <>
@@ -115,7 +115,7 @@ export const BookForm = ({ setBooks, setError, error }) => {
                         onClose={() => {
                             // フォームリセット
                             setTitle('');
-                            setAuthor('');
+                            setAuthors('');
                             setPublisher('');
                             setYear('');
                             setGenre('');
@@ -162,7 +162,7 @@ export const BookForm = ({ setBooks, setError, error }) => {
                 <form onSubmit={handleSubmit} style={{ width: '100%', maxWidth: '500px' }}>
                     {[
                         { label: "タイトル", value: title, setter: setTitle, type: "text" },
-                        { label: "著者", value: author, setter: setAuthor, type: "text" },
+                        { label: "著者", value: authors, setter: setAuthors, type: "text" },
                         { label: "出版社", value: publisher, setter: setPublisher, type: "text" },
                         { label: "出版年", value: year, setter: setYear, type: "select", options: years },
                         { label: "ジャンル", value: genre, setter: setGenre, type: "select", options: genres }

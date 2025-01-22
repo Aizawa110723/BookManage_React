@@ -200,7 +200,7 @@ export const BookList = () => {
                                                 >
                                                     <TableCell sx={{ ...bodyCells }}>{book.id}</TableCell>
                                                     <TableCell sx={{ ...bodyCells }}>{book.title}</TableCell>
-                                                    <TableCell sx={{ ...bodyCells }}>{book.author}</TableCell>
+                                                    <TableCell sx={{ ...bodyCells }}>{book.authors}</TableCell>
                                                     <TableCell sx={{ ...bodyCells }}>{book.publisher}</TableCell>
                                                     <TableCell sx={{ ...bodyCells }}>{book.year}</TableCell>
                                                     <TableCell sx={{ ...bodyCells }}>{book.genre}</TableCell>
@@ -299,7 +299,7 @@ export const BookList = () => {
                                                         {book.title}
                                                     </Typography>
                                                     <Typography variant="body2" color="text.secondary">
-                                                        {book.author}
+                                                        {book.authors}
                                                     </Typography>
                                                 </CardContent>
                                             </Card>

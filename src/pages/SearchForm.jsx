@@ -5,7 +5,7 @@ import { bigStyles, fieldItem, formFrame, buttonStyle_a } from "../components/St
 
 export const SearchForm = () => {
     const [title, setTitle] = useState("");  // タイトル
-    const [author, setAuthor] = useState("");  // 著者
+    const [authors, setAuthors] = useState("");  // 著者
     const [publisher, setPublisher] = useState("");  // 出版社
     const [year, setYear] = useState("");  // 出版年
     const [genre, setGenre] = useState("");  // ジャンル
@@ -21,7 +21,7 @@ export const SearchForm = () => {
     const genres = ["文学・評論", "自伝・伝記", "ノンフィクション", "ファンタジー・SF", "ミステリー・推理", "教育・学習", "ビジネス・経済", "歴史・社会", "芸能・エンターテインメント", "アート・建築・デザイン", "人文・思想・宗教", "科学・テクノロジー・プログラミング", "健康・ライフスタイル", "旅行・ガイド", "料理・グルメ",];
 
     // いずれかのフィールドに値が入っていれば検索可能
-    const isFormValid = title || author || publisher || year || genre;
+    const isFormValid = title || authors || publisher || year || genre;
 
     const handleSearch = async (e) => {
         e.preventDefault();
@@ -38,7 +38,7 @@ export const SearchForm = () => {
         // 空のフィールドはクエリパラメータから削除する
         const queryParams = {};
         if (title) queryParams.title = title;
-        if (author) queryParams.author = author;
+        if (authors) queryParams.authors = authors;
         if (publisher) queryParams.publisher = publisher;
         if (year) queryParams.year = year;
         if (genre) queryParams.genre = genre;
@@ -55,7 +55,7 @@ export const SearchForm = () => {
             let filteredBooks = data.filter(book => {
                 return (
                     (title ? new RegExp(title, 'i').test(book.title) : true) &&  // タイトルに対する正規表現検索
-                    (author ? new RegExp(author, 'i').test(book.author) : true) &&  // 著者に対する正規表現検索
+                    (authors ? new RegExp(authors, 'i').test(book.authors) : true) &&  // 著者に対する正規表現検索
                     (publisher ? new RegExp(publisher, 'i').test(book.publisher) : true) &&  // 出版社に対する正規表現検索
                     (year ? new RegExp(`^${year}$`).test(book.year.toString()) : true) &&  // 出版年を完全一致で検索
                     (genre ? new RegExp(genre, 'i').test(book.genre) : true)  // ジャンルに対する正規表現検索
@@ -131,7 +131,7 @@ export const SearchForm = () => {
                 {/* 検索フォーム */}
                 <form onSubmit={handleSearch} style={{ width: '100%', maxWidth: '500px' }}>
                     {[{ label: "タイトル", value: title, setter: setTitle, type: "text" },
-                    { label: "著者", value: author, setter: setAuthor, type: "text" },
+                    { label: "著者", value: authors, setter: setAuthors, type: "text" },
                     { label: "出版社", value: publisher, setter: setPublisher, type: "text" },
                     { label: "出版年", value: year, setter: setYear, type: "select", options: years },
                     { label: "ジャンル", value: genre, setter: setGenre, type: "select", options: genres }]
