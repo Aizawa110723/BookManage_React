@@ -4,24 +4,6 @@ import { Box, Typography, CircularProgress, Grid, Card, CardMedia, CardContent, 
 import { bigStyles, getButtonStyles, titleCells, bodyCells } from "../components/Styles";
 
 
-// // Google Books APIからサムネイル画像を取得する関数(カード表示)
-// const fetchGoogleBookInfo = async (title) => {
-//     try {
-//         const response = await axios.get(`https://www.googleapis.com/books/v1/volumes?q=intitle:${encodeURIComponent(title)}`);
-//         console.log('Google Books API response:', response.data); // レスポンス内容を確認
-
-//         const bookData = response.data.items && response.data.items[0];
-//         if (bookData && bookData.volumeInfo) {
-//             const imageUrl = bookData.volumeInfo.imageLinks ? bookData.volumeInfo.imageLinks.thumbnail : ''; // サムネイル画像のURL
-//             const googleBooksId = bookData.id;  // Google BooksのID
-//             return { imageUrl, googleBooksId }; // サムネイル画像とIDを返す
-//         }
-//         return { imageUrl: '', googleBooksId: '' }; // 画像がない場合、IDも空文字を返す
-//     } catch (error) {
-//         console.error('Error fetching Google book info:', error);
-//         return { imageUrl: '', googleBooksId: '' }; // 取得失敗時
-//     }
-// };
 
 
 export const BookList = () => {
@@ -32,14 +14,16 @@ export const BookList = () => {
     const [currentPage, setCurrentPage] = useState(1); // 現在のページ
     const [totalPages, setTotalPages] = useState(1); // 総ページ数
 
-    // コンポーネントがマウントされた時に書籍情報を取得
+    // コンポーネントがマウントされた時にAPIから書籍データを取得
     useEffect(() => {
         const loadBooks = async () => {
             setLoading(true);  // ローディング開始
 
             try {
                 // 自分のAPIから書籍データを取得(テーブル表示・ページネーション対応)
-                const bookData = await axios.get(`http://127.0.0.1:8000/api/books?page=${currentPage}`);
+                const response = await axios.get(`http://127.0.0.1:8000/api/books?page=${currentPage}`);
+                const bookData = response.data;
+
                 console.log(bookData.data);  // レスポンス内容を確認
 
                 // 書籍情報にGoogle Books APIの画像とIDを追加
@@ -56,8 +40,8 @@ export const BookList = () => {
                             ...book,
 
                             // 画像URLを設定（localhostを使用した完全なパス）
-                            imageUrl: `http://localhost:8000/storage/${book.image_path}`,
-                            googleBooksId: googleBooksId, // Google BooksのIDをセット
+                            imageUrl: book.image_path ? `http://localhost:8000/storage/${book.image_path}` : null,
+                            googleBooksId,  // Google BooksのIDをセット
                         };
                     });
 
@@ -233,9 +217,9 @@ export const BookList = () => {
                                 {books.map((book) => (
                                     <Grid item xs={12} sm={6} md={4} key={book.id}>
                                         <Link
-                                            href={`https://books.google.com/books?id=${book.googleBooksId}`}  // Google Booksのリンク
+                                            href={book.google_books_url}  // Google Booksのリンク
                                             target="_blank"
-                                            rel="noopener noreferrer"
+                                            rel="noopener noreferrer"   // <a>タグリンク属性。target="_blank"を指定している場合のリンク先）に対して、親ページ（現在のページ）の window.opener プロパティへのアクセスを防ぐ
                                             underline="none"
                                             sx={{
                                                 display: 'block', // Link全体をブロック要素にして、カード全体をクリック可能にする
@@ -253,19 +237,21 @@ export const BookList = () => {
                                                     height: '300px',
 
                                                 }}>
-                                                {book.imageUrl ? (
+
+                                                {book.image_url ? (
+                                                    // image_urlが存在する場合に画像を表示
                                                     <CardMedia
                                                         component="img"
                                                         alt={book.title}
                                                         height="200px"
-                                                        image={book.imageUrl}
+                                                        image={book.image_url} // image_urlを使用
                                                         sx={{
                                                             objectFit: 'cover',
                                                             minHeight: '200px',
                                                         }}
                                                     />
                                                 ) : (
-                                                    // 画像がない場合でも表示される部分
+                                                    // 画像がない場合表示される部分
                                                     <div
                                                         style={{
                                                             height: '200px',
