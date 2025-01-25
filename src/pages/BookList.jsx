@@ -31,6 +31,8 @@ export const BookList = () => {
 
                     const booksWithDetails = bookData.data.data.map((book) => {
 
+                        console.log(book.image_path);  // ここでimage_pathの値を確認
+                        
                         // google_books_urlが存在する場合にのみsplitを使用
                         const googleBooksId = book.google_books_url
                             ? book.google_books_url.split('=')[1]  // Google BooksのIDを抽出
@@ -194,14 +196,14 @@ export const BookList = () => {
                                     </Table>
                                 </TableContainer>
 
-                                {/* ページネーション
+                                {/* ページネーション*/}
                                 <Box sx={{ display: 'flex', justifyContent: 'center', marginTop: '20px' }}>
                                     <Pagination
                                         count={totalPages}
                                         page={currentPage}
                                         onChange={handlePageChange}
                                     />
-                                </Box> */}
+                                </Box>
                             </Box>
                         )}
 
@@ -238,13 +240,13 @@ export const BookList = () => {
 
                                                 }}>
 
-                                                {book.image_url ? (
+                                                {book.imageUrl ? (
                                                     // image_urlが存在する場合に画像を表示
                                                     <CardMedia
                                                         component="img"
                                                         alt={book.title}
                                                         height="200px"
-                                                        image={book.image_url} // image_urlを使用
+                                                        image={book.imageUrl} // imageUrlを使用
                                                         sx={{
                                                             objectFit: 'cover',
                                                             minHeight: '200px',

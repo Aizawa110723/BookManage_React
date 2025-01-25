@@ -61,8 +61,7 @@ export const BookForm = ({ setBooks, setError, error }) => {
                     console.log('成功:', response);
                 })
                 .catch(error => {
-                    console.error('エラー:', error);
-                });
+                 });
 
             // APIレスポンスをコンソールで表示
             console.log(response.data);
