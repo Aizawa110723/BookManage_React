@@ -51,14 +51,21 @@ export const BookForm = ({ setBooks, setError, error }) => {
             setErrorMessage(''); // ★成功する前にエラーメッセージをクリア★
 
             // APIリクエストを送る
-            const response = await axios.post(url, data, {
+            axios.post('http://127.0.0.1:8000/api/books', data, {
+                withCredentials: true,
                 headers: {
-                    'Content-Type': 'application/json'
+                    'Content-Type': 'application/json',
                 }
-            });
+            })
+                .then(response => {
+                    console.log('成功:', response);
+                })
+                .catch(error => {
+                    console.error('エラー:', error);
+                });
 
             // APIレスポンスをコンソールで表示
-            console.log(response.data); 
+            console.log(response.data);
 
             // レスポンスがあれば新しい本をセット
             setBooks((prevBooks) => [...prevBooks, response.data]);
