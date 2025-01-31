@@ -48,7 +48,7 @@ export const BookList = () => {
                     setBooks(booksWithDetails);  // 書籍データをセット
                     setTotalPages(bookData.data.last_page);  // 総ページ数をセット
                 } else {
-                    setError('データが正しくありません。'); // エラーをセット
+                    setError('書籍情報の取得に失敗しました。'); // エラーをセット
                 }
             } catch (err) {
                 setError(err.message); // エラーメッセージをセット
@@ -194,14 +194,14 @@ export const BookList = () => {
                                     </Table>
                                 </TableContainer>
 
-                                {/* ページネーション
+                                {/* ページネーション*/}
                                 <Box sx={{ display: 'flex', justifyContent: 'center', marginTop: '20px' }}>
                                     <Pagination
                                         count={totalPages}
                                         page={currentPage}
                                         onChange={handlePageChange}
                                     />
-                                </Box> */}
+                                </Box>
                             </Box>
                         )}
 
@@ -217,7 +217,7 @@ export const BookList = () => {
                                 {books.map((book) => (
                                     <Grid item xs={12} sm={6} md={4} key={book.id}>
                                         <Link
-                                            href={book.google_books_url}  // Google Booksのリンク
+                                            href={book.google_books_url || '#'}  // google_books_urlが無ければ#
                                             target="_blank"
                                             rel="noopener noreferrer"   // <a>タグリンク属性。target="_blank"を指定している場合のリンク先）に対して、親ページ（現在のページ）の window.opener プロパティへのアクセスを防ぐ
                                             underline="none"
