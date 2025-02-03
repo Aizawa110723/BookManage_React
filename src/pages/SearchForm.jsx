@@ -1,6 +1,6 @@
 import { useState } from "react";
 import axios from "axios";
-import { Box, Button, TextField, CircularProgress, Typography, FormControl, InputLabel, Select, MenuItem, Dialog, DialogTitle, DialogContent, DialogActions } from "@mui/material";
+import { Box, Button, TextField, CircularProgress, Typography, FormControl, InputLabel, Select, MenuItem } from "@mui/material";
 import { bigStyles, fieldItem, formFrame, buttonStyle_a } from "../components/Styles";
 
 export const SearchForm = () => {
@@ -14,10 +14,10 @@ export const SearchForm = () => {
     const [books, setBooks] = useState([]);  // 検索結果を格納するステート
     const [openDialog, setOpenDialog] = useState(false);  // ダイアログボックスの表示・非表示ステート
 
-    // 出版年の選択肙を1868年（明治）から2024年まで作成
+    // 出版年の選択欄を1868年（明治）から2024年まで作成
     const years = Array.from({ length: 2024 - 1868 + 1 }, (_, index) => 1868 + index);  // 1868年から2024年までの配列
 
-    // ジャンルの選択肙を定義（必要に応じて変更可能）
+    // ジャンルの選択欄を定義（必要に応じて変更可能）
     const genres = ["文学・評論", "自伝・伝記", "ノンフィクション", "ファンタジー・SF", "ミステリー・推理", "教育・学習", "ビジネス・経済", "歴史・社会", "芸能・エンターテインメント", "アート・建築・デザイン", "人文・思想・宗教", "科学・テクノロジー・プログラミング", "健康・ライフスタイル", "旅行・ガイド", "料理・グルメ",];
 
     // いずれかのフィールドに値が入っていれば検索可能
@@ -51,14 +51,14 @@ export const SearchForm = () => {
 
             console.log(data);  // ここでレスポンスを確認する
 
-            // 正規表現を使った部分一致検索
+            // 正規表現を使った検索※完全一致と部分一致
             let filteredBooks = data.filter(book => {
                 return (
-                    (title ? new RegExp(title, 'i').test(book.title) : true) &&  // タイトルに対する正規表現検索
-                    (authors ? new RegExp(authors, 'i').test(book.authors) : true) &&  // 著者に対する正規表現検索
-                    (publisher ? new RegExp(publisher, 'i').test(book.publisher) : true) &&  // 出版社に対する正規表現検索
+                    (title ? title === book.title : true) &&  // タイトルに対する完全一致検索
+                    (authors ? authors === book.authors : true) &&  // 著者に対する完全一致検索
+                    (publisher ? new RegExp(publisher, 'i').test(book.publisher) : true) &&  // 出版社に対する部分一致検索
                     (year ? new RegExp(`^${year}$`).test(book.year.toString()) : true) &&  // 出版年を完全一致で検索
-                    (genre ? new RegExp(genre, 'i').test(book.genre) : true)  // ジャンルに対する正規表現検索
+                    (genre ? new RegExp(genre, 'i').test(book.genre) : true)  // ジャンルに対する部分一致検索
                 );
             });
 

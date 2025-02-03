@@ -24,15 +24,16 @@ export const BookList = () => {
                 const response = await axios.get(`http://127.0.0.1:8000/api/books?page=${currentPage}`);
                 const bookData = response.data;
 
-                console.log(bookData.data);  // レスポンス内容を確認
+                console.log(bookData.items);  // レスポンス内容を確認
 
                 // 書籍情報にGoogle Books APIの画像とIDを追加
-                if (bookData.data && Array.isArray(bookData.data.data)) {
-
+                if (bookData.items && Array.isArray(bookData.items)) {
+                    // booksWithDetails に画像やGoogle BooksのIDを追加
                     const booksWithDetails = bookData.data.data.map((book) => {
+                        // const googleBooksId = book.id; // Google BooksのIDを直接取得
 
                         console.log(book.image_path);  // ここでimage_pathの値を確認
-                        
+
                         // google_books_urlが存在する場合にのみsplitを使用
                         const googleBooksId = book.google_books_url
                             ? book.google_books_url.split('=')[1]  // Google BooksのIDを抽出
@@ -53,7 +54,8 @@ export const BookList = () => {
                     setError('書籍情報の取得に失敗しました。'); // エラーをセット
                 }
             } catch (err) {
-                setError(err.message); // エラーメッセージをセット
+                console.error('API Error:', err);  // 詳細なエラー情報をコンソールに出力
+                setError('データの取得に失敗しました。'); // より一般的なエラーメッセージを設定            
             } finally {
                 setLoading(false);  // ローディング終了
             }
@@ -199,7 +201,7 @@ export const BookList = () => {
                                 {/* ページネーション*/}
                                 <Box sx={{ display: 'flex', justifyContent: 'center', marginTop: '20px' }}>
                                     <Pagination
-                                        count={totalPages}
+                                        count={totalPages > 0 ? totalPages : 1} // もしtotalPagesが1以下なら1を指定
                                         page={currentPage}
                                         onChange={handlePageChange}
                                     />

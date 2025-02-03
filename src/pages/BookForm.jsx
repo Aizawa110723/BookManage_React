@@ -26,7 +26,6 @@ export const BookForm = ({ setBooks, setError, error }) => {
 
 
     const postData = async () => {
-
         if (loading || isSubmitted) return;  // リクエストが送信中なら何もしない
 
         try {
@@ -51,29 +50,22 @@ export const BookForm = ({ setBooks, setError, error }) => {
             setErrorMessage(''); // ★成功する前にエラーメッセージをクリア★
 
             // APIリクエストを送る
-            axios.post('http://127.0.0.1:8000/api/books', data, {
+            const response = await axios.post('http://127.0.0.1:8000/api/books', data, {
                 withCredentials: true,
                 headers: {
                     'Content-Type': 'application/json',
                 }
-            })
-                .then(response => {
-                    console.log('成功:', response);
-                })
-                .catch(error => {
-                 });
+            });
 
-            // APIレスポンスをコンソールで表示
-            console.log(response.data);
-
-            // レスポンスがあれば新しい本をセット
-            setBooks((prevBooks) => [...prevBooks, response.data]);
-
-            // 成功メッセージをセット
+            // 成功の場合
+            console.log('成功:', response);
+            setBooks((prevBooks) => [...prevBooks, response.data]);  // レスポンスを元に書籍データを更新
             setSuccessMessage('本の登録に成功しました');
             setIsSubmitted(true);  // ●送信完了フラグ●
 
         } catch (error) {
+            // エラーの場合
+            console.log('エラー:', error);
             if (error.response && error.response.data) {
                 // バリデーションエラーや他のエラーが発生した場合に詳細を表示
                 setErrorMessage(error.response.data.error || '本の追加に失敗しました'); // エラーをstateに保存
@@ -90,6 +82,7 @@ export const BookForm = ({ setBooks, setError, error }) => {
             setLoading(false);
         }
     };
+
 
 
     const handleSubmit = (e) => {
