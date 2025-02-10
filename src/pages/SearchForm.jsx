@@ -47,6 +47,7 @@ export const SearchForm = () => {
             // フィールドに入力された情報をまとめてAPIに渡す
             const { data } = await axios.get("http://127.0.0.1:8000/api/searchbooks", {
                 params: queryParams,
+                withCredentials: true,
             });
 
             console.log(data);  // ここでレスポンスを確認する

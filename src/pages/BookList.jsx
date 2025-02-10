@@ -3,9 +3,6 @@ import axios from 'axios';
 import { Box, Typography, CircularProgress, Grid, Card, CardMedia, CardContent, Link, Table, TableHead, TableRow, TableCell, TableBody, TableContainer, Paper, Pagination } from '@mui/material';
 import { bigStyles, getButtonStyles, titleCells, bodyCells } from "../components/Styles";
 
-
-
-
 export const BookList = () => {
     const [books, setBooks] = useState([]); // 書籍データを格納するstate
     const [loading, setLoading] = useState(false);
@@ -21,7 +18,9 @@ export const BookList = () => {
 
             try {
                 // 自分のAPIから書籍データを取得(テーブル表示・ページネーション対応)
-                const response = await axios.get(`http://127.0.0.1:8000/api/books?page=${currentPage}`);
+                const response = await axios.get(`http://127.0.0.1:8000/api/books?page=${currentPage}`, {
+                    withCredentials: true,
+                });
                 const bookData = response.data;
 
                 console.log(bookData.items);  // レスポンス内容を確認
@@ -29,7 +28,7 @@ export const BookList = () => {
                 // 書籍情報にGoogle Books APIの画像とIDを追加
                 if (bookData.items && Array.isArray(bookData.items)) {
                     // booksWithDetails に画像やGoogle BooksのIDを追加
-                    const booksWithDetails = bookData.data.data.map((book) => {
+                    const booksWithDetails = bookData.items.map((book) => {
                         // const googleBooksId = book.id; // Google BooksのIDを直接取得
 
                         console.log(book.image_path);  // ここでimage_pathの値を確認

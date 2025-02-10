@@ -1,4 +1,5 @@
-import { useState } from 'react';
+import React from 'react';
+import axios from 'axios';
 import { BrowserRouter, Route, Routes, Link } from 'react-router-dom';
 import { BookForm } from './pages/BookForm';
 import { SearchForm } from './pages/SearchForm';
@@ -6,6 +7,10 @@ import { BookList } from './pages/BookList';
 import { Typography, Box, Button } from '@mui/material';
 import { topButton, buttonStyle_a, bigStyles } from './components/Styles';
 import { Root } from './components/Root';
+
+
+// Axiosの設定
+axios.defaults.withCredentials = true;  // これで全てのリクエストにクレデンシャルを含める
 
 export const App = () => {
 
@@ -73,7 +78,7 @@ export const App = () => {
           element={
             <>
               <Root isVertical={false} />
-              <SearchForm /> 
+              <SearchForm />
             </>
           }
         />
@@ -84,7 +89,7 @@ export const App = () => {
           element={
             <>
               <Root isVertical={false} />
-              <BookList /> 
+              <BookList />
             </>
           }
         />

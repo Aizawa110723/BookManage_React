@@ -49,11 +49,15 @@ export const BookForm = ({ setBooks, setError, error }) => {
             setSuccessMessage('');
             setErrorMessage(''); // ★成功する前にエラーメッセージをクリア★
 
+            // CSRFトークンをクッキーから取得
+            const csrfToken = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
+
             // APIリクエストを送る
             const response = await axios.post('http://127.0.0.1:8000/api/books', data, {
                 withCredentials: true,
                 headers: {
                     'Content-Type': 'application/json',
+                    'X-XSRF-TOKEN': csrfToken,  // CSRFトークンをヘッダーに追加
                 }
             });
 
@@ -61,7 +65,6 @@ export const BookForm = ({ setBooks, setError, error }) => {
             console.log('成功:', response);
             setBooks((prevBooks) => [...prevBooks, response.data]);  // レスポンスを元に書籍データを更新
             setSuccessMessage('本の登録に成功しました');
-            setIsSubmitted(true);  // ●送信完了フラグ●
 
         } catch (error) {
             // エラーの場合
