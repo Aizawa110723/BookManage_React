@@ -7,6 +7,7 @@ import { BookList } from './pages/BookList';
 import { Typography, Box, Button } from '@mui/material';
 import { topButton, buttonStyle_a, bigStyles } from './components/Styles';
 import { Root } from './components/Root';
+import { CsrfTokenProvider } from './context/CsrfTokenContext';  // CsrfTokenProviderのインポート
 
 
 // Axiosの設定
@@ -18,82 +19,83 @@ export const App = () => {
   // const [error, setError] = useState(null); // setError を定義
 
   return (
-    <BrowserRouter>
+    <CsrfTokenProvider>    {/* App全体をCsrfTokenProviderでラップ */}
+      <BrowserRouter>
+        <Routes>
 
-      <Routes>
+          {/* トップページ */}
+          <Route
+            path="/"
+            element={
 
-        {/* トップページ */}
-        <Route
-          path="/"
-          element={
+              <div>
+                <Box sx={{ ...topButton }}>
+                  <Typography
+                    variant="h4"
+                    sx={{
+                      fontFamily: '"Roboto", sans-serif',
+                      fontSize: '2.5rem',
+                      fontWeight: 'bold',
+                      color: '#003366',
+                      textAlign: 'center',
+                      letterSpacing: '2px',
+                    }}
+                  >
+                    書籍管理＆検索
+                  </Typography>
+                </Box>
 
-            <div>
-              <Box sx={{ ...topButton }}>
-                <Typography
-                  variant="h4"
-                  sx={{
-                    fontFamily: '"Roboto", sans-serif',
-                    fontSize: '2.5rem',
-                    fontWeight: 'bold',
-                    color: '#003366',
-                    textAlign: 'center',
-                    letterSpacing: '2px',
-                  }}
-                >
-                  書籍管理＆検索
-                </Typography>
-              </Box>
+                <Box sx={{ ...bigStyles, height: '70vh', backgroundColor: '#ffffff' }}>
+                  <Button component={Link} to="/BookForm" variant="outlined" sx={{ ...buttonStyle_a }}>
+                    書籍登録フォーム
+                  </Button>
 
-              <Box sx={{ ...bigStyles, height: '70vh', backgroundColor: '#ffffff' }}>
-                <Button component={Link} to="/BookForm" variant="outlined" sx={{ ...buttonStyle_a }}>
-                  書籍登録フォーム
-                </Button>
+                  <Button component={Link} to="/SearchForm" variant="outlined" sx={{ ...buttonStyle_a }}>
+                    書籍検索フォーム
+                  </Button>
 
-                <Button component={Link} to="/SearchForm" variant="outlined" sx={{ ...buttonStyle_a }}>
-                  書籍検索フォーム
-                </Button>
+                  <Button component={Link} to="/BookList" variant="outlined" sx={{ ...buttonStyle_a }}>
+                    書籍リスト
+                  </Button>
+                </Box>
+              </div>
+            }
+          />
 
-                <Button component={Link} to="/BookList" variant="outlined" sx={{ ...buttonStyle_a }}>
-                  書籍リスト
-                </Button>
-              </Box>
-            </div>
-          }
-        />
+          {/* 書籍登録フォーム */}
+          <Route
+            path="/BookForm"
+            element={
+              <>
+                <Root isVertical={false} />
+                <BookForm />
+              </>
+            }
+          />
 
-        {/* 書籍登録フォーム */}
-        <Route
-          path="/BookForm"
-          element={
-            <>
-              <Root isVertical={false} />
-              <BookForm />
-            </>
-          }
-        />
+          {/* 書籍検索フォーム */}
+          <Route
+            path="/SearchForm"
+            element={
+              <>
+                <Root isVertical={false} />
+                <SearchForm />
+              </>
+            }
+          />
 
-        {/* 書籍検索フォーム */}
-        <Route
-          path="/SearchForm"
-          element={
-            <>
-              <Root isVertical={false} />
-              <SearchForm />
-            </>
-          }
-        />
-
-        {/* 書籍リスト */}
-        <Route
-          path="/BookList"
-          element={
-            <>
-              <Root isVertical={false} />
-              <BookList />
-            </>
-          }
-        />
-      </Routes>
-    </BrowserRouter>
+          {/* 書籍リスト */}
+          <Route
+            path="/BookList"
+            element={
+              <>
+                <Root isVertical={false} />
+                <BookList />
+              </>
+            }
+          />
+        </Routes>
+      </BrowserRouter>
+    </CsrfTokenProvider>
   );
 };

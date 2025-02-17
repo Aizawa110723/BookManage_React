@@ -10,7 +10,7 @@ export const buttonStyle_a = {
     margin: '20px',
     fontWeight: 'bold',
     fontFamily: '"Roboto", sans-serif', // フォント変更
-    backgroundColor: '#003366',
+    backgroundColor: '#8B3A2F',
     color: 'white',
     borderRadius: '50px', // ボタンを丸く
     alignItems: 'center',
@@ -22,7 +22,7 @@ export const buttonStyle_a = {
     lineHeight: '1.2',
     boxShadow: 'none !important', // 影を削除
     '&:hover': {
-        backgroundColor: '#6495ED',
+        backgroundColor: '#D2691E',
         color: 'white',
     },
     '@media (max-width: 1024px)': { // タブレットや中型スクリーン向け
@@ -60,7 +60,7 @@ export const topButton = {
     borderRadius: "10px",
     border: "1px solid rgba(0, 0, 0, 0.1)",
     height: '60px',
-    backgroundColor: '#AEE0FF',
+    backgroundColor: '#E4D00A',
     width: '90%',
     paddingTop: '30px',
     paddingBottom: '30px',
@@ -75,7 +75,7 @@ export const buttonStyles = {
     margin: '20px',
     fontWeight: 'bold',
     fontFamily: '"Roboto", sans-serif', // フォント変更
-    backgroundColor: '#003366',
+    backgroundColor: '#E4D00A',
     color: 'white',
     borderRadius: '50px', // ボタンを丸く
     alignItems: 'center',
@@ -87,7 +87,7 @@ export const buttonStyles = {
     lineHeight: '1.2',
     boxShadow: 'none !important', // 影を削除
     '&:hover': {
-        backgroundColor: '#6495ED',
+        backgroundColor: '#D2691E',
         color: 'white',
     },
     '@media (max-width: 1024px)': { // タブレットや中型スクリーン向け
@@ -113,7 +113,7 @@ export const navStyles = {
     alignItems: "center",
     fontFamily: '"Roboto", sans-serif', // フォント変更
     fontWeight: "bold",
-    color: '#003366',
+    color: '#8B3A2F',
     textAlign: 'center',
     borderRadius: "10px",
     border: "1px solid rgba(0, 0, 0, 0.1)",
@@ -147,14 +147,14 @@ export const bigStyles = {
     alignItems: "center",
     fontFamily: '"Roboto", sans-serif', // フォント変更
     fontWeight: "bold",
-    color: '#003366',
+    color: '#8B3A2F',
     textAlign: 'center',
     borderRadius: "10px",
     border: "1px solid rgba(0, 0, 0, 0.1)",
     borderTop: "none",
     height: '100vh',
     margin: '0 auto', // 中央に配置
-    backgroundColor: '#AEE0FF',
+    backgroundColor: '#E4D00A',
     width: '90%',  // 幅を統一
     position: 'relative',  // 親コンテナにrelativeを追加
 
@@ -184,7 +184,7 @@ const dialogStyle = {
     top: '50px',  // 上部から少し余白を取る
     left: '50%',
     transform: 'translateX(-50%)',  // 横方向の中央揃え
-    backgroundColor: 'rgba(255, 255, 255, 0.9)',  // 少し透過した白,
+    backgroundColor: 'white',  // 少し透過した白,
     borderRadius: '10px',
     padding: '20px',
     boxShadow: '0 4px 10px rgba(0, 0, 0, 0.1)',
@@ -209,7 +209,7 @@ const dialogStyle = {
 // 成功メッセージのスタイル
 const successDialogStyle = {
     ...dialogStyle,
-    color: '#003366',
+    color: '#8B3A2F',
 };
 
 // 失敗メッセージのスタイル
@@ -224,7 +224,7 @@ const errorDialogStyle = {
 // 閉じるボタンのスタイルを登録ボタンに合わせる
 const closeButtonStyle = {
     marginTop: '20px',
-    backgroundColor: '#003366',  // ボタンの色
+    backgroundColor: '#8B3A2F',  // ボタンの色
     color: 'white',  // ボタン文字色
     padding: '10px 10px',
     fontWeight: 'bold',
@@ -235,14 +235,14 @@ const closeButtonStyle = {
     width: '100%',
     textAlign: 'center',
     '&:hover': {
-        backgroundColor: '#6495ED',
+        backgroundColor: '#D2691E',
     },
 };
 
 // 成功・失敗メッセージ表示用のコンポーネント
 export const MyComponent = ({ successMessage, errorMessage, onClose }) => {
     const message = successMessage || errorMessage;
-    const color = successMessage ? '#003366' : 'red';
+    const color = successMessage ? '#8B3A2F' : 'green';
     return (
         message && (
             <Box
@@ -280,14 +280,14 @@ export const MyComponent = ({ successMessage, errorMessage, onClose }) => {
                     color="primary"
                     sx={{
                         marginTop: '20px',
-                        backgroundColor: '#003366',
+                        backgroundColor: '#8B3A2F',
                         color: 'white',
                         padding: '8px 8px',
                         fontWeight: 'bold',
                         borderRadius: '50px',
                         fontSize: '20px',
                         width: '50%',
-                        '&:hover': { backgroundColor: '#6495ED' },
+                        '&:hover': { backgroundColor: '#D2691E' },
                     }}
                 >
                     閉じる
@@ -355,7 +355,7 @@ export const messages = {
     left: 0,
     right: 0,
     backgroundColor: 'white',
-    color: '#003366',
+    color: '#8B3A2F',
     textAlign: 'center',
     padding: '20px 0', // パディングを大きくして高さを増す
     zIndex: 1000,
@@ -369,7 +369,7 @@ export const messages = {
 
 // BookListボタンのスタイルを共通化する関数
 export const getButtonStyles = (isActive) => ({
-    backgroundColor: isActive ? '#6495ED' : '#003366',
+    backgroundColor: isActive ? '#D2691E' : '#8B3A2F',
     color: 'white',
     borderRadius: '50px',
     fontSize: '1.1rem',
@@ -386,10 +386,10 @@ export const getButtonStyles = (isActive) => ({
     outline: 'none',
     border: 'none',
     '&:hover': {
-        backgroundColor: '#6495ED',
+        backgroundColor: '#D2691E ',
     },
     '&:active': {
-        backgroundColor: '#6495ED',
+        backgroundColor: '#D2691E ',
     },
     '&:focus': {
         outline: 'none',
@@ -411,7 +411,7 @@ export const titleCells = {
 
 // 内容のセルの設定
 export const bodyCells = {
-    color: '#003366',
+    color: '#8B3A2F',
     padding: '18px',
     textAlign: 'center',
     fontSize: '1.0rem',

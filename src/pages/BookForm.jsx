@@ -3,9 +3,9 @@ import axios from "axios";
 import { Box, Button, TextField, CircularProgress, Typography, FormControl, InputLabel, Select, MenuItem } from "@mui/material";
 import { buttonStyle_a, bigStyles, fieldItem, formFrame, MyComponent } from "../components/Styles";
 
-
-
 export const BookForm = ({ setBooks, setError, error }) => {
+
+    const [openDialog, setOpenDialog] = useState(false);  // ダイアログボックスの表示・非表示ステート
 
     const [title, setTitle] = useState('');
     const [authors, setAuthors] = useState('');
@@ -17,13 +17,14 @@ export const BookForm = ({ setBooks, setError, error }) => {
     const [errorMessage, setErrorMessage] = useState('');  // エラーメッセージ
     const [isSubmitted, setIsSubmitted] = useState(false); // データ送信が完了したかどうかの判定
 
+    // CSRFトークンをコンテキストから取得
+    const csrfToken = useCsrfToken(); // CSRFトークンの取得
 
     // 出版年の選択肢を1868年（明治）から2024年まで作成
     const years = Array.from({ length: 2024 - 1868 + 1 }, (_, index) => 1868 + index);  // 1868年から2024年までの配列
 
     // ジャンルの選択肢を定義（必要に応じて変更可能）
     const genres = ["文学・評論", "自伝・伝記", "ノンフィクション", "ファンタジー・SF", "ミステリー・推理", "教育・学習", "ビジネス・経済", "歴史・社会", "芸能・エンターテインメント", "アート・建築・デザイン", "人文・思想・宗教", "科学・テクノロジー・プログラミング", "健康・ライフスタイル", "旅行・ガイド", "料理・グルメ"];
-
 
     const postData = async () => {
         if (loading || isSubmitted) return;  // リクエストが送信中なら何もしない
@@ -49,8 +50,12 @@ export const BookForm = ({ setBooks, setError, error }) => {
             setSuccessMessage('');
             setErrorMessage(''); // ★成功する前にエラーメッセージをクリア★
 
-            // CSRFトークンをクッキーから取得
-            const csrfToken = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
+            // CSRFトークンを取得
+            if (!csrfToken) {
+                setErrorMessage('CSRFトークンが取得できませんでした');
+                setLoading(false);
+                return;
+            }
 
             // APIリクエストを送る
             const response = await axios.post('http://127.0.0.1:8000/api/books', data, {
@@ -131,7 +136,7 @@ export const BookForm = ({ setBooks, setError, error }) => {
                 <Typography
                     variant="h3"
                     sx={{
-                        color: '#003366',
+                        color: '#8B3A2F',
                         textAlign: 'center',  // タイトルを中央揃えにする
                         letterSpacing: '4px',  // 文字間隔を広めにして清潔感を出す
                         fontWeight: 'bold',
@@ -151,7 +156,7 @@ export const BookForm = ({ setBooks, setError, error }) => {
                     sx={{
                         fontWeight: 'normal',
                         fontSize: '1.2rem',  // サブタイトルを小さく
-                        color: '#003366',
+                        color: '#8B3A2F',
                         textAlign: 'center',
                         marginTop: '0',
                         marginBottom: '60px', // 入力フォームとの間に広めのスペース
@@ -182,7 +187,7 @@ export const BookForm = ({ setBooks, setError, error }) => {
                                 <InputLabel htmlFor={label} sx={{
                                     fontWeight: 'bold',
                                     fontSize: '1.2rem',
-                                    color: '#003366',
+                                    color: '#8B3A2F',
                                 }} shrink>{label}</InputLabel>
                             </FormControl>
 

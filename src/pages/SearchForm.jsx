@@ -2,6 +2,7 @@ import { useState } from "react";
 import axios from "axios";
 import { Box, Button, TextField, CircularProgress, Typography, FormControl, InputLabel, Select, MenuItem } from "@mui/material";
 import { bigStyles, fieldItem, formFrame, buttonStyle_a } from "../components/Styles";
+import { useCsrfToken } from "../context/CsrfTokenContext"; // CSRFトークンを取得するフック
 
 export const SearchForm = () => {
     const [title, setTitle] = useState("");  // タイトル
@@ -13,6 +14,9 @@ export const SearchForm = () => {
     const [localError, setLocalError] = useState(null);  // ローカルエラーステートを追加
     const [books, setBooks] = useState([]);  // 検索結果を格納するステート
     const [openDialog, setOpenDialog] = useState(false);  // ダイアログボックスの表示・非表示ステート
+
+    // CSRFトークンを取得
+    const csrfToken = useCsrfToken(); // CSRFトークンを取得する
 
     // 出版年の選択欄を1868年（明治）から2024年まで作成
     const years = Array.from({ length: 2024 - 1868 + 1 }, (_, index) => 1868 + index);  // 1868年から2024年までの配列
@@ -45,8 +49,10 @@ export const SearchForm = () => {
 
         try {
             // フィールドに入力された情報をまとめてAPIに渡す
-            const { data } = await axios.get("http://127.0.0.1:8000/api/searchbooks", {
-                params: queryParams,
+            const { data } = await axios.post("http://127.0.0.1:8000/api/searchbooks", queryParams, {
+                headers: {
+                    'X-XSRF-TOKEN': csrfToken,  // CSRFトークンをヘッダーに追加
+                },
                 withCredentials: true,
             });
 
@@ -102,7 +108,7 @@ export const SearchForm = () => {
                 <Typography
                     variant="h3"
                     sx={{
-                        color: '#003366',
+                        color: '#8B3A2F',
                         textAlign: 'center',
                         letterSpacing: '4px',
                         fontWeight: 'bold',
@@ -120,7 +126,7 @@ export const SearchForm = () => {
                     sx={{
                         fontWeight: 'normal',
                         fontSize: '1.2rem',
-                        color: '#003366',
+                        color: '#8B3A2F',
                         textAlign: 'center',
                         marginTop: '0',
                         marginBottom: '60px',
@@ -149,7 +155,7 @@ export const SearchForm = () => {
                                     <InputLabel htmlFor={label} sx={{
                                         fontWeight: 'bold',
                                         fontSize: '1.2rem',
-                                        color: '#003366'
+                                        color: '#8B3A2F'
                                     }} shrink>{label}</InputLabel>
                                 </FormControl>
 
