@@ -71,6 +71,7 @@ export const SearchForm = () => {
 
             // 検索結果があった場合、ダイアログを開く
             if (filteredBooks.length === 0) {
+                
                 // 検索結果がない場合
                 setBooks([]);  // 検索結果がない場合は空の配列をセット
                 setLocalError("検索結果が見つかりませんでした");

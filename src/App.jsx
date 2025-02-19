@@ -6,7 +6,7 @@ import { SearchForm } from './pages/SearchForm';
 import { BookList } from './pages/BookList';
 import { Typography, Box, Button } from '@mui/material';
 import { topButton, buttonStyle_a, bigStyles } from './components/Styles';
-import { Root } from './components/Root';
+import { Root } from './components/Bcroute';
 import { CsrfTokenProvider } from './context/CsrfTokenContext';  // CsrfTokenProviderのインポート
 
 
@@ -36,7 +36,7 @@ export const App = () => {
                       fontFamily: '"Roboto", sans-serif',
                       fontSize: '2.5rem',
                       fontWeight: 'bold',
-                      color: '#003366',
+                      color: '#3D120E',
                       textAlign: 'center',
                       letterSpacing: '2px',
                     }}
@@ -45,7 +45,7 @@ export const App = () => {
                   </Typography>
                 </Box>
 
-                <Box sx={{ ...bigStyles, height: '70vh', backgroundColor: '#ffffff' }}>
+                <Box sx={{ ...bigStyles, height: '70vh', backgroundColor: '#F5D19A' }}>
                   <Button component={Link} to="/BookForm" variant="outlined" sx={{ ...buttonStyle_a }}>
                     書籍登録フォーム
                   </Button>

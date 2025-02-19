@@ -22,7 +22,7 @@ export const buttonStyle_a = {
     lineHeight: '1.2',
     boxShadow: 'none !important', // 影を削除
     '&:hover': {
-        backgroundColor: '#D2691E',
+        backgroundColor: '#F24D3A',
         color: 'white',
     },
     '@media (max-width: 1024px)': { // タブレットや中型スクリーン向け
@@ -46,7 +46,7 @@ export const buttonStyle_a = {
 
 };
 
-// トップページのみボタン（タテ並び）
+// トップページのみボタン（タテ並び）、背景
 export const topButton = {
     display: "flex",
     boxShadow: 'none',
@@ -55,16 +55,31 @@ export const topButton = {
     alignItems: "center",
     fontFamily: '"Roboto", sans-serif',
     fontWeight: "bold",
-    color: '#003366',
     textAlign: 'center',
     borderRadius: "10px",
     border: "1px solid rgba(0, 0, 0, 0.1)",
     height: '60px',
-    backgroundColor: '#E4D00A',
+    backgroundColor: '#D88F34',
     width: '90%',
     paddingTop: '30px',
     paddingBottom: '30px',
     margin: '0 auto',
+    '@media (max-width: 1024px)': { // タブレットや中型スクリーン向け
+        width: 'auto',  // 幅を30%に調整
+        height: 'auto',
+        flexDirection: 'column', // 横並びから縦並びに変更 
+    },
+    '@media (max-width: 768px)': { // スマートフォン向け
+        width: 'auto',  // 幅を50%に調整
+        height: 'auto',
+        flexDirection: 'column', // 横並びから縦並びに変更
+    },
+    '@media (max-width: 480px)': { // より小さな画面向け
+        width: 'auto',  // 幅を70%に調整
+        height: 'auto',
+        flexDirection: 'column', // 横並びから縦並びに変更 
+    },
+
 
 }
 
@@ -75,9 +90,10 @@ export const buttonStyles = {
     margin: '20px',
     fontWeight: 'bold',
     fontFamily: '"Roboto", sans-serif', // フォント変更
-    backgroundColor: '#E4D00A',
+    backgroundColor: '#8B3A2F',
     color: 'white',
     borderRadius: '50px', // ボタンを丸く
+    border: "1px solid rgba(0, 0, 0, 0.1)",
     alignItems: 'center',
     fontSize: '1.3rem',  // フォントサイズを少し大きく
     padding: '18px 18px', // ボタンのパディング（大きさ調整）
@@ -87,7 +103,7 @@ export const buttonStyles = {
     lineHeight: '1.2',
     boxShadow: 'none !important', // 影を削除
     '&:hover': {
-        backgroundColor: '#D2691E',
+        backgroundColor: '#F24D3A',
         color: 'white',
     },
     '@media (max-width: 1024px)': { // タブレットや中型スクリーン向け
@@ -117,7 +133,7 @@ export const navStyles = {
     textAlign: 'center',
     borderRadius: "10px",
     border: "1px solid rgba(0, 0, 0, 0.1)",
-    backgroundColor: '#ffffff',
+    backgroundColor: '#D88F34',
     width: '90%',  // 幅を統一
     paddingTop: '10px',  // 重複を避けてここに設定
     paddingBottom: '10px',  // 重複を避けてここに設定
@@ -139,7 +155,7 @@ export const navStyles = {
     },
 }
 
-// トップページ以外の下の背景
+// トップページ以外の下の背景(トップページ色のみ直)
 export const bigStyles = {
     display: "flex",
     flexDirection: "column",
@@ -147,14 +163,13 @@ export const bigStyles = {
     alignItems: "center",
     fontFamily: '"Roboto", sans-serif', // フォント変更
     fontWeight: "bold",
-    color: '#8B3A2F',
     textAlign: 'center',
     borderRadius: "10px",
     border: "1px solid rgba(0, 0, 0, 0.1)",
     borderTop: "none",
     height: '100vh',
     margin: '0 auto', // 中央に配置
-    backgroundColor: '#E4D00A',
+    backgroundColor: '#F5D19A',
     width: '90%',  // 幅を統一
     position: 'relative',  // 親コンテナにrelativeを追加
 
@@ -369,7 +384,7 @@ export const messages = {
 
 // BookListボタンのスタイルを共通化する関数
 export const getButtonStyles = (isActive) => ({
-    backgroundColor: isActive ? '#D2691E' : '#8B3A2F',
+    backgroundColor: isActive ? '#F24D3A' : '#8B3A2F',
     color: 'white',
     borderRadius: '50px',
     fontSize: '1.1rem',

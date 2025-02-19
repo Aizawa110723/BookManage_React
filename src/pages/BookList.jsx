@@ -96,7 +96,6 @@ export const BookList = () => {
                 <Typography
                     variant="h3"
                     sx={{
-                        color: '#003366',
                         textAlign: 'center',
                         letterSpacing: '3px',
                         fontWeight: 'bold',
@@ -159,7 +158,7 @@ export const BookList = () => {
                                         width: '100%',
                                         boxShadow: 'none',
                                         borderRadius: '30px',
-                                        border: '3px solid #003366',
+                                        border: '3px solid #8B3A2F',
                                     }}>
                                     <Table
                                         sx={{
@@ -170,7 +169,7 @@ export const BookList = () => {
                                         <TableHead>
                                             <TableRow
                                                 sx={{
-                                                    backgroundColor: '#003366',
+                                                        backgroundColor: '#8B3A2F',
                                                 }}>
                                                 <TableCell sx={{ ...titleCells, width: '8%' }}>管理ID</TableCell>
                                                 <TableCell sx={{ ...titleCells }}>タイトル</TableCell>
@@ -282,7 +281,7 @@ export const BookList = () => {
                                                         component="div"
                                                         sx={{
                                                             fontWeight: 'bold',
-                                                            color: '#003366', // タイトルのカラー
+                                                            color: '#8B3A2F', // タイトルのカラー
                                                         }}
                                                     >
                                                         {book.title}

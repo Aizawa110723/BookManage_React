@@ -6,15 +6,19 @@ const CsrfTokenContext = createContext();
 
 // CSRF トークンを提供するプロバイダー
 export const CsrfTokenProvider = ({ children }) => {
-    const [csrfToken, setCsrfToken] = useState(null);
+    const [csrfToken, setCsrfToken] = useState(null);  // トークンの初期状態はnull
+    const[loading, setLoading] = useState(true); // ローディング状態の管理
+
 
     // CSRF トークンを取得する関数
     const fetchCsrfToken = async () => {
         try {
             const response = await axios.get('http://127.0.0.1:8000/api/get-csrf-token');  // サーバーで設定したAPIエンドポイント
-            setCsrfToken(response.data.csrf_token);  // CSRF トークンをセット
+            setCsrfToken(response.data.csrf_token);  // トークンをセット
         } catch (error) {
             console.error('CSRF トークンの取得に失敗しました:', error);
+        } finally {
+            setLoading(false);  // トークン取得後、ローディングを終了
         }
     };
 

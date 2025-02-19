@@ -2,6 +2,8 @@ import { useState } from "react";
 import axios from "axios";
 import { Box, Button, TextField, CircularProgress, Typography, FormControl, InputLabel, Select, MenuItem } from "@mui/material";
 import { buttonStyle_a, bigStyles, fieldItem, formFrame, MyComponent } from "../components/Styles";
+import { useCsrfToken } from "../context/CsrfTokenContext"; // CSRFトークンを取得するフック
+
 
 export const BookForm = ({ setBooks, setError, error }) => {
 
@@ -76,7 +78,9 @@ export const BookForm = ({ setBooks, setError, error }) => {
             console.log('エラー:', error);
             if (error.response && error.response.data) {
                 // バリデーションエラーや他のエラーが発生した場合に詳細を表示
-                setErrorMessage(error.response.data.error || '本の追加に失敗しました'); // エラーをstateに保存
+                setErrorMessage('本の追加に失敗しました');
+                setSuccessMessage('');  // 成功メッセージをクリア
+                setIsSubmitted(true);   // 送信完了フラグ
             } else {
                 // ネットワークエラーなど
                 setErrorMessage('サーバーとの通信に失敗しました');
