@@ -7,7 +7,7 @@ const CsrfTokenContext = createContext();
 // CSRF トークンを提供するプロバイダー
 export const CsrfTokenProvider = ({ children }) => {
     const [csrfToken, setCsrfToken] = useState(null);  // トークンの初期状態はnull
-    const[loading, setLoading] = useState(true); // ローディング状態の管理
+    const [loading, setLoading] = useState(true); // ローディング状態の管理
 
 
     // CSRF トークンを取得する関数
@@ -26,8 +26,15 @@ export const CsrfTokenProvider = ({ children }) => {
         fetchCsrfToken();  // コンポーネントがマウントされたときに CSRF トークンを取得
     }, []);
 
+    // axios インスタンスに CSRF トークンを設定
+    useEffect(() => {
+        if (csrfToken) {
+            axios.defaults.headers.common['X-XSRF-TOKEN'] = csrfToken;  // トークンをaxiosのデフォルトヘッダーに設定
+        }
+    }, [csrfToken]);
+
     return (
-        <CsrfTokenContext.Provider value={csrfToken}>
+        <CsrfTokenContext.Provider value={{ csrfToken, loading }}>
             {children}
         </CsrfTokenContext.Provider>
     );
@@ -35,9 +42,20 @@ export const CsrfTokenProvider = ({ children }) => {
 
 // CSRF トークンを取得するカスタムフック
 export const useCsrfToken = () => {
-    const csrfToken = useContext(CsrfTokenContext);
-    if (csrfToken === null) {
-        throw new Error('CSRF トークンが利用できません');
+    const { csrfToken, loading } = useContext(CsrfTokenContext);
+
+    if (csrfToken === null && !loading) {
+        throw new Error('CsrfTokenContext が見つかりません');
     }
-    return csrfToken;
+
+    // トークンが取得できていない場合やローディング中の場合の処理
+    if (loading) {
+        return { csrfToken: null, loading };
+    }
+
+    if (!csrfToken) {
+        throw new Error('CSRF トークンが取得できません');
+    }
+
+    return { csrfToken, loading };
 };

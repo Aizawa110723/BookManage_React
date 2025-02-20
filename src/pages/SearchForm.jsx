@@ -1,4 +1,4 @@
-import { useState } from "react";
+import React, { useState } from "react";
 import axios from "axios";
 import { Box, Button, TextField, CircularProgress, Typography, FormControl, InputLabel, Select, MenuItem } from "@mui/material";
 import { bigStyles, fieldItem, formFrame, buttonStyle_a } from "../components/Styles";
@@ -15,8 +15,14 @@ export const SearchForm = () => {
     const [books, setBooks] = useState([]);  // 検索結果を格納するステート
     const [openDialog, setOpenDialog] = useState(false);  // ダイアログボックスの表示・非表示ステート
 
-    // CSRFトークンを取得
-    const csrfToken = useCsrfToken(); // CSRFトークンを取得する
+
+    // CSRFトークンを取得する際にエラーハンドリングを追加
+    let csrfToken;
+    try {
+        csrfToken = useCsrfToken();  // CSRFトークンを取得
+    } catch (err) {
+        setCsrfError("CSRFトークンの取得に失敗しました");  // トークン取得エラーをセット
+    }
 
     // 出版年の選択欄を1868年（明治）から2024年まで作成
     const years = Array.from({ length: 2024 - 1868 + 1 }, (_, index) => 1868 + index);  // 1868年から2024年までの配列
@@ -71,7 +77,7 @@ export const SearchForm = () => {
 
             // 検索結果があった場合、ダイアログを開く
             if (filteredBooks.length === 0) {
-                
+
                 // 検索結果がない場合
                 setBooks([]);  // 検索結果がない場合は空の配列をセット
                 setLocalError("検索結果が見つかりませんでした");

@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom';
 import { Box, Button } from '@mui/material';
 import { navStyles, buttonStyles } from './Styles';
 
-export const Root = ({ isVertical = true }) => {
+export const BcRoute = ({ isVertical = true }) => {
 
     return (
         <div>

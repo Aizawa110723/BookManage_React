@@ -6,7 +6,7 @@ export default defineConfig({
   server: {
     proxy: {
       '/api': {
-        target: 'http://localhost:8000', // バックエンド（Laravel）のURL
+        target: 'http://localhost:8000',
         changeOrigin: true,  // オリジンを変更する
         secure: false, // ローカル開発環境ではfalseに設定
       },
