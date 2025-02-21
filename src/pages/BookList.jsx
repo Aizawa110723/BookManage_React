@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { Box, Typography, CircularProgress, Grid, Card, CardMedia, CardContent, Link, Table, TableHead, TableRow, TableCell, TableBody, TableContainer, Paper, Pagination } from '@mui/material';
 import { bigStyles, getButtonStyles, titleCells, bodyCells } from "../components/Styles";
+import { useCsrfToken } from "../context/CsrfTokenContext"; // CSRFトークンを取得するフック
 
 export const BookList = () => {
     const [books, setBooks] = useState([]); // 書籍データを格納するstate
@@ -10,6 +11,19 @@ export const BookList = () => {
     const [viewMode, setViewMode] = useState('table'); // viewMode: 'table' or 'card'
     const [currentPage, setCurrentPage] = useState(1); // 現在のページ
     const [totalPages, setTotalPages] = useState(1); // 総ページ数
+
+    // *------------------*
+
+    // CSRFトークンを取得（フックを使用）
+    const { csrfToken, loading: csrfLoading, error: csrfError } = useCsrfToken();
+
+    // CSRFトークン取得エラーがあった場合の処理
+    if (csrfError) {
+        setLocalError("CSRFトークンの取得に失敗しました");
+    }
+
+    // *------------------*
+
 
     // コンポーネントがマウントされた時にAPIから書籍データを取得
     useEffect(() => {

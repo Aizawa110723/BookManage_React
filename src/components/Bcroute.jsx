@@ -1,7 +1,6 @@
-import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { Box, Button } from '@mui/material';
-import { navStyles, buttonStyles } from './Styles';
+import { navStyles, buttonStyles } from '../components/Styles';
 
 export const BcRoute = ({ isVertical = true }) => {
 

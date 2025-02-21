@@ -15,14 +15,17 @@ export const SearchForm = () => {
     const [books, setBooks] = useState([]);  // 検索結果を格納するステート
     const [openDialog, setOpenDialog] = useState(false);  // ダイアログボックスの表示・非表示ステート
 
+    // *------------------*
 
-    // CSRFトークンを取得する際にエラーハンドリングを追加
-    let csrfToken;
-    try {
-        csrfToken = useCsrfToken();  // CSRFトークンを取得
-    } catch (err) {
-        setCsrfError("CSRFトークンの取得に失敗しました");  // トークン取得エラーをセット
+    // CSRFトークンを取得（フックを使用）
+    const { csrfToken, loading: csrfLoading, error: csrfError } = useCsrfToken();
+
+    // CSRFトークン取得エラーがあった場合の処理
+    if (csrfError) {
+        setLocalError("CSRFトークンの取得に失敗しました");
     }
+
+    // *------------------*
 
     // 出版年の選択欄を1868年（明治）から2024年まで作成
     const years = Array.from({ length: 2024 - 1868 + 1 }, (_, index) => 1868 + index);  // 1868年から2024年までの配列
