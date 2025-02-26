@@ -26,7 +26,7 @@ export const BookForm = ({ setBooks, setError, error }) => {
 
     // CSRFトークン取得エラーがあった場合の処理
     if (csrfError) {
-        setLocalError("CSRFトークンの取得に失敗しました");
+        setErrorMessage("CSRFトークンの取得に失敗しました");
     }
 
     // *------------------*

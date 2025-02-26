@@ -6,7 +6,7 @@ export const App = () => {
   return (
     <CsrfTokenProvider>
       <BrowserRouter>
-        <RoutesSetup /> {/* RoutesSetupにルーティング設定を任せる */}
+        <RoutesSetup /> {/* ルーティング設定を任せる */}
       </BrowserRouter>
     </CsrfTokenProvider>
   );

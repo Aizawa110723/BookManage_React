@@ -30,7 +30,7 @@ export const CsrfTokenProvider = ({ children }) => {
     // axios インスタンスに CSRF トークンを設定
     useEffect(() => {
         if (csrfToken) {
-            axios.defaults.headers.common['X-XSRF-TOKEN'] = csrfToken;  // トークンをaxiosのデフォルトヘッダーに設定
+            axios.defaults.headers.common['X-XSRF-TOKEN'] = document.querySelector('meta[name="csrf-token"]').getAttribute('content');  // トークンをaxiosのデフォルトヘッダーに設定
         }
     }, [csrfToken]);
 
