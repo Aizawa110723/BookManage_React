@@ -15,6 +15,7 @@ export const CsrfTokenProvider = ({ children }) => {
         try {
             const response = await axios.get('http://127.0.0.1:8000/api/get-csrf-token');  // サーバーで設定したAPIエンドポイント
             setCsrfToken(response.data.csrf_token);  // トークンをセット
+            console.log('CSRFトークン:', response.data.csrf_token);
         } catch (error) {
             console.error('CSRF トークンの取得に失敗しました:', error);
             setError('CSRF トークンの取得に失敗しました');
@@ -23,16 +24,18 @@ export const CsrfTokenProvider = ({ children }) => {
         }
     };
 
+    // 初期トークン取得
     useEffect(() => {
-        fetchCsrfToken();  // コンポーネントがマウントされたときに CSRF トークンを取得
+        fetchCsrfToken();  // コンポーネントがマウントされたときのみ実行
     }, []);
 
     // axios インスタンスに CSRF トークンを設定
     useEffect(() => {
         if (csrfToken) {
-            axios.defaults.headers.common['X-XSRF-TOKEN'] = document.querySelector('meta[name="csrf-token"]').getAttribute('content');  // トークンをaxiosのデフォルトヘッダーに設定
+            // CSRFトークンが取得できた場合のみ、axiosのデフォルトヘッダーに設定
+            axios.defaults.headers.common['X-XSRF-TOKEN'] = csrfToken;
         }
-    }, [csrfToken]);
+    }, [csrfToken]);  // csrfTokenが変更された時にのみ実行
 
     return (
         <CsrfTokenContext.Provider value={{ csrfToken, loading, error }}>
@@ -45,31 +48,20 @@ export const CsrfTokenProvider = ({ children }) => {
 export const useCsrfToken = () => {
     const { csrfToken, loading, error } = useContext(CsrfTokenContext);
 
-    if (csrfToken === null && !loading) {
-        throw new Error('CsrfTokenContext が見つかりません');
-    }
-
-    // トークンが取得できていない場合やローディング中の場合の処理
-    // ローディング中はnullを返す
+    // トークンが取得されていないか、ローディング中の場合
     if (loading) {
-        return { csrfToken: null, loading, error };
+        return { csrfToken: null, loading, error }; // ローディング中はnull
     }
 
     if (!csrfToken) {
-        throw new Error('CSRF トークンが取得できません');
+        throw new Error('CSRFトークンが取得できません');
     }
 
     return { csrfToken, loading, error }; // トークン、ローディング状態、エラーを返す
-
 };
 
-// /例：フォーム送信時にCSRFトークンが期限切れの場合、再取得して送信を試みる
-
-let retryCount = 0; // 再試行回数のカウンター
-const maxRetryCount = 3; // 最大再試行回数
-
-const postData = async (csrfToken, setBooks, setLoading, setErrorMessage, setSuccessMessage) => {
-
+// APIリクエストを送る関数
+const postData = async (title, authors, publisher, year, genre, csrfToken, loading, setLoading, setErrorMessage, setSuccessMessage, setBooks, setIsSubmitted) => {
     if (loading) return;  // リクエストが送信中なら何もしない
 
     try {
@@ -79,62 +71,53 @@ const postData = async (csrfToken, setBooks, setLoading, setErrorMessage, setSuc
         const parsedYear = year ? parseInt(year, 10) : null;
 
         const data = {
-            title: title,
-            authors: authors,
-            publisher: publisher,
+            title,
+            authors,
+            publisher,
             year: parsedYear,
-            genre: genre
+            genre,
         };
 
         // ローディング状態を開始
         setLoading(true);
 
-        // 成功メッセージをリセット
+        // 成功メッセージとエラーメッセージをリセット
         setSuccessMessage('');
-        setErrorMessage(''); // エラーメッセージリセット
+        setErrorMessage('');
 
-        // CSRFトークンがない場合
+        // CSRFトークンがない場合、エラーメッセージを設定
         if (!csrfToken) {
             setErrorMessage('CSRFトークンが取得できませんでした');
             setLoading(false);
             return;
         }
 
-        // APIリクエストを送る
+        // APIリクエストを送信
         const response = await axios.post(url, data, {
             withCredentials: true,
             headers: {
                 'Content-Type': 'application/json',
-                'X-XSRF-TOKEN': csrfToken,  // CSRFトークンをヘッダーに追加
-            }
+            },
         });
 
         // 成功の場合
         console.log('成功:', response);
-        setBooks((prevBooks) => [...prevBooks, response.data]);  // レスポンスを元に書籍データを更新
+        setBooks((prevBooks) => [...prevBooks, response.data]);  // 書籍データを更新
         setSuccessMessage('本の登録に成功しました');
 
     } catch (error) {
-        // エラーの場合
-        console.log('エラー:', error);
+        console.error('エラー:', error);
 
-        if (error.response && error.response.status === 419 && retryCount < maxRetryCount) {
-            // CSRFトークンが期限切れの場合、再取得を試みる
-            retryCount++; // 再試行カウントを増やす
-            console.log('CSRFトークンが期限切れです。再取得します...');
-
-            // トークンを再取得して再送信
-            await fetchCsrfToken();
-            postData(csrfToken, setBooks, setLoading, setErrorMessage, setSuccessMessage); // 再度APIリクエストを送る
-        } else {
-            // バリデーションエラーや他のエラーが発生した場合に詳細を表示
+        // エラー処理
+        if (error.response && error.response.data) {
             setErrorMessage('本の追加に失敗しました');
             setSuccessMessage('');
+        } else {
+            setErrorMessage('サーバーとの通信に失敗しました');
         }
+        setIsSubmitted(true);  // 送信完了フラグ
 
-        setSuccessMessage('');
     } finally {
-        // ローディング完了
-        setLoading(false);
+        setLoading(false);  // ローディング完了
     }
 };

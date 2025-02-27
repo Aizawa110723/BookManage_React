@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import axios from "axios";
+import axiosInstance from '../axios';
 import { Box, Button, TextField, CircularProgress, Typography, FormControl, InputLabel, Select, MenuItem } from "@mui/material";
 import { buttonStyle_a, bigStyles, fieldItem, formFrame, MyComponent } from "../components/Styles";
 import { useCsrfToken } from "../context/CsrfTokenContext"; // CSRFトークンを取得するフック
