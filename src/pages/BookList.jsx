@@ -18,9 +18,11 @@ export const BookList = () => {
     const { csrfToken, loading: csrfLoading, error: csrfError } = useCsrfToken();
 
     // CSRFトークン取得エラーがあった場合の処理
-    if (csrfError) {
-        setLocalError("CSRFトークンの取得に失敗しました");
-    }
+    useEffect(() => {
+        if (csrfError) {
+            setError("CSRFトークンの取得に失敗しました");
+        }
+    }, [csrfError]);
 
     // *------------------*
 
@@ -29,11 +31,16 @@ export const BookList = () => {
     useEffect(() => {
         const loadBooks = async () => {
             setLoading(true);  // ローディング開始
+            setError(null);  // エラーメッセージをリセット
 
             try {
                 // 自分のAPIから書籍データを取得(テーブル表示・ページネーション対応)
-                const response = await axios.get(`http://127.0.0.1:8000/api/books?page=${currentPage}`, {
+                const response = await axiosInstance.get(`http://127.0.0.1:8000/api/books?page=${currentPage}`, {
                     withCredentials: true,
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-XSRF-TOKEN': csrfToken,  // CSRFトークンをヘッダーに追加
+                    }
                 });
                 const bookData = response.data;
 
@@ -183,7 +190,7 @@ export const BookList = () => {
                                         <TableHead>
                                             <TableRow
                                                 sx={{
-                                                        backgroundColor: '#8B3A2F',
+                                                    backgroundColor: '#8B3A2F',
                                                 }}>
                                                 <TableCell sx={{ ...titleCells, width: '8%' }}>管理ID</TableCell>
                                                 <TableCell sx={{ ...titleCells }}>タイトル</TableCell>

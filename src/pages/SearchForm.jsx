@@ -1,5 +1,5 @@
-import React, { useState } from "react";
-import axios from "axios";
+import React, { useState, useEffect } from "react";
+import { axiosInstance } from '../api/axios.js';
 import { Box, Button, TextField, CircularProgress, Typography, FormControl, InputLabel, Select, MenuItem } from "@mui/material";
 import { bigStyles, fieldItem, formFrame, buttonStyle_a } from "../components/Styles";
 import { useCsrfToken } from "../context/CsrfTokenContext"; // CSRFトークンを取得するフック
@@ -20,10 +20,15 @@ export const SearchForm = () => {
     // CSRFトークンを取得（フックを使用）
     const { csrfToken, loading: csrfLoading, error: csrfError } = useCsrfToken();
 
-    // CSRFトークン取得エラーがあった場合の処理
-    if (csrfError) {
-        setLocalError("CSRFトークンの取得に失敗しました");
-    }
+    useEffect(() => {
+        // 初期化時に CSRF トークンを取得（必要に応じて）
+        const token = getCookie('XSRF-TOKEN');
+        setCsrfToken(token);
+        // CSRFトークン取得エラーがあった場合の処理
+        if (csrfError) {
+            setLocalError("CSRFトークンの取得に失敗しました");
+        }
+    }, [csrfError]);
 
     // *------------------*
 
@@ -58,14 +63,17 @@ export const SearchForm = () => {
 
         try {
             // フィールドに入力された情報をまとめてAPIに渡す
-            const { data } = await axios.post("http://127.0.0.1:8000/api/searchbooks", queryParams, {
-                headers: {
-                    'X-XSRF-TOKEN': csrfToken,  // CSRFトークンをヘッダーに追加
-                },
+            // APIリクエストを送る
+            const response = await axiosInstance.post(url, data, {
                 withCredentials: true,
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-XSRF-TOKEN': csrfToken,  // CSRFトークンをヘッダーに追加
+                }
             });
 
-            console.log(data);  // ここでレスポンスを確認する
+            const bookData = response.data;
+            console.log(bookData.items);  // レスポンス内容を確認
 
             // 正規表現を使った検索※完全一致と部分一致
             let filteredBooks = data.filter(book => {
