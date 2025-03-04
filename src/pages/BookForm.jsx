@@ -1,12 +1,19 @@
 import React, { useState, useEffect } from 'react';
-import { axiosInstance } from '../api/axios.js';
-import { Box, Button, TextField, CircularProgress, Typography, FormControl, InputLabel, Select, MenuItem } from "@mui/material";
-import { buttonStyle_a, bigStyles, fieldItem, formFrame, MyComponent } from "../components/Styles";
-import { useCsrfToken } from "../context/CsrfTokenContext"; // CSRFトークンを取得するフック
+import axios from 'axios';
+// import { axiosInstance } from '../api/axios.js';
+import { Box, Button, CircularProgress, Typography, Dialog, DialogTitle, DialogContent, DialogActions } from "@mui/material";
+import { bigStyles } from "../components/Styles";
+// import { useCsrfToken } from "../context/CsrfTokenContext"; // CSRFトークンを取得するフック
+
+// // クッキーから値を取得する関数
+// const getCookie = (name) => {
+//     const value = `; ${document.cookie}`;
+//     const parts = value.split(`; ${name}=`);
+//     if (parts.length === 2) return parts.pop().split(';').shift();
+//     return null;
+// };
 
 export const BookForm = ({ setBooks, setError, error }) => {
-
-    const [openDialog, setOpenDialog] = useState(false);  // ダイアログボックスの表示・非表示ステート
 
     const [title, setTitle] = useState('');
     const [authors, setAuthors] = useState('');
@@ -17,17 +24,28 @@ export const BookForm = ({ setBooks, setError, error }) => {
     const [successMessage, setSuccessMessage] = useState('');  // 成功メッセージ
     const [errorMessage, setErrorMessage] = useState('');  // エラーメッセージ
     const [isSubmitted, setIsSubmitted] = useState(false); // データ送信が完了したかどうかの判定
+    const [openDialog, setOpenDialog] = useState(false);  // ダイアログボックスの表示・非表示ステート
+    const [localToken, setLocalCsrfToken] = useState(""); // CSRFトークン用のステートを追加
 
-    // CSRFトークンを取得（フックを使用）
-    const { csrfToken, loading: csrfLoading, error: csrfError } = useCsrfToken();
+    // // CSRFトークンを取得（フックを使用）
+    // const { csrfToken, loading: csrfLoading, error: csrfError } = useCsrfToken();
 
-    // CSRFトークン取得エラーがあった場合の処理
-    if (csrfError) {
-        console.log("CSRF Error:", csrfError); // エラー内容の確認
-        setErrorMessage("CSRFトークンの取得に失敗しました");
-    }
+    // // CSRFトークン取得エラーがあった場合の処理
+    // useEffect(() => {
+    //     if (csrfError) {
+    //         console.log("CSRF Error:", csrfError); // エラー内容の確認
+    //         setErrorMessage("CSRFトークンの取得に失敗しました");
+    //     } else if (!csrfToken) {
+    //         // `csrfToken` がない場合、クッキーから直接取得してセット
+    //         const token = getCookie('XSRF-TOKEN');
+    //         setLocalCsrfToken(token); // ローカルトークンに設定
+    //     } else {
+    //         // フックから取得した `csrfToken` を使用
+    //         setLocalCsrfToken(csrfToken); // ローカルトークンに設定
+    //     }
+    // }, [csrfToken, csrfError]);
 
-    // データ送信関数 (CSRFトークンをヘッダーに追加)
+    // データ送信関数 (CSRF必要なときCSRFトークンをヘッダーに追加)
     const postData = async () => {
         if (loading || isSubmitted) return;  // リクエストが送信中なら何もしない
 
@@ -46,26 +64,26 @@ export const BookForm = ({ setBooks, setError, error }) => {
             setSuccessMessage('');
             setErrorMessage('');
 
-            // CSRFトークンが取得できなかった場合
-            if (!csrfToken) {
-                setErrorMessage('CSRFトークンが取得できませんでした');
-                setLoading(false);
-                return;
-            }
+            // // CSRFトークンが取得できなかった場合
+            // if (!csrfToken) {
+            //     setErrorMessage('CSRFトークンが取得できませんでした');
+            //     setLoading(false);
+            //     return;
+            // }
 
             // APIリクエストを送る
-            const response = await axiosInstance.post(url, data, {
+            const response = await axios.post(url, data, {
                 withCredentials: true,
                 headers: {
-                    'Content-Type': 'application/json',
-                    'X-XSRF-TOKEN': csrfToken,  // CSRFトークンをヘッダーに追加
+                    params: queryParams,
+                    // 'Content-Type': 'application/json',
+                    // 'X-XSRF-TOKEN': csrfToken,  // CSRFトークンをヘッダーに追加
                 }
             });
 
             setBooks((prevBooks) => [...prevBooks, response.data]);
             setSuccessMessage('本の登録に成功しました');
             setIsSubmitted(true);  // 送信完了フラグを立てる
-
 
         } catch (error) {
             console.log('エラー:', error);
@@ -106,6 +124,23 @@ export const BookForm = ({ setBooks, setError, error }) => {
                     {loading ? <CircularProgress size={24} /> : "登録"}
                 </Button>
             </form>
+
+            {/* 成功/エラーダイアログ */}
+            {(successMessage || errorMessage) && (
+                <Dialog open={openDialog} onClose={() => setOpenDialog(false)}>
+                    <DialogTitle>{successMessage ? "成功" : "エラー"}</DialogTitle>
+                    <DialogContent>
+                        <Typography variant="body2" color={successMessage ? 'primary' : 'error'}>
+                            {successMessage || errorMessage}
+                        </Typography>
+                    </DialogContent>
+                    <DialogActions>
+                        <Button onClick={() => setOpenDialog(false)} color="primary">
+                            閉じる
+                        </Button>
+                    </DialogActions>
+                </Dialog>
+            )}
         </Box>
-    );
+    )
 };

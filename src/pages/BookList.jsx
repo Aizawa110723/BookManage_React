@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { Box, Typography, CircularProgress, Grid, Card, CardMedia, CardContent, Link, Table, TableHead, TableRow, TableCell, TableBody, TableContainer, Paper, Pagination } from '@mui/material';
 import { bigStyles, getButtonStyles, titleCells, bodyCells } from "../components/Styles";
-import { useCsrfToken } from "../context/CsrfTokenContext"; // CSRFトークンを取得するフック
+// import { useCsrfToken } from "../context/CsrfTokenContext"; // CSRFトークンを取得するフック
 
 export const BookList = () => {
     const [books, setBooks] = useState([]); // 書籍データを格納するstate
@@ -14,15 +14,15 @@ export const BookList = () => {
 
     // *------------------*
 
-    // CSRFトークンを取得（フックを使用）
-    const { csrfToken, loading: csrfLoading, error: csrfError } = useCsrfToken();
+    // // CSRFトークンを取得（フックを使用）
+    // const { csrfToken, loading: csrfLoading, error: csrfError } = useCsrfToken();
 
-    // CSRFトークン取得エラーがあった場合の処理
-    useEffect(() => {
-        if (csrfError) {
-            setError("CSRFトークンの取得に失敗しました");
-        }
-    }, [csrfError]);
+    // // CSRFトークン取得エラーがあった場合の処理
+    // useEffect(() => {
+    //     if (csrfError) {
+    //         setError("CSRFトークンの取得に失敗しました");
+    //     }
+    // }, [csrfError]);
 
     // *------------------*
 
@@ -92,22 +92,25 @@ export const BookList = () => {
     return (
         <>
             {/* エラーメッセージの表示 */}
-            {error && (
+            {openDialog && error && (
                 <Box sx={{
                     position: 'fixed',
-                    top: 0,
-                    left: 0,
-                    right: 0,
+                    top: '20%',
+                    left: '50%',
+                    transform: 'translateX(-50%)',  // 中央に配置
                     backgroundColor: 'white',
                     color: 'red',
                     textAlign: 'center',
-                    padding: '10px 0',
-                    zIndex: 1000
+                    padding: '20px',
+                    zIndex: 1000,
+                    borderRadius: '8px',
                 }}>
                     <Typography variant="body2">{error}</Typography>
+                    <Button onClick={() => setOpenDialog(false)} variant="contained" sx={{ marginTop: '10px' }}>
+                        閉じる
+                    </Button>
                 </Box>
             )}
-
 
             <Box sx={{
                 ...bigStyles,

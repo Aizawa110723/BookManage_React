@@ -1,8 +1,17 @@
 import React, { useState, useEffect } from "react";
-import { axiosInstance } from '../api/axios.js';
-import { Box, Button, TextField, CircularProgress, Typography, FormControl, InputLabel, Select, MenuItem } from "@mui/material";
+import axios from 'axios';
+// import { axiosInstance } from '../api/axios.js';
+import { Box, Button, TextField, CircularProgress, Typography, FormControl, InputLabel, Select, MenuItem, DialogActions, DialogContent, DialogTitle } from "@mui/material";
 import { bigStyles, fieldItem, formFrame, buttonStyle_a } from "../components/Styles";
-import { useCsrfToken } from "../context/CsrfTokenContext"; // CSRFトークンを取得するフック
+// import { useCsrfToken } from "../context/CsrfTokenContext"; // CSRFトークンを取得するフック
+
+// // クッキーから値を取得する関数
+// const getCookie = (name) => {
+//     const value = `; ${document.cookie}`;
+//     const parts = value.split(`; ${name}=`);
+//     if (parts.length === 2) return parts.pop().split(';').shift();
+//     return null;
+// };
 
 export const SearchForm = () => {
     const [title, setTitle] = useState("");  // タイトル
@@ -14,21 +23,22 @@ export const SearchForm = () => {
     const [localError, setLocalError] = useState(null);  // ローカルエラーステートを追加
     const [books, setBooks] = useState([]);  // 検索結果を格納するステート
     const [openDialog, setOpenDialog] = useState(false);  // ダイアログボックスの表示・非表示ステート
+    const [localToken, setLocalCsrfToken] = useState(""); // CSRFトークン用のステートを追加
 
     // *------------------*
 
-    // CSRFトークンを取得（フックを使用）
-    const { csrfToken, loading: csrfLoading, error: csrfError } = useCsrfToken();
+    // // CSRFトークンを取得（フックを使用）
+    // const { csrfToken, loading: csrfLoading, error: csrfError } = useCsrfToken();
 
-    useEffect(() => {
-        // 初期化時に CSRF トークンを取得（必要に応じて）
-        const token = getCookie('XSRF-TOKEN');
-        setCsrfToken(token);
-        // CSRFトークン取得エラーがあった場合の処理
-        if (csrfError) {
-            setLocalError("CSRFトークンの取得に失敗しました");
-        }
-    }, [csrfError]);
+    // useEffect(() => {
+    //     // 初期化時に CSRF トークンを取得（必要に応じて）
+    //     const token = getCookie('XSRF-TOKEN');
+    //     setLocalCsrfToken(token);  // ローカルのCSRFトークンにセット
+    //     // CSRFトークン取得エラーがあった場合の処理
+    //     if (csrfError) {
+    //         setLocalError("CSRFトークンの取得に失敗しました");
+    //     }
+    // }, [csrfError]);
 
     // *------------------*
 
@@ -64,16 +74,16 @@ export const SearchForm = () => {
         try {
             // フィールドに入力された情報をまとめてAPIに渡す
             // APIリクエストを送る
-            const response = await axiosInstance.post(url, data, {
+            const response = await axios.post(url, data, {
                 withCredentials: true,
                 headers: {
-                    'Content-Type': 'application/json',
-                    'X-XSRF-TOKEN': csrfToken,  // CSRFトークンをヘッダーに追加
+                    params: queryParams,
+                    // 'Content-Type': 'application/json',
+                    // 'X-XSRF-TOKEN': csrfToken,  // CSRFトークンをヘッダーに追加
                 }
             });
 
             const bookData = response.data;
-            console.log(bookData.items);  // レスポンス内容を確認
 
             // 正規表現を使った検索※完全一致と部分一致
             let filteredBooks = data.filter(book => {
@@ -86,42 +96,41 @@ export const SearchForm = () => {
                 );
             });
 
-            // 検索結果があった場合、ダイアログを開く
-            if (filteredBooks.length === 0) {
-
-                // 検索結果がない場合
-                setBooks([]);  // 検索結果がない場合は空の配列をセット
-                setLocalError("検索結果が見つかりませんでした");
+            // 結果があればメッセージをセット
+            if (booksData.length > 0) {
+                setSuccessMessage("検索結果が見つかりました");
+                setIsSubmitted(true);
             } else {
-
-                // 検索結果があれば表示
-                setBooks(filteredBooks);  // 検索結果を books にセット
-                setLocalError(null);  // エラーメッセージがないことをリセット
-                setOpenDialog(true);  // ダイアログを表示
+                setErrorMessage("検索結果が見つかりませんでした");
+                setIsSubmitted(true);
             }
         } catch (error) {
-            setLocalError("検索に失敗しました");
-            console.error('Error', error);
+            setErrorMessage("検索に失敗しました");
+            setSuccessMessage('');
+            setIsSubmitted(true);
         } finally {
-            // ローディング完了
             setLoading(false);
         }
     };
 
     return (
         <>
-            <Box sx={bigStyles}>
-                {/* 検索結果を表示 */}
-                {books.length > 0 ? (
-                    books.map((book, index) => (
-                        <Typography key={index}>{book.title}</Typography>
-                    ))
-                ) : localError ? (
-                    <Typography variant="h6" sx={{ textAlign: 'center', color: 'gray' }}>
-                        検索結果がありません。
+            {/* 検索成功/エラーダイアログ */}
+            <Dialog open={openDialog} onClose={() => setOpenDialog(false)}>
+                <DialogTitle>{successMessage ? "成功" : "エラー"}</DialogTitle>
+                <DialogContent>
+                    <Typography variant="body2" color={successMessage ? 'primary' : 'error'}>
+                        {successMessage || errorMessage}
                     </Typography>
-                ) : null}
+                </DialogContent>
+                <DialogActions>
+                    <Button onClick={() => setOpenDialog(false)} color="primary">
+                        閉じる
+                    </Button>
+                </DialogActions>
+            </Dialog>
 
+            <Box sx={bigStyles}>
                 {/* タイトルと検索フォーム */}
                 <Typography
                     variant="h3"
@@ -159,47 +168,44 @@ export const SearchForm = () => {
                     { label: "著者", value: authors, setter: setAuthors, type: "text" },
                     { label: "出版社", value: publisher, setter: setPublisher, type: "text" },
                     { label: "出版年", value: year, setter: setYear, type: "select", options: years },
-                    { label: "ジャンル", value: genre, setter: setGenre, type: "select", options: genres }]
-                        .map(({ label, value, setter, type, options }) => (
-                            <Box
-                                sx={{
-                                    display: 'flex',
-                                    flexDirection: 'column',
-                                    marginBottom: '16px',
-                                    width: '100%',
-                                }} key={label}>
+                    { label: "ジャンル", value: genre, setter: setGenre, type: "select", options: genres }].map(({ label, value, setter, type, options }) => (
+                        <Box
+                            sx={{
+                                display: 'flex',
+                                flexDirection: 'column',
+                                marginBottom: '16px',
+                                width: '100%',
+                            }} key={label}>
+                            <FormControl fullWidth sx={{ marginBottom: '16px' }}>
+                                <InputLabel htmlFor={label} sx={{
+                                    fontWeight: 'bold',
+                                    fontSize: '1.2rem',
+                                    color: '#8B3A2F'
+                                }} shrink>{label}</InputLabel>
+                            </FormControl>
 
-                                <FormControl fullWidth sx={{ marginBottom: '16px' }}>
-                                    <InputLabel htmlFor={label} sx={{
-                                        fontWeight: 'bold',
-                                        fontSize: '1.2rem',
-                                        color: '#8B3A2F'
-                                    }} shrink>{label}</InputLabel>
-                                </FormControl>
-
-                                {type === "select" ? (
-                                    <Select
-                                        value={value}
-                                        onChange={(e) => setter(e.target.value)}
-                                        sx={{ ...fieldItem }}
-                                    >
-                                        {options && options.map((option, index) => (
-                                            <MenuItem key={index} value={option}>{option}</MenuItem>
-                                        ))}
-                                    </Select>
-
-                                ) : (
-                                    <TextField
-                                        id={label}
-                                        value={value}
-                                        onChange={(e) => setter(e.target.value)}
-                                        type={type}
-                                        variant="outlined"
-                                        sx={{ ...formFrame }}
-                                    />
-                                )}
-                            </Box>
-                        ))}
+                            {type === "select" ? (
+                                <Select
+                                    value={value}
+                                    onChange={(e) => setter(e.target.value)}
+                                    sx={{ ...fieldItem }}
+                                >
+                                    {options && options.map((option, index) => (
+                                        <MenuItem key={index} value={option}>{option}</MenuItem>
+                                    ))}
+                                </Select>
+                            ) : (
+                                <TextField
+                                    id={label}
+                                    value={value}
+                                    onChange={(e) => setter(e.target.value)}
+                                    type={type}
+                                    variant="outlined"
+                                    sx={{ ...formFrame }}
+                                />
+                            )}
+                        </Box>
+                    ))}
 
                     <Box sx={{
                         display: 'flex',
@@ -235,5 +241,4 @@ export const SearchForm = () => {
             </Box>
         </>
     );
-
 };
