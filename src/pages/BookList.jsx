@@ -1,8 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
-import { Box, Typography, CircularProgress, Grid, Card, CardMedia, CardContent, Link, Table, TableHead, TableRow, TableCell, TableBody, TableContainer, Paper, Pagination } from '@mui/material';
+import { Box, Typography, CircularProgress, Grid, Card, CardMedia, CardContent, Link, Table, TableHead, TableRow, TableCell, TableBody, TableContainer, Paper, Pagination, Dialog, DialogTitle, DialogContent, DialogActions, Button } from '@mui/material';
 import { bigStyles, getButtonStyles, titleCells, bodyCells } from "../components/Styles";
-// import { useCsrfToken } from "../context/CsrfTokenContext"; // CSRFトークンを取得するフック
 
 export const BookList = () => {
     const [books, setBooks] = useState([]); // 書籍データを格納するstate
@@ -11,21 +10,7 @@ export const BookList = () => {
     const [viewMode, setViewMode] = useState('table'); // viewMode: 'table' or 'card'
     const [currentPage, setCurrentPage] = useState(1); // 現在のページ
     const [totalPages, setTotalPages] = useState(1); // 総ページ数
-
-    // *------------------*
-
-    // // CSRFトークンを取得（フックを使用）
-    // const { csrfToken, loading: csrfLoading, error: csrfError } = useCsrfToken();
-
-    // // CSRFトークン取得エラーがあった場合の処理
-    // useEffect(() => {
-    //     if (csrfError) {
-    //         setError("CSRFトークンの取得に失敗しました");
-    //     }
-    // }, [csrfError]);
-
-    // *------------------*
-
+    const [openDialog, setOpenDialog] = useState(false); // エラーダイアログの状態
 
     // コンポーネントがマウントされた時にAPIから書籍データを取得
     useEffect(() => {
@@ -35,34 +20,24 @@ export const BookList = () => {
 
             try {
                 // 自分のAPIから書籍データを取得(テーブル表示・ページネーション対応)
-                const response = await axiosInstance.get(`http://127.0.0.1:8000/api/books?page=${currentPage}`, {
+                const response = await axios.get(`http://127.0.0.1:8000/api/books?page=${currentPage}`, {
                     withCredentials: true,
                     headers: {
                         'Content-Type': 'application/json',
-                        'X-XSRF-TOKEN': csrfToken,  // CSRFトークンをヘッダーに追加
                     }
                 });
                 const bookData = response.data;
-
-                console.log(bookData.items);  // レスポンス内容を確認
 
                 // 書籍情報にGoogle Books APIの画像とIDを追加
                 if (bookData.items && Array.isArray(bookData.items)) {
                     // booksWithDetails に画像やGoogle BooksのIDを追加
                     const booksWithDetails = bookData.items.map((book) => {
-                        // const googleBooksId = book.id; // Google BooksのIDを直接取得
-
-                        console.log(book.image_path);  // ここでimage_pathの値を確認
-
-                        // google_books_urlが存在する場合にのみsplitを使用
                         const googleBooksId = book.google_books_url
                             ? book.google_books_url.split('=')[1]  // Google BooksのIDを抽出
                             : null; // google_books_urlがない場合はnullを設定
 
                         return {
                             ...book,
-
-                            // 画像URLを設定（localhostを使用した完全なパス）
                             imageUrl: book.image_path ? `http://localhost:8000/storage/${book.image_path}` : null,
                             googleBooksId,  // Google BooksのIDをセット
                         };
@@ -72,10 +47,12 @@ export const BookList = () => {
                     setTotalPages(bookData.data.last_page);  // 総ページ数をセット
                 } else {
                     setError('書籍情報の取得に失敗しました。'); // エラーをセット
+                    setOpenDialog(true);  // エラーダイアログを開く
                 }
             } catch (err) {
                 console.error('API Error:', err);  // 詳細なエラー情報をコンソールに出力
-                setError('データの取得に失敗しました。'); // より一般的なエラーメッセージを設定            
+                setError('データの取得に失敗しました。'); // より一般的なエラーメッセージを設定
+                setOpenDialog(true);  // エラーダイアログを開く
             } finally {
                 setLoading(false);  // ローディング終了
             }
@@ -89,28 +66,26 @@ export const BookList = () => {
         setCurrentPage(value);
     };
 
+    // ダイアログの「閉じる」ボタン
+    const handleCloseDialog = () => {
+        setOpenDialog(false);
+    };
     return (
         <>
-            {/* エラーメッセージの表示 */}
-            {openDialog && error && (
-                <Box sx={{
-                    position: 'fixed',
-                    top: '20%',
-                    left: '50%',
-                    transform: 'translateX(-50%)',  // 中央に配置
-                    backgroundColor: 'white',
-                    color: 'red',
-                    textAlign: 'center',
-                    padding: '20px',
-                    zIndex: 1000,
-                    borderRadius: '8px',
-                }}>
-                    <Typography variant="body2">{error}</Typography>
-                    <Button onClick={() => setOpenDialog(false)} variant="contained" sx={{ marginTop: '10px' }}>
+            {/* エラーダイアログの表示 */}
+            <Dialog open={openDialog} onClose={handleCloseDialog}>
+                <DialogTitle>エラー</DialogTitle>
+                <DialogContent>
+                    <Typography variant="body2" color="error">
+                        {error}
+                    </Typography>
+                </DialogContent>
+                <DialogActions>
+                    <Button onClick={handleCloseDialog} color="primary">
                         閉じる
                     </Button>
-                </Box>
-            )}
+                </DialogActions>
+            </Dialog>
 
             <Box sx={{
                 ...bigStyles,

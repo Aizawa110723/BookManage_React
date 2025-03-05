@@ -1,8 +1,8 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import axios from 'axios';
-// import { axiosInstance } from '../api/axios.js';
-import { Box, Button, TextField, CircularProgress, Typography, FormControl, InputLabel, Select, MenuItem, DialogActions, DialogContent, DialogTitle } from "@mui/material";
+import { Box, Button, TextField, CircularProgress, Typography, FormControl, InputLabel, Select, MenuItem, Dialog, DialogActions, DialogContent, DialogTitle } from "@mui/material";
 import { bigStyles, fieldItem, formFrame, buttonStyle_a } from "../components/Styles";
+// import { axiosInstance } from '../api/axios.js';
 // import { useCsrfToken } from "../context/CsrfTokenContext"; // CSRFトークンを取得するフック
 
 // // クッキーから値を取得する関数
@@ -23,7 +23,9 @@ export const SearchForm = () => {
     const [localError, setLocalError] = useState(null);  // ローカルエラーステートを追加
     const [books, setBooks] = useState([]);  // 検索結果を格納するステート
     const [openDialog, setOpenDialog] = useState(false);  // ダイアログボックスの表示・非表示ステート
-    const [localToken, setLocalCsrfToken] = useState(""); // CSRFトークン用のステートを追加
+    const [successMessage, setSuccessMessage] = useState("");  // 成功メッセージ
+    const [errorMessage, setErrorMessage] = useState("");      // エラーメッセージ
+    // const [localToken, setLocalCsrfToken] = useState(""); // CSRFトークン用のステートを追加
 
     // *------------------*
 

@@ -1,10 +1,11 @@
-import { BrowserRouter, Route, Routes } from 'react-router-dom';
+import { Link, BrowserRouter, Route, Routes } from 'react-router-dom';
 import { BookForm } from './pages/BookForm';
 import { SearchForm } from './pages/SearchForm';
 import { BookList } from './pages/BookList';
 import { Box, Typography, Button } from '@mui/material';
-import { Link } from 'react-router-dom';
 import { topButton, buttonStyle_a, bigStyles } from './components/Styles';
+import { BcRoutes } from './components/BcRoutes';  // BcRouteをインポート
+
 // import { CsrfTokenProvider } from './context/CsrfTokenContext';  // 追加
 
 export const App = () => {
@@ -12,6 +13,7 @@ export const App = () => {
     <BrowserRouter>
       <Routes>
         {/* トップページ */}
+        {/* トップページ（BcRoutesを表示しない） */}
         <Route
           path="/"
           element={
@@ -49,22 +51,38 @@ export const App = () => {
           }
         />
 
-        {/* 書籍登録フォーム - CSRF トークンを提供 */}
-        <Route path="/BookForm" element={
-          <CsrfTokenProvider>
-            <BookForm />
-          </CsrfTokenProvider>
-        } />
+        {/* 書籍登録フォーム（BcRoutesを表示） */}
+        <Route
+          path="/BookForm"
+          element={
+            <>
+              <BcRoutes isVertical={false} /> {/* BcRoutesを表示 */}
+              <BookForm />
+            </>
+          }
+        />
 
-        {/* 書籍検索フォーム - CSRF トークンを提供 */}
-        <Route path="/SearchForm" element={
-          <CsrfTokenProvider>
-            <SearchForm />
-          </CsrfTokenProvider>
-        } />
+        {/* 書籍検索フォーム（BcRoutesを表示） */}
+        <Route
+          path="/SearchForm"
+          element={
+            <>
+              <BcRoutes isVertical={false} /> {/* BcRoutesを表示 */}
+              <SearchForm />
+            </>
+          }
+        />
 
-        {/* 書籍リスト */}
-        <Route path="/BookList" element={<BookList />} />
+        {/* 書籍リスト（BcRoutesを表示） */}
+        <Route
+          path="/BookList"
+          element={
+            <>
+              <BcRoutes isVertical={false} /> {/* BcRoutesを表示 */}
+              <BookList />
+            </>
+          }
+        />
       </Routes>
     </BrowserRouter>
   );
