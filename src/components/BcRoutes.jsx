@@ -14,7 +14,6 @@ export const BcRoutes = ({ isVertical = true }) => {
                 flexDirection={isVertical ? 'column' : 'row'}  // isVerticalによって縦並び・横並びを変更
                 alignItems="center"  // どちらの方向でも中央揃えにする
                 justifyContent="center"  // 横並びの場合は中央揃えにする
-
             >
                 {/* トップページリンクボタン */}
                 <Button
