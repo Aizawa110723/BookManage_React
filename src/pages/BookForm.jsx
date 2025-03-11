@@ -81,11 +81,11 @@ export const BookForm = ({ setBooks, setError, error }) => {
             // APIリクエストを送る
             const response = await axios.post(url, data, {
                 withCredentials: true,
-                headers: {
-                    params: queryParams,
-                    // 'Content-Type': 'application/json',
-                    // 'X-XSRF-TOKEN': csrfToken,  // CSRFトークンをヘッダーに追加
-                }
+                // headers: {
+                //     // params: queryParams,
+                //     // 'Content-Type': 'application/json',
+                //     // 'X-XSRF-TOKEN': csrfToken,  // CSRFトークンをヘッダーに追加
+                // }
             });
 
             setBooks((prevBooks) => [...prevBooks, response.data]);
