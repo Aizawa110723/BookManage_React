@@ -1,14 +1,36 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import axios from 'axios';
-import { Box, Typography, CircularProgress, Grid, Card, CardMedia, CardContent, Link, Table, TableHead, TableRow, TableCell, TableBody, TableContainer, Paper, Pagination, Dialog, DialogTitle, DialogContent, DialogActions, Button } from '@mui/material';
-import { bigStyles, getButtonStyles, titleCells, bodyCells } from "../components/Styles";
+import {
+    Box,
+    Typography,
+    CircularProgress,
+    Grid,
+    Card,
+    CardMedia,
+    CardContent,
+    Link,
+    Table,
+    TableHead,
+    TableRow,
+    TableCell,
+    TableBody,
+    TableContainer,
+    Paper,
+    Pagination,
+    Dialog,
+    DialogTitle,
+    DialogContent,
+    DialogActions,
+    Button
+} from '@mui/material';
+import { bigStyles, getButtonStyles } from "../components/Styles";
 
 
 export const BookList = () => {
     const [books, setBooks] = useState([]); // 書籍データを格納するstate
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState(null);  // エラーステートを定義
-    const [viewMode, setViewMode] = useState('table'); // viewMode: 'table' or 'card'
+    const [viewMode, setViewMode] = useState('table'); // 'table' or 'card'
     const [currentPage, setCurrentPage] = useState(1); // 現在のページ
     const [totalPages, setTotalPages] = useState(1); // 総ページ数
     const [openDialog, setOpenDialog] = useState(false); // エラーダイアログの状態
@@ -21,49 +43,37 @@ export const BookList = () => {
             setError(null);  // エラーメッセージをリセット
             try {
                 // 自分のAPIから書籍データを取得(テーブル表示・ページネーション対応)
-                const response = await axios.get(`http://127.0.0.1:8000/api/books?page=${currentPage}`, {
-                    withCredentials: true,
-                    headers: {
-                        'Content-Type': 'application/json',   // ヘッダーの設定
-                    }
-                });
+                const response = await axios.get(`http://127.0.0.1:8000/api/books?page=${currentPage}`);
+                const data = response.data;
 
-                console.log('API Response:', response.data);  // レスポンス内容を確認するためにログ出力
-
-                const bookData = response.data;
-                // 書籍情報にGoogle Books APIの画像とIDを追加
-                if (bookData.items && Array.isArray(bookData.items)) {
-                    // booksWithDetails に画像やGoogle BooksのIDを追加
-                    const booksWithDetails = bookData.items.map((book) => {
-                        const googleBooksId = book.google_books_url
-                            ? book.google_books_url.split('=')[1]  // Google BooksのIDを抽出
-                            : null; // google_books_urlがない場合はnullを設定
-                        return {
-                            ...book,
-                            imageUrl: book.image_path ? `http://localhost:8000/storage/${book.image_path}` : null,
-                            googleBooksId,  // Google BooksのIDをセット
-                        };
-                    });
-                    setBooks(booksWithDetails);  // 書籍データをセット
-                    setTotalPages(bookData.data.last_page);  // 総ページ数をセット
+                if (Array.isArray(data.data)) {
+                    const booksWithImages = data.data.map(book => ({
+                        ...book,
+                        imageUrl: book.image_path ? `http://127.0.0.1:8000/storage/${book.image_path}` : null
+                    }));
+                    setBooks(booksWithImages);
+                    setTotalPages(data.last_page || 1);
                 } else {
-                    setError('書籍情報の取得に失敗しました。'); // エラーをセット
-                    setOpenDialog(true);  // エラーダイアログを開く
+                    setError('書籍データが正しく取得できませんでした');
+                    setOpenDialog(true);
                 }
             } catch (err) {
-                console.error('API Error:', err);  // 詳細なエラー情報をコンソールに出力
-                setError('データの取得に失敗しました。'); // より一般的なエラーメッセージを設定
+                console.error(err);
+                setError('書籍情報の取得に失敗しました'); // エラーをセット
                 setOpenDialog(true);  // エラーダイアログを開く
             } finally {
                 setLoading(false);  // ローディング終了
             }
         };
+
         loadBooks();  // データをロード
     }, [currentPage]);  // currentPageが変更されたら再度データを取得
+
     // ページ切り替え処理
     const handlePageChange = (event, value) => {
         setCurrentPage(value);
     };
+    
     // ダイアログの「閉じる」ボタン
     const handleCloseDialog = () => {
         setOpenDialog(false);

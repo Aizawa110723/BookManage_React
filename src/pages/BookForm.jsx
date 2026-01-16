@@ -27,8 +27,7 @@ export const BookForm = ({ setBooks }) => {
     // ジャンルの選択欄を定義（必要に応じて変更可能）
     const genres = ["文学・評論", "自伝・伝記", "ノンフィクション", "ファンタジー・SF", "ミステリー・推理", "教育・学習", "ビジネス・経済", "歴史・社会", "芸能・エンターテインメント", "アート・建築・デザイン", "人文・思想・宗教", "科学・テクノロジー・プログラミング", "健康・ライフスタイル", "旅行・ガイド", "料理・グルメ",];
 
-    // eslint-disable-next-line no-unused-vars
-    const postData = async () => {      // データ送信関数
+   const postData = async () => {      // データ送信関数
         if (loading) return;
 
         setLoading(true);

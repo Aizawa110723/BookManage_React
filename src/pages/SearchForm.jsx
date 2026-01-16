@@ -1,17 +1,7 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import axios from 'axios';
 import { Box, Button, TextField, CircularProgress, Typography, FormControl, InputLabel, Select, MenuItem, Dialog, DialogActions, DialogContent, DialogTitle } from "@mui/material";
 import { bigStyles, fieldItem, formFrame, buttonStyle_a } from "../components/Styles";
-// import { axiosInstance } from '../api/axios.js';
-// import { useCsrfToken } from "../context/CsrfTokenContext"; // CSRFトークンを取得するフック
-
-// // クッキーから値を取得する関数
-// const getCookie = (name) => {
-//     const value = `; ${document.cookie}`;
-//     const parts = value.split(`; ${name}=`);
-//     if (parts.length === 2) return parts.pop().split(';').shift();
-//     return null;
-// };
 
 export const SearchForm = () => {
     const [title, setTitle] = useState("");  // タイトル
@@ -20,32 +10,18 @@ export const SearchForm = () => {
     const [year, setYear] = useState("");  // 出版年
     const [genre, setGenre] = useState("");  // ジャンル
     const [loading, setLoading] = useState(false);  // ローディング状態
-    const [localError, setLocalError] = useState(null);  // ローカルエラーステートを追加
     const [books, setBooks] = useState([]);  // 検索結果を格納するステート
     const [openDialog, setOpenDialog] = useState(false);  // ダイアログボックスの表示・非表示ステート
     const [successMessage, setSuccessMessage] = useState("");  // 成功メッセージ
     const [errorMessage, setErrorMessage] = useState("");      // エラーメッセージ
-    // const [localToken, setLocalCsrfToken] = useState(""); // CSRFトークン用のステートを追加
 
-    // *------------------*
 
-    // // CSRFトークンを取得（フックを使用）
-    // const { csrfToken, loading: csrfLoading, error: csrfError } = useCsrfToken();
-
-    // useEffect(() => {
-    //     // 初期化時に CSRF トークンを取得（必要に応じて）
-    //     const token = getCookie('XSRF-TOKEN');
-    //     setLocalCsrfToken(token);  // ローカルのCSRFトークンにセット
-    //     // CSRFトークン取得エラーがあった場合の処理
-    //     if (csrfError) {
-    //         setLocalError("CSRFトークンの取得に失敗しました");
-    //     }
-    // }, [csrfError]);
-
-    // *------------------*
-
-    // 出版年の選択欄を1868年（明治）から2024年まで作成
-    const years = Array.from({ length: 2024 - 1868 + 1 }, (_, index) => 1868 + index);  // 1868年から2024年までの配列
+    // 出版年の選択欄を1868年から最新年まで作成
+    const currentYear = new Date().getFullYear();
+    const years = Array.from(
+        { length: currentYear - 1868 + 1 },
+        (_, index) => 1868 + index
+    );
 
     // ジャンルの選択欄を定義（必要に応じて変更可能）
     const genres = ["文学・評論", "自伝・伝記", "ノンフィクション", "ファンタジー・SF", "ミステリー・推理", "教育・学習", "ビジネス・経済", "歴史・社会", "芸能・エンターテインメント", "アート・建築・デザイン", "人文・思想・宗教", "科学・テクノロジー・プログラミング", "健康・ライフスタイル", "旅行・ガイド", "料理・グルメ",];
@@ -57,61 +33,46 @@ export const SearchForm = () => {
         e.preventDefault();
 
         // いずれかのフィールドが入力されていない場合にエラー
-        if (!isFormValid) {
-            setLocalError("少なくとも1つのフィールドに入力してください");
+        if (!title && !authors && !publisher && !year && !genre) {
+            setErrorMessage("少なくとも1つのフィールドに入力してください");
+            setOpenDialog(true);
             return;
         }
 
         setLoading(true);  // 検索開始時にローディングを開始
-        setLocalError(null);    // エラーメッセージをリセット
-
-        // 空のフィールドはクエリパラメータから削除する
-        const queryParams = {};
-        if (title) queryParams.title = title;
-        if (authors) queryParams.authors = authors;
-        if (publisher) queryParams.publisher = publisher;
-        if (year) queryParams.year = year;
-        if (genre) queryParams.genre = genre;
+        setSuccessMessage("");
+        setErrorMessage("");
 
         try {
             // フィールドに入力された情報をまとめてAPIに渡す
             // APIリクエストを送る
-            const response = await axios.post(url, data, {
-                withCredentials: true,
-                headers: {
-                    params: queryParams,
-                    // 'Content-Type': 'application/json',
-                    // 'X-XSRF-TOKEN': csrfToken,  // CSRFトークンをヘッダーに追加
+            const response = await axios.get(
+                "http://127.0.0.1:8000/api/books/search",
+                {
+                    params: {
+                        title,
+                        authors,
+                        publisher,
+                        year,
+                        genre,
+                    },
                 }
-            });
+            );
 
-            const bookData = response.data;
-
-            // 正規表現を使った検索※完全一致と部分一致
-            let filteredBooks = data.filter(book => {
-                return (
-                    (title ? title === book.title : true) &&  // タイトルに対する完全一致検索
-                    (authors ? authors === book.authors : true) &&  // 著者に対する完全一致検索
-                    (publisher ? new RegExp(publisher, 'i').test(book.publisher) : true) &&  // 出版社に対する部分一致検索
-                    (year ? new RegExp(`^${year}$`).test(book.year.toString()) : true) &&  // 出版年を完全一致で検索
-                    (genre ? new RegExp(genre, 'i').test(book.genre) : true)  // ジャンルに対する部分一致検索
-                );
-            });
+            setBooks(response.data);
 
             // 結果があればメッセージをセット
-            if (booksData.length > 0) {
+            if (response.data.length > 0) {
                 setSuccessMessage("検索結果が見つかりました");
-                setIsSubmitted(true);
             } else {
                 setErrorMessage("検索結果が見つかりませんでした");
-                setIsSubmitted(true);
             }
         } catch (error) {
+            console.error(error);
             setErrorMessage("検索に失敗しました");
-            setSuccessMessage('');
-            setIsSubmitted(true);
         } finally {
             setLoading(false);
+            setOpenDialog(true);
         }
     };
 
@@ -240,6 +201,23 @@ export const SearchForm = () => {
                         </Button>
                     </Box>
                 </form>
+
+                {/* 検索結果リスト */}
+                {books.length > 0 && (
+                    <Box sx={{ width: '100%', maxWidth: '500px', margin: '40px auto' }}>
+                        <Typography variant="h5" sx={{ mb: 2 }}>検索結果</Typography>
+                        {books.map((book, index) => (
+                            <Box key={index} sx={{ mb: 2, p: 2, border: '1px solid #ccc', borderRadius: '8px' }}>
+                                <Typography variant="subtitle1"><strong>タイトル:</strong> {book.title}</Typography>
+                                <Typography variant="body2"><strong>著者:</strong> {book.authors}</Typography>
+                                <Typography variant="body2"><strong>出版社:</strong> {book.publisher}</Typography>
+                                <Typography variant="body2"><strong>出版年:</strong> {book.year}</Typography>
+                                <Typography variant="body2"><strong>ジャンル:</strong> {book.genre}</Typography>
+                            </Box>
+                        ))}
+                    </Box>
+                )}
+
             </Box>
         </>
     );
