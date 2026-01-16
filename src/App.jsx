@@ -30,7 +30,7 @@ export const App = () => {
                     letterSpacing: '2px',
                   }}
                 >
-                  書籍管理＆検索
+                  My Book Collection
                 </Typography>
               </Box>
 

@@ -21,7 +21,7 @@ export const SearchForm = () => {
     const years = Array.from(
         { length: currentYear - 1868 + 1 },
         (_, index) => 1868 + index
-    );
+    ).reverse();
 
     // ジャンルの選択欄を定義（必要に応じて変更可能）
     const genres = ["文学・評論", "自伝・伝記", "ノンフィクション", "ファンタジー・SF", "ミステリー・推理", "教育・学習", "ビジネス・経済", "歴史・社会", "芸能・エンターテインメント", "アート・建築・デザイン", "人文・思想・宗教", "科学・テクノロジー・プログラミング", "健康・ライフスタイル", "旅行・ガイド", "料理・グルメ",];
@@ -46,8 +46,8 @@ export const SearchForm = () => {
         try {
             // フィールドに入力された情報をまとめてAPIに渡す
             // APIリクエストを送る
-            const response = await axios.get(
-                "http://127.0.0.1:8000/api/books/search",
+            const response = await axios.post(
+                "http://127.0.0.1:8000/api/searchbooks",
                 {
                     params: {
                         title,

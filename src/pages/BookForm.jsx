@@ -44,7 +44,7 @@ export const BookForm = ({ setBooks }) => {
     const years = Array.from(
         { length: currentYear - 1868 + 1 },
         (_, index) => 1868 + index
-    );
+    ).reverse();
 
     // ジャンルの選択欄を定義（必要に応じて変更可能）
     const genres = [
@@ -76,6 +76,7 @@ export const BookForm = ({ setBooks }) => {
             const response = await axios.post('http://127.0.0.1:8000/api/books', book);
             setBooks(prev => [...prev, response.data]);
             setSuccessMessage('書籍を登録しました');
+            setOpenDialog(true);
         } catch (err) {
             console.error(err);
             setErrorMessage('登録に失敗しました');
@@ -95,6 +96,7 @@ export const BookForm = ({ setBooks }) => {
 
         if (!isFormValid) {
             setErrorMessage('少なくとも1つの項目を入力してください');
+            setOpenDialog(true);
             return;
         }
 
@@ -102,13 +104,14 @@ export const BookForm = ({ setBooks }) => {
 
         try {
             // 楽天APIで検索
-            const response = await axios.post('http://127.0.0.1:8000/api/books/search-rakuten', {
-                title, authors, publisher, year, genre
+            const response = await axios.get('http://127.0.0.1:8000/api/books/fetch-rakuten', {
+                params: { title, authors, publisher, year, genre }
             });
 
             const results = response.data; // 配列
             if (!results || results.length === 0) {
                 setErrorMessage('該当書籍が見つかりませんでした');
+                setOpenDialog(true);
             } else if (results.length === 1) {
                 // 1件だけ → 直接登録
                 registerBook(results[0]);
@@ -120,6 +123,7 @@ export const BookForm = ({ setBooks }) => {
         } catch (err) {
             console.error(err);
             setErrorMessage('検索に失敗しました');
+            setOpenDialog(true);
         } finally {
             setLoading(false);
         }
