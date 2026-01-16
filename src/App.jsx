@@ -36,15 +36,15 @@ export const App = () => {
 
               <Box sx={{ ...bigStyles, height: '70vh', backgroundColor: '#F5D19A' }}>
                 <Button component={Link} to="/BookForm" variant="outlined" sx={{ ...buttonStyle_a }}>
-                  書籍登録フォーム
+                  書籍登録
                 </Button>
 
                 <Button component={Link} to="/SearchForm" variant="outlined" sx={{ ...buttonStyle_a }}>
-                  書籍検索フォーム
+                  書籍検索
                 </Button>
 
                 <Button component={Link} to="/BookList" variant="outlined" sx={{ ...buttonStyle_a }}>
-                  書籍リスト
+                  登録一覧
                 </Button>
               </Box>
             </div>
