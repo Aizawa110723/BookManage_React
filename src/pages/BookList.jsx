@@ -26,6 +26,8 @@ import {
 import { bigStyles, getButtonStyles } from "../components/Styles";
 
 
+const DEFAULT_IMAGE = '/images/noprinting.png';
+
 export const BookList = () => {
     const [books, setBooks] = useState([]); // 書籍データを格納するstate
     const [loading, setLoading] = useState(false);
@@ -49,7 +51,7 @@ export const BookList = () => {
                 if (Array.isArray(data.data)) {
                     const booksWithImages = data.data.map(book => ({
                         ...book,
-                        imageUrl: book.image_path ? `http://127.0.0.1:8000/storage/${book.image_path}` : null
+                        imageUrl: book.image_url || (book.image_path ? `http://127.0.0.1:8000/storage/${book.image_path}` : DEFAULT_IMAGE)
                     }));
                     setBooks(booksWithImages);
                     setTotalPages(data.last_page || 1);

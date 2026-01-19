@@ -178,7 +178,11 @@ export const BookForm = ({ setBooks }) => {
                     </Grid>
                 </DialogContent>
                 <DialogActions>
-                    <Button onClick={() => setCandidates([])} color="secondary">キャンセル</Button>
+                    <Button onClick={() => {
+                        setCandidates([]);
+                        setSelectedCandidate(null);
+                    }}
+                     color="secondary">キャンセル</Button>
                     <Button
                         onClick={() => {
                             if (selectedCandidate) {
