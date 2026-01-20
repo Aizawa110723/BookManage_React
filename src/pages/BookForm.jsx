@@ -23,7 +23,7 @@ import { bigStyles, buttonStyle_a, formFrame, fieldItem } from "../components/St
 // デフォルト画像URL
 const DEFAULT_IMAGE = '/images/noprinting.png';
 
-export const BookForm = ({ setBooks }) => {
+export const BookForm = () => {
 
     const [title, setTitle] = useState('');
     const [authors, setAuthors] = useState('');
@@ -73,8 +73,8 @@ export const BookForm = ({ setBooks }) => {
     const registerBook = async (book) => {
         try {
             setLoading(true);
-            const response = await axios.post('http://127.0.0.1:8000/api/books', book);
-            setBooks(prev => [...prev, response.data]);
+            await axios.post('http://127.0.0.1:8000/api/books', book);
+
             setSuccessMessage('書籍を登録しました');
             setOpenDialog(true);
         } catch (err) {
@@ -156,9 +156,16 @@ export const BookForm = ({ setBooks }) => {
                                 <Card
                                     sx={{
                                         cursor: "pointer",
-                                        border: selectedCandidate?.id === book.id ? "2px solid #1976d2" : "1px solid #ccc"
+                                        border: selectedCandidate?.id === book.id ? "2px solid #5c4016" : "1px solid #f5b352",
+                                        backgroundColor: selectedCandidate?.id === book.id ? "#5c4016" : "#f5b352",
                                     }}
-                                    onClick={() => setSelectedCandidate(book)}
+                                    onClick={() => {
+                                        if (selectedCandidate?.id === book.id) {
+                                            setSelectedCandidate(null); // 選択解除
+                                        } else {
+                                            setSelectedCandidate(book); // 選択
+                                        }
+                                    }}
                                 >
                                     <CardMedia
                                         component="img"
@@ -182,7 +189,7 @@ export const BookForm = ({ setBooks }) => {
                         setCandidates([]);
                         setSelectedCandidate(null);
                     }}
-                     color="secondary">キャンセル</Button>
+                        color="secondary">キャンセル</Button>
                     <Button
                         onClick={() => {
                             if (selectedCandidate) {
