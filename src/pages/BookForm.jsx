@@ -68,21 +68,48 @@ export const BookForm = () => {
     const isFormValid = title || authors || publisher || year || genre;
 
     // -----------------------
-    // 候補選択後のDB登録
+    // 候補選択後のDB登録（API優先・手入力補完）
     // -----------------------
-    const registerBook = async (book) => {
+    const registerBook = async (bookFromAPI) => {
         try {
             setLoading(true);
-            await axios.post('http://127.0.0.1:8000/api/books', book);
+
+            // 手入力データをまとめる
+            const manualData = {
+                title,      // 手入力タイトル
+                authors,    // 手入力著者
+                publisher,  // 手入力出版社
+                year,       // 手入力年
+                genre,      // 手入力ジャンル
+            };
+
+            // 登録用データを作成
+            // API情報優先：title, authors, publisher, isbn, imageUrl
+            // 手入力補完：year, genre（APIにない場合のみ）
+            const mergedData = {
+                title: bookFromAPI.title || manualData.title,
+                authors: bookFromAPI.authors || manualData.authors,
+                publisher: bookFromAPI.publisher || manualData.publisher,
+                year: bookFromAPI.year || manualData.year || null,
+                genre: bookFromAPI.genre || manualData.genre || null,
+                isbn: bookFromAPI.isbn || null,
+                imageUrl: bookFromAPI.imageUrl || null,
+            };
+
+            // LaravelにPOST
+            await axios.post('http://127.0.0.1:8000/api/books', mergedData);
 
             setSuccessMessage('書籍を登録しました');
             setOpenDialog(true);
+
         } catch (err) {
             console.error(err);
             setErrorMessage('登録に失敗しました');
+            setOpenDialog(true);
         } finally {
             setLoading(false);
             setCandidateDialogOpen(false);
+            setSelectedCandidate(null);
         }
     };
 
@@ -149,35 +176,46 @@ export const BookForm = () => {
             {/* 複数候補選択ダイアログ */}
             <Dialog open={candidateDialogOpen} onClose={() => setCandidateDialogOpen(false)}>
                 <DialogTitle>候補を選択してください</DialogTitle>
+
                 <DialogContent>
-                    <Grid container spacing={2}>
+                    {/* // 選択中タイトル表示 */}
+                    {selectedCandidate && (
+                        <Typography variant="body1" sx={{ mb: 2, fontWeight: 'bold', color: '#af1d03' }}>
+                            選択中：{selectedCandidate.title}
+                        </Typography>
+                    )}
+
+                    {/* // 候補カード部分 */}
+                    <Grid container spacing={2} alignItems="stretch">
                         {candidates.map((book, index) => (
-                            <Grid item xs={12} sm={6} md={4} key={index}>
+                            <Grid item xs={6} sm={6} md={4} key={index}>
                                 <Card
                                     sx={{
                                         cursor: "pointer",
-                                        border: selectedCandidate?.id === book.id ? "2px solid #5c4016" : "1px solid #f5b352",
-                                        backgroundColor: selectedCandidate?.id === book.id ? "#5c4016" : "#f5b352",
+                                        border: selectedCandidate?.isbn === book.isbn ? "2px solid #e0b26c" : "1px solid #ccc",
+                                        backgroundColor: selectedCandidate?.isbn === book.isbn ? "#fff2d1" : "#fff",
+                                        display: "flex",
+                                        flexDirection: "column",
+                                        minHeight: 250,
+                                        width: '100%',
                                     }}
                                     onClick={() => {
-                                        if (selectedCandidate?.id === book.id) {
-                                            setSelectedCandidate(null); // 選択解除
-                                        } else {
-                                            setSelectedCandidate(book); // 選択
-                                        }
+                                        const key = book.isbn || book.title + book.authors + book.publisher;
+                                        const selectedKey = selectedCandidate?.isbn || selectedCandidate?.title + selectedCandidate?.authors + selectedCandidate?.publisher;
+                                        if (key === selectedKey) setSelectedCandidate(null);
+                                        else setSelectedCandidate(book);
                                     }}
                                 >
                                     <CardMedia
                                         component="img"
                                         alt="No Image"
-                                        height="200px"
-                                        image={book.imageUrl || DEFAULT_IMAGE} // book.imageUrl がなければ DEFAULT_IMAGE を表示
+                                        height="140"
+                                        image={book.imageUrl || DEFAULT_IMAGE}
                                     />
-
-                                    <CardContent>
-                                        <Typography variant="subtitle1">{book.title}</Typography>
-                                        <Typography variant="body2">{book.authors}</Typography>
-                                        <Typography variant="body2">{book.publisher} / {book.year}</Typography>
+                                    <CardContent sx={{ flexGrow: 1 }}>
+                                        <Typography variant="subtitle1" noWrap>{book.title}</Typography>
+                                        <Typography variant="body2" noWrap>{book.authors}</Typography>
+                                        <Typography variant="body2" noWrap>{book.publisher} / {book.year}</Typography>
                                     </CardContent>
                                 </Card>
                             </Grid>
@@ -188,6 +226,7 @@ export const BookForm = () => {
                     <Button onClick={() => {
                         setCandidates([]);
                         setSelectedCandidate(null);
+                        setCandidateDialogOpen(false); // ← ダイアログを即座に閉じる
                     }}
                         color="secondary">キャンセル</Button>
                     <Button
@@ -199,8 +238,7 @@ export const BookForm = () => {
                         }}
                         color="primary"
                         disabled={!selectedCandidate}
-                    >
-                        選択して登録
+                    >選択して登録
                     </Button>
                 </DialogActions>
             </Dialog>
