@@ -34,6 +34,7 @@ export const BookForm = () => {
     const [successMessage, setSuccessMessage] = useState('');  // 成功メッセージ
     const [errorMessage, setErrorMessage] = useState('');  // エラーメッセージ
     const [openDialog, setOpenDialog] = useState(false);  // ダイアログボックスの表示・非表示ステート
+    const [confirmDialogOpen, setConfirmDialogOpen] = useState(false);
     const [candidateDialogOpen, setCandidateDialogOpen] = useState(false);
     const [selectedCandidate, setSelectedCandidate] = useState(null);
     const [candidates, setCandidates] = useState([]);  //複数候補
@@ -74,7 +75,7 @@ export const BookForm = () => {
         try {
             setLoading(true);
 
-            // 手入力データをまとめる
+            // 手入力データ
             const manualData = {
                 title,      // 手入力タイトル
                 authors,    // 手入力著者
@@ -83,17 +84,21 @@ export const BookForm = () => {
                 genre,      // 手入力ジャンル
             };
 
-            // 登録用データを作成
-            // API情報優先：title, authors, publisher, isbn, imageUrl
-            // 手入力補完：year, genre（APIにない場合のみ）
+            // -----------------------
+            // 登録データを作成（API優先・補完ルール）
+            // マッピングしてDBに送る
+            // -----------------------
             const mergedData = {
+                // 正確さ重視は API 優先
                 title: bookFromAPI.title || manualData.title,
                 authors: bookFromAPI.authors || manualData.authors,
-                publisher: bookFromAPI.publisher || manualData.publisher,
-                year: bookFromAPI.year || manualData.year || null,
-                genre: bookFromAPI.genre || manualData.genre || null,
+                publisher: bookFromAPI.publisherName || manualData.publisher,
                 isbn: bookFromAPI.isbn || null,
-                imageUrl: bookFromAPI.imageUrl || null,
+                imageUrl: bookFromAPI.largeImageUrl || bookFromAPI.mediumImageUrl || null,
+                year: bookFromAPI.salesDate || manualData.year,
+
+                // 手入力優先の補完（genreはキーになし）
+                genre: manualData.genre ? manualData.genre : bookFromAPI.genre || null,
             };
 
             // LaravelにPOST
@@ -110,6 +115,13 @@ export const BookForm = () => {
             setLoading(false);
             setCandidateDialogOpen(false);
             setSelectedCandidate(null);
+
+            // 入力欄リセット
+            setTitle('');
+            setAuthors('');
+            setPublisher('');
+            setYear('');
+            setGenre('');
         }
     };
 
@@ -121,9 +133,8 @@ export const BookForm = () => {
         setErrorMessage('');
         setSuccessMessage('');
 
-        if (!isFormValid) {
+        if (!title && !authors && !publisher && !year && !genre) {
             setErrorMessage('少なくとも1つの項目を入力してください');
-            setOpenDialog(true);
             return;
         }
 
@@ -138,10 +149,11 @@ export const BookForm = () => {
             const results = response.data; // 配列
             if (!results || results.length === 0) {
                 setErrorMessage('該当書籍が見つかりませんでした');
-                setOpenDialog(true);
+
             } else if (results.length === 1) {
-                // 1件だけ → 直接登録
-                registerBook(results[0]);
+                // 候補1件でも確認ダイアログを出す
+                setSelectedCandidate(results[0]);
+                setConfirmDialogOpen(true);
             } else {
                 // 複数候補 → モーダルで選択
                 setCandidates(results);
@@ -232,17 +244,46 @@ export const BookForm = () => {
                     <Button
                         onClick={() => {
                             if (selectedCandidate) {
-                                registerBook(selectedCandidate); // Laravel に送信
-                                setCandidates([]);
+                                setConfirmDialogOpen(true);
                             }
                         }}
                         color="primary"
                         disabled={!selectedCandidate}
-                    >選択して登録
+                    >
+                        選択して登録
                     </Button>
+
+                    {/* 確認ダイアログ */}
+                    <Dialog open={confirmDialogOpen} onClose={() => setConfirmDialogOpen(false)}>
+                        <DialogTitle>登録内容確認</DialogTitle>
+                        <DialogContent>
+                            <Typography>次の内容で登録しますか？</Typography>
+                            {selectedCandidate && (
+                                <Box sx={{ mt: 2 }}>
+                                    <Typography>タイトル: {selectedCandidate.title}</Typography>
+                                    <Typography>著者: {selectedCandidate.authors}</Typography>
+                                    <Typography>出版社: {selectedCandidate.publisher}</Typography>
+                                    <Typography>出版年: {selectedCandidate.year || year}</Typography>
+                                    <Typography>ジャンル: {selectedCandidate.genre || genre}</Typography>
+                                </Box>
+                            )}
+                        </DialogContent>
+                        <DialogActions>
+                            <Button
+                                onClick={() => setConfirmDialogOpen(false)}
+                                color="secondary">
+                                キャンセル
+                            </Button>
+                            <Button onClick={() => { if (selectedCandidate) registerBook(selectedCandidate); }}
+                                color="primary">
+                                OK
+                            </Button>
+                        </DialogActions>
+                    </Dialog>
                 </DialogActions>
             </Dialog>
 
+            {/* 登録フォーム */}
             <Box sx={bigStyles}>
                 {/* タイトル */}
                 <Typography

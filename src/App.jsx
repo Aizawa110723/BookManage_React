@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import { Link, BrowserRouter, Route, Routes } from 'react-router-dom';
 import { BookForm } from './pages/BookForm';
 import { SearchForm } from './pages/SearchForm';
@@ -6,9 +7,11 @@ import { Box, Typography, Button } from '@mui/material';
 import { topButton, buttonStyle_a, bigStyles } from './components/Styles';
 import { BcRoutes } from './components/BcRoutes';  // BcRouteをインポート
 
-// import { CsrfTokenProvider } from './context/CsrfTokenContext';  // 追加
 
 export const App = () => {
+
+  const [books, setBooks] = useState([]);
+
   return (
     <BrowserRouter>
       <Routes>
@@ -57,7 +60,7 @@ export const App = () => {
           element={
             <>
               <BcRoutes isVertical={false} /> {/* BcRoutesを表示 */}
-              <BookForm />
+              <BookForm setBooks={setBooks} /> {/* prop を渡す */}
             </>
           }
         />
@@ -79,7 +82,7 @@ export const App = () => {
           element={
             <>
               <BcRoutes isVertical={false} /> {/* BcRoutesを表示 */}
-              <BookList />
+              <BookList books={books} />
             </>
           }
         />
