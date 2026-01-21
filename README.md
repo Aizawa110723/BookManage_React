@@ -1,8 +1,33 @@
-# React + Vite
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+# 📚 My Book Collection　- Frontend（Bookmanage_React）
 
-Currently, two official plugins are available:
+## 概要
+- React + Viteで作成した書籍管理アプリのフロントエンドです。
+- LaravelバックエンドAPIと連携して書籍情報を取得・登録します。
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react/README.md) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+## 特徴
+- 入力フォームとAPI取得データをマージして書籍を登録
+- 複数候補の書籍選択をカードUIで直感的に操作可能
+- 画像が無い書籍にはデフォルト画像を表示
+- モバイル・PCレスポンシブ対応
+- 状態管理とMUIを組み合わせた操作性の高いフォーム設計
+
+## 使用技術
+- React: 18.3.1
+- ReactDOM: 18.3.1
+- ReactRouterDOM: 7.0.2
+- Vite: 6.2.0
+- Node.js: 24.12.0
+- npm: 11.6.2
+- MUI(Material-UI): 6.2.1
+
+### 工夫した点
+- 楽天Books API との連携と手入力データの統合
+- 画像なし書籍にデフォルト画像を表示
+- 複数候補選択ダイアログでUX改善
+- モバイル・PCレスポンシブ対応
+
+### 難しかった点 / 改善したい点
+- 複数候補選択モーダルの状態管理
+- バリデーションの統一化
+- フロント側のパフォーマンス最適化
