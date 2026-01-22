@@ -71,7 +71,7 @@ export const BookForm = () => {
     // -----------------------
     // 候補選択後のDB登録（API優先・手入力補完）
     // -----------------------
-    const registerBook = async (bookFromAPI) => {
+    const registerBook = async (normalizedBook) => {
         try {
             setLoading(true);
 
@@ -89,20 +89,24 @@ export const BookForm = () => {
             // マッピングしてDBに送る
             // -----------------------
             const mergedData = {
-                // 正確さ重視は API 優先
-                title: bookFromAPI.title || manualData.title,
-                authors: bookFromAPI.authors || manualData.authors,
-                publisher: bookFromAPI.publisherName || manualData.publisher,
-                isbn: bookFromAPI.isbn || null,
-                imageUrl: bookFromAPI.largeImageUrl || bookFromAPI.mediumImageUrl || null,
-                year: bookFromAPI.salesDate || manualData.year,
+                title: normalizedBook.title || manualData.title,
+                authors: normalizedBook.authors || manualData.authors,
+                publisher: normalizedBook.publisher || manualData.publisher,
+                isbn: normalizedBook.isbn || null,
+                imageUrl: normalizedBook.imageUrl || null,
+                year: normalizedBook.year || manualData.year,
 
                 // 手入力優先の補完（genreはキーになし）
-                genre: manualData.genre ? manualData.genre : bookFromAPI.genre || null,
+                genre: manualData.genre || null,
             };
 
+            console.log('selectedCandidate', normalizedBook);
+            console.log('mergedData', mergedData);
+
             // LaravelにPOST
-            await axios.post('http://127.0.0.1:8000/api/books', mergedData);
+            await axios.post('http://127.0.0.1:8000/api/books', mergedData, {
+                headers: { 'Content-Type': 'application/json' }
+            });
 
             setSuccessMessage('書籍を登録しました');
             setOpenDialog(true);
@@ -171,51 +175,104 @@ export const BookForm = () => {
     return (
         <>
             {/* 登録成功/エラーダイアログ */}
-            <Dialog open={openDialog} onClose={() => setOpenDialog(false)}>
-                <DialogTitle>{successMessage ? "成功" : "エラー"}</DialogTitle>
+            <Dialog
+                open={openDialog}
+                onClose={() => setOpenDialog(false)}
+                maxWidth='sm'
+                fullWidth
+                PaperProps={{
+                    sx: {
+                        borderRadius: 3,
+                        padding: 2,
+                        backgroundColor: '#fffaf5',
+                        fontFamily: '"Roboto", sans-serif',
+                    }
+                }}
+            >
+                <DialogTitle
+                    sx={{ textAlign: 'center', fontWeight: 'bold', color: '#8B3A2F' }}
+                >{successMessage ? "成功" : "エラー"}</DialogTitle>
                 <DialogContent>
-                    <Typography variant="body2" color={successMessage ? 'primary' : 'error'}>
+                    <Typography
+                        variant="body1"
+                        sx={{ textAlign: 'center', mt: 1, color: successMessage ? '#8B3A2F' : '#D2691E' }}
+                    >
                         {successMessage || errorMessage}
                     </Typography>
                 </DialogContent>
-                <DialogActions>
-                    <Button onClick={() => setOpenDialog(false)} color="primary">
+                <DialogActions sx={{ justifyContent: 'center' }}>
+                    <Button
+                        onClick={() => setOpenDialog(false)}
+                        sx={{
+                            backgroundColor: '#8B3A2F',
+                            color: 'white',
+                            fontWeight: 'bold',
+                            borderRadius: '50px',
+                            padding: '8px 20px',
+                            '&:hover': { backgroundColor: '#D2691E' },
+                        }}
+                    >
                         閉じる
                     </Button>
                 </DialogActions>
             </Dialog>
 
             {/* 複数候補選択ダイアログ */}
-            <Dialog open={candidateDialogOpen} onClose={() => setCandidateDialogOpen(false)}>
-                <DialogTitle>候補を選択してください</DialogTitle>
+            <Dialog
+                open={candidateDialogOpen}
+                onClose={() => setCandidateDialogOpen(false)}
+                maxWidth="md"
+                fullWidth
+                PaperProps={{
+                    sx: {
+                        borderRadius: 3,
+                        padding: 2,
+                        backgroundColor: '#fffaf5',
+                        fontFamily: '"Roboto", sans-serif',
+                    }
+                }}
+            >
+                <DialogTitle sx={{ fontWeight: 'bold', color: '#8B3A2F' }}>
+                    候補を選択してください
+                </DialogTitle>
 
                 <DialogContent>
-                    {/* // 選択中タイトル表示 */}
-                    {selectedCandidate && (
-                        <Typography variant="body1" sx={{ mb: 2, fontWeight: 'bold', color: '#af1d03' }}>
-                            選択中：{selectedCandidate.title}
-                        </Typography>
-                    )}
+                    {/* 選択中タイトル表示：常に表示 */}
+                    <Typography
+                        variant="body1"
+                        sx={{
+                            mb: 2,
+                            fontWeight: 'bold',
+                            color: '#af1d03',
+                            textAlign: 'center'
+                        }}>
+                        選択：{selectedCandidate ? selectedCandidate.title : 'なし'}
+                    </Typography>
 
-                    {/* // 候補カード部分 */}
+
+                    {/* 候補カード部分 */}
                     <Grid container spacing={2} alignItems="stretch">
                         {candidates.map((book, index) => (
                             <Grid item xs={6} sm={6} md={4} key={index}>
                                 <Card
                                     sx={{
                                         cursor: "pointer",
-                                        border: selectedCandidate?.isbn === book.isbn ? "2px solid #e0b26c" : "1px solid #ccc",
-                                        backgroundColor: selectedCandidate?.isbn === book.isbn ? "#fff2d1" : "#fff",
+                                        border: selectedCandidate?.isbn === book.isbn ? "2px solid #af1d03" : "none", // 選択時のみ枠
+                                        backgroundColor: selectedCandidate?.isbn === book.isbn ? "#F5D19A" : "#f5f5f5",
                                         display: "flex",
                                         flexDirection: "column",
                                         minHeight: 250,
                                         width: '100%',
+                                        '&:hover': {
+                                            backgroundColor: selectedCandidate?.isbn === book.isbn ? "#F5D19A" : "#f5f5f5",
+                                        },
                                     }}
                                     onClick={() => {
                                         const key = book.isbn || book.title + book.authors + book.publisher;
-                                        const selectedKey = selectedCandidate?.isbn || selectedCandidate?.title + selectedCandidate?.authors + selectedCandidate?.publisher;
-                                        if (key === selectedKey) setSelectedCandidate(null);
-                                        else setSelectedCandidate(book);
+                                        const selectedKey = selectedCandidate?.isbn || selectedCandidate?.title +
+                                            selectedCandidate?.authors + selectedCandidate?.publisher;
+                                        if (key === selectedKey) setSelectedCandidate(null); // 二度目で解除
+                                        else setSelectedCandidate(book); // 選択
                                     }}
                                 >
                                     <CardMedia
@@ -240,42 +297,78 @@ export const BookForm = () => {
                         setSelectedCandidate(null);
                         setCandidateDialogOpen(false); // ← ダイアログを即座に閉じる
                     }}
-                        color="secondary">キャンセル</Button>
+                        sx={{
+                            color: '#aaa194',
+                            fontWeight: 'bold',
+                            fontFamily: '"Roboto", sans-serif',
+                            fontSize: '1.1rem',
+                        }}
+                    >
+                        キャンセル
+                    </Button>
                     <Button
                         onClick={() => {
                             if (selectedCandidate) {
                                 setConfirmDialogOpen(true);
                             }
                         }}
-                        color="primary"
+                        sx={{
+                            color: '#8B3A2F',
+                            fontWeight: 'bold',
+                            fontFamily: '"Roboto", sans-serif',
+                            fontSize: '1.1rem', // 少し大きく
+                        }}
                         disabled={!selectedCandidate}
                     >
                         選択して登録
                     </Button>
 
                     {/* 確認ダイアログ */}
-                    <Dialog open={confirmDialogOpen} onClose={() => setConfirmDialogOpen(false)}>
-                        <DialogTitle>登録内容確認</DialogTitle>
+                    <Dialog open={confirmDialogOpen} onClose={() => setConfirmDialogOpen(false)} maxWidth='lg'>
+                        <DialogTitle sx={{ textAlign: 'center', fontWeight: 'bold', color: '#8B3A2F' }}>
+                            登録内容確認
+                        </DialogTitle>
                         <DialogContent>
-                            <Typography>次の内容で登録しますか？</Typography>
+                            <Typography
+                                sx={{
+                                    textAlign: 'center',
+                                    fontWeight: 'bold',
+                                    color: '#8B3A2F',
+                                }}
+                            >
+                                次の内容で登録しますか
+                            </Typography>
                             {selectedCandidate && (
-                                <Box sx={{ mt: 2 }}>
+                                <Box sx={{ mt: 3, fontFamily: '"Roboto", sans-serif', }}>
                                     <Typography>タイトル: {selectedCandidate.title}</Typography>
                                     <Typography>著者: {selectedCandidate.authors}</Typography>
                                     <Typography>出版社: {selectedCandidate.publisher}</Typography>
                                     <Typography>出版年: {selectedCandidate.year || year}</Typography>
                                     <Typography>ジャンル: {selectedCandidate.genre || genre}</Typography>
+                                    <Typography>ISBN: {selectedCandidate.isbn || ''}</Typography>
                                 </Box>
                             )}
                         </DialogContent>
-                        <DialogActions>
+                        <DialogActions sx={{ justifyContent: 'center', gap: 2 }}>
                             <Button
                                 onClick={() => setConfirmDialogOpen(false)}
-                                color="secondary">
+                                sx={{
+                                    color: '#aaa194',
+                                    fontWeight: 'bold',
+                                    fontFamily: '"Roboto", sans-serif',
+                                    fontSize: '1.1rem',
+                                }}
+                            >
                                 キャンセル
                             </Button>
                             <Button onClick={() => { if (selectedCandidate) registerBook(selectedCandidate); }}
-                                color="primary">
+                                sx={{
+                                    color: '#af1d03',
+                                    fontWeight: 'bold',
+                                    fontFamily: '"Roboto", sans-serif',
+                                    fontSize: '1.1rem',
+                                }}
+                            >
                                 OK
                             </Button>
                         </DialogActions>
