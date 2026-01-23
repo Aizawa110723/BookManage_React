@@ -30,7 +30,8 @@ export const BookForm = () => {
     const [publisher, setPublisher] = useState('');
     const [year, setYear] = useState('');
     const [genre, setGenre] = useState('');
-    const [loading, setLoading] = useState(false);
+    const [searching, setSearching] = useState(false);  // 検索中フラグ
+    const [registering, setRegistering] = useState(false);  // 登録中フラグ
     const [successMessage, setSuccessMessage] = useState('');  // 成功メッセージ
     const [errorMessage, setErrorMessage] = useState('');  // エラーメッセージ
     const [openDialog, setOpenDialog] = useState(false);  // ダイアログボックスの表示・非表示ステート
@@ -38,6 +39,26 @@ export const BookForm = () => {
     const [candidateDialogOpen, setCandidateDialogOpen] = useState(false);
     const [selectedCandidate, setSelectedCandidate] = useState(null);
     const [candidates, setCandidates] = useState([]);  //複数候補
+    const [form, setForm] = useState({
+        title: '',
+        authors: '',
+        publisher: '',
+        year: '',
+        genre: '',
+    });
+
+
+    //ダイアログボタン（共通）
+    const dialogButtonStyle = {
+        backgroundColor: '#af1d03',
+        color: 'white',
+        fontWeight: 'bold',
+        fontFamily: '"Roboto", sans-serif',
+        fontSize: '1.1rem',
+        borderRadius: '50px',
+        padding: '8px 20px',
+        '&:hover': { backgroundColor: '#D2691E' },
+    };
 
 
     // 出版年の選択欄を1868年から最新年まで作成
@@ -66,14 +87,14 @@ export const BookForm = () => {
         "料理・グルメ",
     ];
 
-    const isFormValid = title || authors || publisher || year || genre;
+    const isFormValid = title || authors || publisher || year || genre;  //少なくとも一つの項目を入力
 
     // -----------------------
     // 候補選択後のDB登録（API優先・手入力補完）
     // -----------------------
     const registerBook = async (normalizedBook) => {
         try {
-            setLoading(true);
+            setRegistering(true);
 
             // 手入力データ
             const manualData = {
@@ -116,16 +137,18 @@ export const BookForm = () => {
             setErrorMessage('登録に失敗しました');
             setOpenDialog(true);
         } finally {
-            setLoading(false);
+            setRegistering(false);
             setCandidateDialogOpen(false);
             setSelectedCandidate(null);
 
             // 入力欄リセット
-            setTitle('');
-            setAuthors('');
-            setPublisher('');
-            setYear('');
-            setGenre('');
+            setForm({
+                title: '',
+                authors: '',
+                publisher: '',
+                year: '',
+                genre: '',
+            });
         }
     };
 
@@ -142,7 +165,7 @@ export const BookForm = () => {
             return;
         }
 
-        setLoading(true);
+        setSearching(true);
 
         try {
             // 楽天APIで検索
@@ -168,13 +191,13 @@ export const BookForm = () => {
             setErrorMessage('検索に失敗しました');
             setOpenDialog(true);
         } finally {
-            setLoading(false);
+            setSearching(false);
         }
     };
 
     return (
         <>
-            {/* 登録成功/エラーダイアログ */}
+            {/* ------------------------登録成功/エラーダイアログ------------------------ */}
             <Dialog
                 open={openDialog}
                 onClose={() => setOpenDialog(false)}
@@ -203,21 +226,14 @@ export const BookForm = () => {
                 <DialogActions sx={{ justifyContent: 'center' }}>
                     <Button
                         onClick={() => setOpenDialog(false)}
-                        sx={{
-                            backgroundColor: '#8B3A2F',
-                            color: 'white',
-                            fontWeight: 'bold',
-                            borderRadius: '50px',
-                            padding: '8px 20px',
-                            '&:hover': { backgroundColor: '#D2691E' },
-                        }}
+                        sx={{ ...dialogButtonStyle }}
                     >
                         閉じる
                     </Button>
                 </DialogActions>
             </Dialog>
 
-            {/* 複数候補選択ダイアログ */}
+            {/* ------------------------複数候補選択ダイアログ------------------------ */}
             <Dialog
                 open={candidateDialogOpen}
                 onClose={() => setCandidateDialogOpen(false)}
@@ -252,8 +268,8 @@ export const BookForm = () => {
 
                     {/* 候補カード部分 */}
                     <Grid container spacing={2} alignItems="stretch">
-                        {candidates.map((book, index) => (
-                            <Grid item xs={6} sm={6} md={4} key={index}>
+                        {candidates.map((book) => (
+                            <Grid item xs={6} sm={6} md={4} key={book.isbn || book.title}>
                                 <Card
                                     sx={{
                                         cursor: "pointer",
@@ -277,6 +293,7 @@ export const BookForm = () => {
                                 >
                                     <CardMedia
                                         component="img"
+                                        loading="lazy"
                                         alt="No Image"
                                         height="140"
                                         image={book.imageUrl || DEFAULT_IMAGE}
@@ -312,69 +329,72 @@ export const BookForm = () => {
                                 setConfirmDialogOpen(true);
                             }
                         }}
-                        sx={{
-                            color: '#8B3A2F',
-                            fontWeight: 'bold',
-                            fontFamily: '"Roboto", sans-serif',
-                            fontSize: '1.1rem', // 少し大きく
-                        }}
+                        sx={{ ...dialogButtonStyle }}
                         disabled={!selectedCandidate}
                     >
                         選択して登録
                     </Button>
 
-                    {/* 確認ダイアログ */}
-                    <Dialog open={confirmDialogOpen} onClose={() => setConfirmDialogOpen(false)} maxWidth='lg'>
-                        <DialogTitle sx={{ textAlign: 'center', fontWeight: 'bold', color: '#8B3A2F' }}>
-                            登録内容確認
-                        </DialogTitle>
-                        <DialogContent>
-                            <Typography
-                                sx={{
-                                    textAlign: 'center',
-                                    fontWeight: 'bold',
-                                    color: '#8B3A2F',
-                                }}
-                            >
-                                次の内容で登録しますか
-                            </Typography>
-                            {selectedCandidate && (
-                                <Box sx={{ mt: 3, fontFamily: '"Roboto", sans-serif', }}>
-                                    <Typography>タイトル: {selectedCandidate.title}</Typography>
-                                    <Typography>著者: {selectedCandidate.authors}</Typography>
-                                    <Typography>出版社: {selectedCandidate.publisher}</Typography>
-                                    <Typography>出版年: {selectedCandidate.year || year}</Typography>
-                                    <Typography>ジャンル: {selectedCandidate.genre || genre}</Typography>
-                                    <Typography>ISBN: {selectedCandidate.isbn || ''}</Typography>
-                                </Box>
-                            )}
-                        </DialogContent>
-                        <DialogActions sx={{ justifyContent: 'center', gap: 2 }}>
-                            <Button
-                                onClick={() => setConfirmDialogOpen(false)}
-                                sx={{
-                                    color: '#aaa194',
-                                    fontWeight: 'bold',
-                                    fontFamily: '"Roboto", sans-serif',
-                                    fontSize: '1.1rem',
-                                }}
-                            >
-                                キャンセル
-                            </Button>
-                            <Button onClick={() => { if (selectedCandidate) registerBook(selectedCandidate); }}
-                                sx={{
-                                    color: '#af1d03',
-                                    fontWeight: 'bold',
-                                    fontFamily: '"Roboto", sans-serif',
-                                    fontSize: '1.1rem',
-                                }}
-                            >
-                                OK
-                            </Button>
-                        </DialogActions>
-                    </Dialog>
                 </DialogActions>
             </Dialog>
+
+            {/* ------------------------確認ダイアログ------------------------ */}
+            <Dialog open={confirmDialogOpen} onClose={() => setConfirmDialogOpen(false)}
+                maxWidth='sm'
+                fullWidth
+                PaperProps={{
+                    sx: {
+                        borderRadius: 3,
+                        padding: 2,
+                        backgroundColor: '#fffaf5',
+                        fontFamily: '"Roboto", sans-serif',
+                    }
+                }}
+            >
+                <DialogTitle sx={{ textAlign: 'center', fontWeight: 'bold', color: '#8B3A2F' }}>
+                    登録内容確認
+                </DialogTitle>
+                <DialogContent>
+                    <Typography
+                        sx={{
+                            textAlign: 'center',
+                            fontWeight: 'bold',
+                            color: '#8B3A2F',
+                        }}
+                    >
+                        次の内容で登録しますか
+                    </Typography>
+                    {selectedCandidate && (
+                        <Box sx={{ mt: 3, fontFamily: '"Roboto", sans-serif', }}>
+                            <Typography>タイトル: {selectedCandidate.title}</Typography>
+                            <Typography>著者: {selectedCandidate.authors}</Typography>
+                            <Typography>出版社: {selectedCandidate.publisher}</Typography>
+                            <Typography>出版年: {selectedCandidate.year || year}</Typography>
+                            <Typography>ジャンル: {selectedCandidate.genre || genre}</Typography>
+                            <Typography>ISBN: {selectedCandidate.isbn || ''}</Typography>
+                        </Box>
+                    )}
+                </DialogContent>
+                <DialogActions sx={{ justifyContent: 'center', gap: 2 }}>
+                    <Button
+                        onClick={() => setConfirmDialogOpen(false)}
+                        sx={{
+                            color: '#aaa194',
+                            fontWeight: 'bold',
+                            fontFamily: '"Roboto", sans-serif',
+                            fontSize: '1.1rem',
+                        }}
+                    >
+                        キャンセル
+                    </Button>
+                    <Button onClick={() => { if (selectedCandidate) registerBook(selectedCandidate); }}
+                        sx={{ ...dialogButtonStyle }}
+                    >
+                        OK
+                    </Button>
+                </DialogActions>
+            </Dialog>
+
 
             {/* 登録フォーム */}
             <Box sx={bigStyles}>
@@ -447,7 +467,7 @@ export const BookForm = () => {
                                 <TextField
                                     id={label}
                                     value={value}
-                                    onChange={(e) => setter(e.target.value)}
+                                    onChange={(e) => setForm({ ...form, title: e.target.value })}
                                     type={type}
                                     variant="outlined"
                                     sx={{ ...formFrame }}
@@ -467,13 +487,13 @@ export const BookForm = () => {
                             type="submit"
                             variant="contained"
                             color={isFormValid ? "primary" : "default"}
-                            disabled={!isFormValid || loading}
+                            disabled={searching || registering}  // ←ここで登録中も無効化
                             sx={{
                                 ...buttonStyle_a,
                                 padding: '35px 15px',
                             }}
                         >
-                            {loading ? <CircularProgress size={24} /> : (
+                            {searching ? <CircularProgress size={24} /> : (
                                 <Typography
                                     variant="button"
                                     sx={{
@@ -486,8 +506,8 @@ export const BookForm = () => {
                             )}
                         </Button>
                     </Box>
-                </form>
-            </Box>
+                </form >
+            </Box >
         </>
     );
 };

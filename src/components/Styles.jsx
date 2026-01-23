@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { Box, Typography, Button } from '@mui/material';
-import { fontFamily, fontWeight } from '@mui/system';
+import { border, fontFamily, fontWeight } from '@mui/system';
 
 
 
@@ -12,6 +12,7 @@ export const buttonStyle_a = {
     fontFamily: '"Roboto", sans-serif', // フォント変更
     backgroundColor: '#8B3A2F',
     color: 'white',
+    border: '#8B3A2F',
     borderRadius: '50px', // ボタンを丸く
     alignItems: 'center',
     fontSize: '1.8rem',  // フォントサイズを少し大きく
