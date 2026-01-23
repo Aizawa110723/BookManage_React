@@ -30,6 +30,7 @@ export const BookForm = () => {
     const [publisher, setPublisher] = useState('');
     const [year, setYear] = useState('');
     const [genre, setGenre] = useState('');
+
     const [searching, setSearching] = useState(false);  // 検索中フラグ
     const [registering, setRegistering] = useState(false);  // 登録中フラグ
     const [successMessage, setSuccessMessage] = useState('');  // 成功メッセージ
@@ -39,14 +40,6 @@ export const BookForm = () => {
     const [candidateDialogOpen, setCandidateDialogOpen] = useState(false);
     const [selectedCandidate, setSelectedCandidate] = useState(null);
     const [candidates, setCandidates] = useState([]);  //複数候補
-    const [form, setForm] = useState({
-        title: '',
-        authors: '',
-        publisher: '',
-        year: '',
-        genre: '',
-    });
-
 
     //ダイアログボタン（共通）
     const dialogButtonStyle = {
@@ -59,7 +52,6 @@ export const BookForm = () => {
         padding: '8px 20px',
         '&:hover': { backgroundColor: '#D2691E' },
     };
-
 
     // 出版年の選択欄を1868年から最新年まで作成
     const currentYear = new Date().getFullYear();
@@ -139,16 +131,15 @@ export const BookForm = () => {
         } finally {
             setRegistering(false);
             setCandidateDialogOpen(false);
+            setConfirmDialogOpen(false);
             setSelectedCandidate(null);
 
             // 入力欄リセット
-            setForm({
-                title: '',
-                authors: '',
-                publisher: '',
-                year: '',
-                genre: '',
-            });
+            setTitle('');
+            setAuthors('');
+            setPublisher('');
+            setYear('');
+            setGenre('');
         }
     };
 
@@ -180,7 +171,7 @@ export const BookForm = () => {
             } else if (results.length === 1) {
                 // 候補1件でも確認ダイアログを出す
                 setSelectedCandidate(results[0]);
-                setConfirmDialogOpen(true);
+                // setConfirmDialogOpen(true);
             } else {
                 // 複数候補 → モーダルで選択
                 setCandidates(results);
@@ -467,7 +458,7 @@ export const BookForm = () => {
                                 <TextField
                                     id={label}
                                     value={value}
-                                    onChange={(e) => setForm({ ...form, title: e.target.value })}
+                                    onChange={(e) => setter(e.target.value)}
                                     type={type}
                                     variant="outlined"
                                     sx={{ ...formFrame }}
