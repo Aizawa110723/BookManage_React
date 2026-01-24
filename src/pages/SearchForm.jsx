@@ -141,17 +141,17 @@ export const SearchForm = () => {
                         OK
                     </Button>
                 </DialogActions>
-            </Dialog >
 
-            {/* ------------------------検索結果ダイアログ------------------------ */}
 
-            <Dialog
-                open={searchDialogOpen}
-                onClose={() => setSearchDialogOpen(false)}
-                maxWidth="lg"
-                fullWidth
-                PaperProps={{ sx: { borderRadius: 3, padding: 2 } }}
-            >
+                {/* ------------------------検索結果ダイアログ------------------------ */}
+                <Dialog
+                    open={searchDialogOpen}
+                    onClose={() => setSearchDialogOpen(false)}
+                    maxWidth="lg"
+                    fullWidth
+                    PaperProps={{ sx: { borderRadius: 3, padding: 2 } }}
+                >
+                </Dialog>
                 <DialogTitle sx={{ textAlign: 'center', color: '#8B3A2F' }}>
                     検索結果 {selectedBook ? `- 選択: ${selectedBook.title}` : ''}
                 </DialogTitle>
@@ -233,119 +233,120 @@ export const SearchForm = () => {
                         </Box>
                     )}
                 </DialogContent>
+            </Dialog>
 
-                {/* ------------------------検索フォーム------------------------ */}
-                < Box sx={bigStyles} >
-                    {/* タイトル*/}
-                    < Typography
-                        variant="h3"
-                        sx={{
-                            color: '#8B3A2F',
-                            textAlign: 'center',
-                            letterSpacing: '4px',
-                            fontWeight: 'bold',
-                            paddingTop: '30px',
-                            marginTop: '10px',
-                            height: '70px'
-                        }
-                        }
-                    >
-                        書籍検索
-                    </Typography >
+            {/* ------------------------検索フォーム------------------------ */}
+            <Box sx={bigStyles} >
+                {/* タイトル*/}
+                < Typography
+                    variant="h3"
+                    sx={{
+                        color: '#8B3A2F',
+                        textAlign: 'center',
+                        letterSpacing: '4px',
+                        fontWeight: 'bold',
+                        paddingTop: '30px',
+                        marginTop: '10px',
+                        height: '70px'
+                    }}
+                >
+                    書籍検索
+                </Typography >
 
-                    <Typography
-                        variant="h6"
-                        component="h2"
-                        sx={{
-                            fontWeight: 'normal',
-                            fontSize: '1.2rem',
-                            color: '#8B3A2F',
-                            textAlign: 'center',
-                            marginTop: '0',
-                            marginBottom: '60px',
-                        }}
-                    >
-                        検索条件を入力してください
-                    </Typography>
+                <Typography
+                    variant="h6"
+                    component="h2"
+                    sx={{
+                        fontWeight: 'normal',
+                        fontSize: '1.2rem',
+                        color: '#8B3A2F',
+                        textAlign: 'center',
+                        marginTop: '0',
+                        marginBottom: '60px',
+                    }}
+                >
+                    検索条件を入力してください
+                </Typography>
 
-                    {/* 検索フォーム */}
-                    <form onSubmit={handleSearch} style={{ width: '100%', maxWidth: '500px' }}>
-                        {[{ label: "タイトル", value: title, setter: setTitle, type: "text" },
-                        { label: "著者", value: authors, setter: setAuthors, type: "text" },
-                        { label: "出版社", value: publisher, setter: setPublisher, type: "text" },
-                        { label: "出版年", value: year, setter: setYear, type: "select", options: years },
-                        { label: "ジャンル", value: genre, setter: setGenre, type: "select", options: genres }].map(({ label, value, setter, type, options }) => (
-                            <Box
-                                sx={{
-                                    display: 'flex',
-                                    flexDirection: 'column',
-                                    marginBottom: '16px',
-                                    width: '100%',
-                                }} key={label}>
-                                <FormControl fullWidth sx={{ marginBottom: '16px' }}>
-                                    <InputLabel htmlFor={label} sx={{
-                                        fontWeight: 'bold',
-                                        fontSize: '1.2rem',
-                                        color: '#8B3A2F'
-                                    }} shrink>{label}</InputLabel>
-                                </FormControl>
+                {/* 検索フォーム */}
+                <form onSubmit={handleSearch} style={{ width: '100%', maxWidth: '500px' }}>
+                    {[{ label: "タイトル", value: title, setter: setTitle, type: "text" },
+                    { label: "著者", value: authors, setter: setAuthors, type: "text" },
+                    { label: "出版社", value: publisher, setter: setPublisher, type: "text" },
+                    { label: "出版年", value: year, setter: setYear, type: "select", options: years },
+                    { label: "ジャンル", value: genre, setter: setGenre, type: "select", options: genres }].map(({ label, value, setter, type, options }) => (
+                        <Box
+                            sx={{
+                                display: 'flex',
+                                flexDirection: 'column',
+                                marginBottom: '16px',
+                                width: '100%',
+                            }} key={label}>
+                            <FormControl fullWidth sx={{ marginBottom: '16px' }}>
+                                <InputLabel htmlFor={label} sx={{
+                                    fontWeight: 'bold',
+                                    fontSize: '1.2rem',
+                                    color: '#8B3A2F'
+                                }} shrink>{label}</InputLabel>
+                            </FormControl>
 
-                                {type === "select" ? (
-                                    <Select
-                                        value={value}
-                                        onChange={(e) => setter(e.target.value)}
-                                        sx={{ ...fieldItem }}
-                                    >
-                                        {options && options.map((option, index) => (
-                                            <MenuItem key={index} value={option}>{option}</MenuItem>
-                                        ))}
-                                    </Select>
-                                ) : (
-                                    <TextField
-                                        id={label}
-                                        value={value}
-                                        onChange={(e) => setter(e.target.value)}
-                                        type={type}
-                                        variant="outlined"
-                                        sx={{ ...formFrame }}
-                                    />
-                                )}
-                            </Box>
-                        ))}
-
-
-                        <Box sx={{
-                            display: 'flex',
-                            justifyContent: 'center',
-                            marginTop: '16px',
-                            width: '100%',
-                            paddingTop: '20px',
-                        }}>
-                            <Button
-                                type="submit"
-                                variant="contained"
-                                color={isFormValid ? "primary" : "default"}
-                                disabled={!isFormValid || loading}
-                                sx={{
-                                    ...buttonStyle_a,
-                                    padding: '35px 15px',
-                                }}
-                            >
-                                {loading ? <CircularProgress size={24} /> : (
-                                    <Typography
-                                        variant="button"
-                                        sx={{
-                                            fontSize: '1.998rem',
-                                            fontWeight: 'bold',
-                                        }}
-                                    >
-                                        検　索
-                                    </Typography>
-                                )}
-                            </Button>
+                            {type === "select" ? (
+                                <Select
+                                    value={value}
+                                    onChange={(e) => setter(e.target.value)}
+                                    sx={{ ...fieldItem }}
+                                >
+                                    {options && options.map((option, index) => (
+                                        <MenuItem key={index} value={option}>{option}</MenuItem>
+                                    ))}
+                                </Select>
+                            ) : (
+                                <TextField
+                                    id={label}
+                                    value={value}
+                                    onChange={(e) => setter(e.target.value)}
+                                    type={type}
+                                    variant="outlined"
+                                    sx={{ ...formFrame }}
+                                />
+                            )}
                         </Box>
-                    </form>
-                </Box >
-            </>
-            );
+                    ))}
+
+
+                    <Box sx={{
+                        display: 'flex',
+                        justifyContent: 'center',
+                        marginTop: '16px',
+                        width: '100%',
+                        paddingTop: '20px',
+                    }}>
+                        <Button
+                            type="submit"
+                            variant="contained"
+                            color={isFormValid ? "primary" : "default"}
+                            disabled={!isFormValid || loading}
+                            sx={{
+                                ...buttonStyle_a,
+                                padding: '35px 15px',
+                            }}
+                        >
+                            {loading ? <CircularProgress size={24} /> : (
+                                <Typography
+                                    variant="button"
+                                    sx={{
+                                        fontSize: '1.998rem',
+                                        fontWeight: 'bold',
+                                    }}
+                                >
+                                    検　索
+                                </Typography>
+                            )}
+                        </Button>
+                    </Box>
+                </form>
+            </Box>
+
+        </>
+    );
 };    
