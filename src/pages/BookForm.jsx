@@ -19,6 +19,10 @@ import {
     CardMedia,
 } from "@mui/material";
 import { bigStyles, buttonStyle_a, formFrame, fieldItem } from "../components/Styles";
+// BookForm.jsx
+import { dialogButtonStyle } from "../components/Styles";
+
+
 
 // デフォルト画像URL
 const DEFAULT_IMAGE = '/images/noprinting.png';
@@ -36,29 +40,20 @@ export const BookForm = () => {
     const [successMessage, setSuccessMessage] = useState('');  // 成功メッセージ
     const [errorMessage, setErrorMessage] = useState('');  // エラーメッセージ
     const [openDialog, setOpenDialog] = useState(false);  // ダイアログボックスの表示・非表示ステート
+    const [manualConfirmOpen, setManualConfirmOpen] = useState(false);  // 候補なしの場合
+    const [manualMode, setManualMode] = useState(false);  //手入力確定モード
+
     const [confirmDialogOpen, setConfirmDialogOpen] = useState(false);
     const [candidateDialogOpen, setCandidateDialogOpen] = useState(false);
     const [selectedCandidate, setSelectedCandidate] = useState(null);
     const [candidates, setCandidates] = useState([]);  //複数候補
 
-    //ダイアログボタン（共通）
-    const dialogButtonStyle = {
-        backgroundColor: '#af1d03',
-        color: 'white',
-        fontWeight: 'bold',
-        fontFamily: '"Roboto", sans-serif',
-        fontSize: '1.1rem',
-        borderRadius: '50px',
-        padding: '8px 20px',
-        '&:hover': { backgroundColor: '#D2691E' },
-    };
-
-    // 出版年の選択欄を1868年から最新年まで作成
-    const currentYear = new Date().getFullYear();
-    const years = Array.from(
-        { length: currentYear - 1868 + 1 },
-        (_, index) => 1868 + index
-    ).reverse();
+    // // 出版年の選択欄を1868年から最新年まで作成
+    // const currentYear = new Date().getFullYear();
+    // const years = Array.from(
+    //     { length: currentYear - 1868 + 1 },
+    //     (_, index) => 1868 + index
+    // ).reverse();
 
     // ジャンルの選択欄を定義（必要に応じて変更可能）
     const genres = [
@@ -72,7 +67,7 @@ export const BookForm = () => {
         "歴史・社会",
         "芸能・エンターテインメント",
         "アート・建築・デザイン",
-        "人文・思想・宗教",
+        "哲学・思想・宗教",
         "科学・テクノロジー・プログラミング",
         "健康・ライフスタイル",
         "旅行・ガイド",
@@ -106,7 +101,7 @@ export const BookForm = () => {
                 authors: normalizedBook.authors || manualData.authors,
                 publisher: normalizedBook.publisher || manualData.publisher,
                 isbn: normalizedBook.isbn || null,
-                imageUrl: normalizedBook.imageUrl || null,
+                imageUrl: normalizedBook.imageUrl || DEFAULT_IMAGE,  // 手入力なら必ずnoprinting,
                 year: normalizedBook.year || manualData.year,
 
                 // 手入力優先の補完（genreはキーになし）
@@ -158,6 +153,16 @@ export const BookForm = () => {
 
         setSearching(true);
 
+        // 手入力モードなら検索しない（入力編集後の動作）
+        if (manualMode) {
+            setManualMode(false);
+            try {
+                await registerBook({});
+            } finally {
+                setSearching(false);  // ←これを追加
+            }
+            return;
+        }
         try {
             // 楽天APIで検索
             const response = await axios.get('http://127.0.0.1:8000/api/books/fetch-rakuten', {
@@ -166,7 +171,9 @@ export const BookForm = () => {
 
             const results = response.data; // 配列
             if (!results || results.length === 0) {
-                setErrorMessage('該当書籍が見つかりませんでした');
+                // エラーメッセージはダイアログではなく確認ダイアログで代替
+                setManualConfirmOpen(true);
+                setSelectedCandidate(null); // 候補なしなので手入力扱い
 
             } else if (results.length === 1) {
                 // 候補1件でも確認ダイアログを出す
@@ -184,6 +191,7 @@ export const BookForm = () => {
         } finally {
             setSearching(false);
         }
+
     };
 
     return (
@@ -329,6 +337,77 @@ export const BookForm = () => {
                 </DialogActions>
             </Dialog>
 
+            {/* ------------------------候補なし用ダイアログ------------------------ */}
+            <Dialog
+                open={manualConfirmOpen}
+                onClose={() => setManualConfirmOpen(false)}
+                maxWidth='sm'
+                fullWidth
+                PaperProps={{
+                    sx: {
+                        borderRadius: 3,
+                        padding: 2,
+                        backgroundColor: '#fffaf5',
+                        fontFamily: '"Roboto", sans-serif',
+                    }
+                }}
+            >
+                <DialogContent>
+                    <Typography
+                        sx={{
+                            textAlign: 'center',
+                            fontWeight: 'bold',
+                            color: '#8B3A2F',
+                            mb: 2,
+                        }}>
+                        該当書籍が見つかりませんでした
+                    </Typography>
+                    <Typography
+                        sx={{
+                            textAlign: 'center',
+                            color: '#8B3A2F',
+                        }}
+                    >
+                        入力内容を編集して登録しますか？
+                    </Typography>
+                </DialogContent>
+
+                <DialogActions sx={{ justifyContent: 'center', gap: 2 }}>
+                    <Button
+                        onClick={() => {
+                            // 登録しない／編集フェーズに戻る
+                            setManualMode(true);
+                            setManualConfirmOpen(false);
+                        }}
+                        sx={{ ...dialogButtonStyle }}
+                    >
+                        はい
+                    </Button>
+                    <Button
+                        onClick={() => {
+
+                            // 入力リセット
+                            setTitle('');
+                            setAuthors('');
+                            setPublisher('');
+                            setYear('');
+                            setGenre('');
+                            setManualConfirmOpen(false);
+                        }}
+                        sx={{
+                            color: '#aaa194',
+                            fontWeight: 'bold',
+                            fontFamily: '"Roboto", sans-serif',
+                            fontSize: '1.1rem',
+                        }}
+                    >
+                        キャンセル
+                    </Button>
+                </DialogActions>
+            </Dialog>
+
+
+
             {/* ------------------------確認ダイアログ------------------------ */}
             <Dialog open={confirmDialogOpen} onClose={() => setConfirmDialogOpen(false)}
                 maxWidth='sm'
@@ -387,7 +466,7 @@ export const BookForm = () => {
             </Dialog>
 
 
-            {/* 登録フォーム */}
+            {/* ------------------------登録フォーム------------------------ */}
             <Box sx={bigStyles}>
                 {/* タイトル */}
                 <Typography
@@ -420,13 +499,14 @@ export const BookForm = () => {
                     書籍情報を入力してください
                 </Typography>
 
-                {/* 登録フォーム */}
                 <form onSubmit={handleSubmit} style={{ width: '100%', maxWidth: '500px' }}>
-                    {[{ label: "タイトル", value: title, setter: setTitle, type: "text" },
-                    { label: "著者", value: authors, setter: setAuthors, type: "text" },
-                    { label: "出版社", value: publisher, setter: setPublisher, type: "text" },
-                    { label: "出版年", value: year, setter: setYear, type: "select", options: years },
-                    { label: "ジャンル", value: genre, setter: setGenre, type: "select", options: genres }].map(({ label, value, setter, type, options }) => (
+                    {[
+                        { label: "タイトル", value: title, setter: setTitle, type: "text" },
+                        { label: "著者", value: authors, setter: setAuthors, type: "text" },
+                        { label: "出版社", value: publisher, setter: setPublisher, type: "text" },
+                        { label: "出版年", value: year, setter: setYear, type: "text" },
+                        { label: "ジャンル", value: genre, setter: setGenre, type: "select", options: genres }
+                    ].map(({ label, value, setter, type, options }) => (
                         <Box
                             sx={{
                                 display: 'flex',
@@ -446,6 +526,7 @@ export const BookForm = () => {
 
                             {type === "select" ? (
                                 <Select
+                                    id={label}
                                     value={value}
                                     onChange={(e) => setter(e.target.value)}
                                     sx={{ ...fieldItem }}
@@ -484,7 +565,7 @@ export const BookForm = () => {
                                 padding: '35px 15px',
                             }}
                         >
-                            {searching ? <CircularProgress size={24} /> : (
+                            {(searching || registering) ? <CircularProgress size={24} /> : (
                                 <Typography
                                     variant="button"
                                     sx={{

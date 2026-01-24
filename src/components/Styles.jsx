@@ -1,7 +1,17 @@
-import { useState, useEffect } from 'react';
-import { Box, Typography, Button } from '@mui/material';
-import { border, fontFamily, fontWeight } from '@mui/system';
+// import { Box, Typography, Button } from '@mui/material';
 
+
+//ダイアログボタン（共通）
+export const dialogButtonStyle = {
+    backgroundColor: '#af1d03',
+    color: 'white',
+    fontWeight: 'bold',
+    fontFamily: '"Roboto", sans-serif',
+    fontSize: '1.1rem',
+    borderRadius: '50px',
+    padding: '8px 20px',
+    '&:hover': { backgroundColor: '#D2691E' },
+};
 
 
 
@@ -194,124 +204,124 @@ export const bigStyles = {
 
 };
 
-// ダイアログのスタイル（成功メッセージ、失敗メッセージ用）
-const dialogStyle = {
-    position: 'absolute',  // 固定位置で表示
-    top: '50px',  // 上部から少し余白を取る
-    left: '50%',
-    transform: 'translateX(-50%)',  // 横方向の中央揃え
-    backgroundColor: 'white',  // 少し透過した白,
-    borderRadius: '10px',
-    padding: '20px',
-    boxShadow: '0 4px 10px rgba(0, 0, 0, 0.1)',
-    zIndex: 8,  // ダイアログを最前面に表示
-    width: '50%', // 幅の設定
-    maxWidth: '400px', // 最大幅を400pxに制限
-    textAlign: 'center',
+// // ダイアログのスタイル（成功メッセージ、失敗メッセージ用）
+// const dialogStyle = {
+//     position: 'absolute',  // 固定位置で表示
+//     top: '50px',  // 上部から少し余白を取る
+//     left: '50%',
+//     transform: 'translateX(-50%)',  // 横方向の中央揃え
+//     backgroundColor: 'white',  // 少し透過した白,
+//     borderRadius: '10px',
+//     padding: '20px',
+//     boxShadow: '0 4px 10px rgba(0, 0, 0, 0.1)',
+//     zIndex: 8,  // ダイアログを最前面に表示
+//     width: '50%', // 幅の設定
+//     maxWidth: '400px', // 最大幅を400pxに制限
+//     textAlign: 'center',
 
-    // レスポンシブ対応
-    '@media (max-width: 768px)': {
-        width: '90%',  // スマートフォン向けに幅を調整
-        padding: '15px',  // パディングも調整
-    },
-    '@media (max-width: 480px)': {
-        width: '100%',  // より小さな画面では全幅に調整
-        maxWidth: 'none',  // 最大幅制限を解除
-        padding: '10px',  // パディング調整
-    },
+//     // レスポンシブ対応
+//     '@media (max-width: 768px)': {
+//         width: '90%',  // スマートフォン向けに幅を調整
+//         padding: '15px',  // パディングも調整
+//     },
+//     '@media (max-width: 480px)': {
+//         width: '100%',  // より小さな画面では全幅に調整
+//         maxWidth: 'none',  // 最大幅制限を解除
+//         padding: '10px',  // パディング調整
+//     },
 
-};
+// };
 
-// 成功メッセージのスタイル
-const successDialogStyle = {
-    ...dialogStyle,
-    color: '#8B3A2F',
-};
+// // 成功メッセージのスタイル
+// const successDialogStyle = {
+//     ...dialogStyle,
+//     color: '#8B3A2F',
+// };
 
-// 失敗メッセージのスタイル
-const errorDialogStyle = {
-    ...dialogStyle,
-    color: 'red',
-    fontFamily: '"Roboto", sans-serif',
-    fontWeight: 'bold',
+// // 失敗メッセージのスタイル
+// const errorDialogStyle = {
+//     ...dialogStyle,
+//     color: 'red',
+//     fontFamily: '"Roboto", sans-serif',
+//     fontWeight: 'bold',
 
-};
+// };
 
-// 閉じるボタンのスタイルを登録ボタンに合わせる
-const closeButtonStyle = {
-    marginTop: '20px',
-    backgroundColor: '#8B3A2F',  // ボタンの色
-    color: 'white',  // ボタン文字色
-    padding: '10px 10px',
-    fontWeight: 'bold',
-    border: 'none',
-    borderRadius: '5px',
-    cursor: 'pointer',
-    fontSize: '16px',
-    width: '100%',
-    textAlign: 'center',
-    '&:hover': {
-        backgroundColor: '#D2691E',
-    },
-};
+// // 閉じるボタンのスタイルを登録ボタンに合わせる
+// const closeButtonStyle = {
+//     marginTop: '20px',
+//     backgroundColor: '#8B3A2F',  // ボタンの色
+//     color: 'white',  // ボタン文字色
+//     padding: '10px 10px',
+//     fontWeight: 'bold',
+//     border: 'none',
+//     borderRadius: '5px',
+//     cursor: 'pointer',
+//     fontSize: '16px',
+//     width: '100%',
+//     textAlign: 'center',
+//     '&:hover': {
+//         backgroundColor: '#D2691E',
+//     },
+// };
 
-// 成功・失敗メッセージ表示用のコンポーネント
-export const MyComponent = ({ successMessage, errorMessage, onClose }) => {
-    const message = successMessage || errorMessage;
-    const color = successMessage ? '#8B3A2F' : 'green';
-    return (
-        message && (
-            <Box
-                sx={{
-                    position: 'absolute',
-                    top: '50px',
-                    left: '50%',
-                    transform: 'translateX(-50%)',
-                    backgroundColor: 'white',
-                    borderRadius: '20px',
-                    padding: '20px',
-                    boxShadow: '0 4px 10px rgba(0, 0, 0, 0.1)',
-                    zIndex: 8,
-                    width: '50%',
-                    maxWidth: '400px',
-                    textAlign: 'center',
-                    '@media (max-width: 768px)': { width: '90%', padding: '15px' },
-                    '@media (max-width: 480px)': { width: '100%', padding: '10px' },
-                }}
-            >
-                <Typography
-                    variant="h6"
-                    color={color}
-                    sx={{
-                        fontWeight: 'bold',
-                        fontSize: '1.5rem'
-                    }}>
-                    {message}
-                </Typography>
-                <Button
-                    onClick={() => {
-                        onClose();  // onCloseがフォームリセットを実行する
-                    }}
-                    variant="contained"
-                    color="primary"
-                    sx={{
-                        marginTop: '20px',
-                        backgroundColor: '#8B3A2F',
-                        color: 'white',
-                        padding: '8px 8px',
-                        fontWeight: 'bold',
-                        borderRadius: '50px',
-                        fontSize: '20px',
-                        width: '50%',
-                        '&:hover': { backgroundColor: '#D2691E' },
-                    }}
-                >
-                    閉じる
-                </Button>
-            </Box>
-        )
-    );
-};
+// // 成功・失敗メッセージ表示用のコンポーネント
+// export const MyComponent = ({ successMessage, errorMessage, onClose }) => {
+//     const message = successMessage || errorMessage;
+//     const color = successMessage ? '#8B3A2F' : 'green';
+//     return (
+//         message && (
+//             <Box
+//                 sx={{
+//                     position: 'absolute',
+//                     top: '50px',
+//                     left: '50%',
+//                     transform: 'translateX(-50%)',
+//                     backgroundColor: 'white',
+//                     borderRadius: '20px',
+//                     padding: '20px',
+//                     boxShadow: '0 4px 10px rgba(0, 0, 0, 0.1)',
+//                     zIndex: 8,
+//                     width: '50%',
+//                     maxWidth: '400px',
+//                     textAlign: 'center',
+//                     '@media (max-width: 768px)': { width: '90%', padding: '15px' },
+//                     '@media (max-width: 480px)': { width: '100%', padding: '10px' },
+//                 }}
+//             >
+//                 <Typography
+//                     variant="h6"
+//                     color={color}
+//                     sx={{
+//                         fontWeight: 'bold',
+//                         fontSize: '1.5rem'
+//                     }}>
+//                     {message}
+//                 </Typography>
+//                 <Button
+//                     onClick={() => {
+//                         onClose();  // onCloseがフォームリセットを実行する
+//                     }}
+//                     variant="contained"
+//                     color="primary"
+//                     sx={{
+//                         marginTop: '20px',
+//                         backgroundColor: '#8B3A2F',
+//                         color: 'white',
+//                         padding: '8px 8px',
+//                         fontWeight: 'bold',
+//                         borderRadius: '50px',
+//                         fontSize: '20px',
+//                         width: '50%',
+//                         '&:hover': { backgroundColor: '#D2691E' },
+//                     }}
+//                 >
+//                     閉じる
+//                 </Button>
+//             </Box>
+//         )
+//     );
+// };
 
 
 // 選択項目
