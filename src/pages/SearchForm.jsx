@@ -23,6 +23,7 @@ import { bigStyles, fieldItem, formFrame, buttonStyle_a } from "../components/St
 import { dialogButtonStyle } from "../components/Styles";
 
 
+// デフォルト画像URL
 const DEFAULT_IMAGE = '/images/noprinting.png';
 
 export const SearchForm = () => {
@@ -162,13 +163,17 @@ export const SearchForm = () => {
                 <DialogContent>
                     <Grid container spacing={2}>
                         {books.map(book => {
+                            console.log(book.image_url);
+                            // 画像は image_url だけ見る
+                            const bookImage =
+                                book.image_url && book.image_url.trim() !== '' && book.image_url !== 'null'
+                                    ? `http://127.0.0.1:8000/${book.image_url}`
+                                    : DEFAULT_IMAGE;
+
+                            // 選択判定
                             const isSelected = selectedBook && getBookKey(selectedBook) === getBookKey(book);
 
-                            const bookImage = book.image_path
-                                ? `/storage/${book.image_path}`
-                                : book.image_url
-                                    ? book.image_url
-                                    : DEFAULT_IMAGE;
+
                             return (
                                 <Grid item xs={12} sm={6} md={4} key={getBookKey(book)}>
                                     <Card
@@ -178,32 +183,31 @@ export const SearchForm = () => {
                                             backgroundColor: isSelected ? '#F5D19A' : '#f5f5f5',
                                         }}
                                         onClick={() => {
-                                            if (isSelected) setSelectedBook(null); // 選択解除
-                                            else setSelectedBook(book);            // 選択
+                                            if (isSelected) setSelectedBook(null);
+                                            else setSelectedBook(book);
                                         }}
                                     >
-
                                         <CardMedia
                                             component="img"
+                                            src={bookImage}
                                             height="140"
-                                            image={bookImage}
-                                            alt={book.title}
+                                            alt={book.title || 'No Image'}
                                         />
                                         <CardContent>
-                                            <Typography variant="subtitle1" noWrap sx={{ fontWeight: 'bold' }}>{book.title}</Typography>
+                                            <Typography variant="subtitle1" noWrap sx={{ fontWeight: 'bold' }}>
+                                                {book.title || 'タイトルなし'}
+                                            </Typography>
                                             <Typography variant="body2" noWrap>{book.authors}</Typography>
                                             <Typography variant="body2" noWrap>{book.publisher} / {book.year}</Typography>
                                             <Typography variant="body2" noWrap>{book.genre}</Typography>
-                                            <Typography variant="body2" noWrap>
-                                                ISBN：{book.isbn || 'なし'}
-                                            </Typography>
+                                            <Typography variant="body2" noWrap>ISBN：{book.isbn || 'なし'}</Typography>
                                         </CardContent>
                                     </Card>
                                 </Grid>
-
                             );
                         })}
                     </Grid>
+
 
 
                     {/* 選択書籍の楽天ボタン */}
