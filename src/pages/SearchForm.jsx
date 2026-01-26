@@ -165,10 +165,10 @@ export const SearchForm = () => {
                         {books.map(book => {
                             console.log(book.image_url);
                             // 画像は image_url だけ見る
-                            const bookImage =
-                                book.image_url && book.image_url.trim() !== '' && book.image_url !== 'null'
-                                    ? `http://127.0.0.1:8000/${book.image_url}`
-                                    : DEFAULT_IMAGE;
+                            // image_url があればそれを使う（DBにフルURLが入ってる場合のみ）
+                            const bookImage = book.image_url
+                                ? book.image_url
+                                : DEFAULT_IMAGE; // React public に置いたやつ
 
                             // 選択判定
                             const isSelected = selectedBook && getBookKey(selectedBook) === getBookKey(book);
@@ -189,8 +189,8 @@ export const SearchForm = () => {
                                     >
                                         <CardMedia
                                             component="img"
-                                            src={bookImage}
                                             height="140"
+                                            image={bookImage}
                                             alt={book.title || 'No Image'}
                                         />
                                         <CardContent>
