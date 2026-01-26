@@ -40,6 +40,7 @@ export const SearchForm = () => {
     const [selectedBook, setSelectedBook] = useState(null);
 
 
+
     // 出版年の選択欄を1868年から最新年まで作成
     const currentYear = new Date().getFullYear();
     const years = Array.from(
@@ -66,6 +67,9 @@ export const SearchForm = () => {
     ];
 
     const isFormValid = title || authors || publisher || year || genre;  // 少なくとも1つ入力
+
+    // ISBN判定用
+    const getBookKey = (book) => book.isbn ?? `${book.title}_${book.authors}_${book.publisher}`;
 
     const handleSearch = async (e) => {
         e.preventDefault();
@@ -141,55 +145,66 @@ export const SearchForm = () => {
                         OK
                     </Button>
                 </DialogActions>
+            </Dialog>
 
-
-                {/* ------------------------検索結果ダイアログ------------------------ */}
-                <Dialog
-                    open={searchDialogOpen}
-                    onClose={() => setSearchDialogOpen(false)}
-                    maxWidth="lg"
-                    fullWidth
-                    PaperProps={{ sx: { borderRadius: 3, padding: 2 } }}
-                >
-                </Dialog>
+            {/* ------------------------検索結果ダイアログ------------------------ */}
+            <Dialog
+                open={searchDialogOpen}
+                onClose={() => setSearchDialogOpen(false)}
+                maxWidth="lg"
+                fullWidth
+                PaperProps={{ sx: { borderRadius: 3, padding: 2 } }}
+            >
                 <DialogTitle sx={{ textAlign: 'center', color: '#8B3A2F' }}>
                     検索結果 {selectedBook ? `- 選択: ${selectedBook.title}` : ''}
                 </DialogTitle>
 
                 <DialogContent>
                     <Grid container spacing={2}>
-                        {books.map(book => (
-                            <Grid item xs={12} sm={6} md={4} key={book.isbn || book.title}>
-                                <Card
-                                    sx={{
-                                        cursor: 'pointer',
-                                        border: selectedBook?.isbn === book.isbn ? '2px solid #af1d03' : '1px solid #ccc',
-                                        backgroundColor: selectedBook?.isbn === book.isbn ? '#F5D19A' : '#f5f5f5',
-                                    }}
-                                    onClick={() => setSelectedBook(book)} //選択状態のみ
-                                >
+                        {books.map(book => {
+                            const isSelected = selectedBook && getBookKey(selectedBook) === getBookKey(book);
 
-                                    <CardMedia
-                                        component="img"
-                                        height="140"
-                                        image={book.image_path  //手動登録・API画像無し・セルフアップロードした場合
-                                            ? `/storage/${book.image_path}`
-                                            : book.image_url || DEFAULT_IMAGE}
-                                        alt="No Image"
-                                    />
-                                    <CardContent>
-                                        <Typography variant="subtitle1" noWrap sx={{ fontWeight: 'bold' }}>{book.title}</Typography>
-                                        <Typography variant="body2" noWrap>{book.authors}</Typography>
-                                        <Typography variant="body2" noWrap>{book.publisher} / {book.year}</Typography>
-                                        <Typography variant="body2" noWrap>{book.genre}</Typography>
-                                        <Typography variant="body2" noWrap>
-                                            <strong>ISBN：</strong>{book.isbn || 'なし'}
-                                        </Typography>
-                                    </CardContent>
-                                </Card>
-                            </Grid>
-                        ))}
+                            const bookImage = book.image_path
+                                ? `/storage/${book.image_path}`
+                                : book.image_url
+                                    ? book.image_url
+                                    : DEFAULT_IMAGE;
+                            return (
+                                <Grid item xs={12} sm={6} md={4} key={getBookKey(book)}>
+                                    <Card
+                                        sx={{
+                                            cursor: 'pointer',
+                                            border: isSelected ? '2px solid #af1d03' : '1px solid #ccc',
+                                            backgroundColor: isSelected ? '#F5D19A' : '#f5f5f5',
+                                        }}
+                                        onClick={() => {
+                                            if (isSelected) setSelectedBook(null); // 選択解除
+                                            else setSelectedBook(book);            // 選択
+                                        }}
+                                    >
+
+                                        <CardMedia
+                                            component="img"
+                                            height="140"
+                                            image={bookImage}
+                                            alt={book.title}
+                                        />
+                                        <CardContent>
+                                            <Typography variant="subtitle1" noWrap sx={{ fontWeight: 'bold' }}>{book.title}</Typography>
+                                            <Typography variant="body2" noWrap>{book.authors}</Typography>
+                                            <Typography variant="body2" noWrap>{book.publisher} / {book.year}</Typography>
+                                            <Typography variant="body2" noWrap>{book.genre}</Typography>
+                                            <Typography variant="body2" noWrap>
+                                                ISBN：{book.isbn || 'なし'}
+                                            </Typography>
+                                        </CardContent>
+                                    </Card>
+                                </Grid>
+
+                            );
+                        })}
                     </Grid>
+
 
                     {/* 選択書籍の楽天ボタン */}
                     {selectedBook && (
@@ -202,34 +217,55 @@ export const SearchForm = () => {
                                 border: '1px solid #e0d6c9',
                             }}
                         >
-                            {!selectedBook.isbn && (
-                                <Typography
+                            {/* 注意文：常に表示 */}
+                            <Typography
+                                sx={{
+                                    color: selectedBook?.isbn ? '#aaa194' : '#8B3A2F', // ISBNありのときはグレー
+                                    fontWeight: 'bold',
+                                    fontFamily: '"Roboto", sans-serif',
+                                    fontSize: '1.1rem',
+                                    textAlign: 'center',
+                                    mb: 1
+                                }}
+                            >
+                                ISBN未登録書籍は詳細情報を参照できません
+                            </Typography>
+
+                            {/* ボタン横並び */}
+                            <Box
+                                sx={{
+                                    display: 'flex',
+                                    justifyContent: 'center',
+                                    gap: 2,
+                                }}
+                            >
+                                {/* isbnあり：楽天ブックスリンク */}
+                                <Button
                                     sx={{
-                                        color: '#aaa194',
-                                        fontWeight: 'bold',
-                                        fontFamily: '"Roboto", sans-serif',
-                                        fontSize: '1.1rem',
-                                        mb: 1
+                                        ...dialogButtonStyle,
+                                        opacity: selectedBook.isbn ? 1 : 0.4,
+                                        cursor: selectedBook.isbn ? 'pointer' : 'not-allowed'
+                                    }}
+                                    disabled={!selectedBook.isbn}
+                                    onClick={() => {
+                                        if (selectedBook.isbn) {
+                                            window.open(
+                                                `https://books.rakuten.co.jp/search?sitem=${selectedBook.isbn}`,
+                                                '_blank'
+                                            );
+                                        }
                                     }}
                                 >
-                                    ISBN未登録書籍は詳細情報を参照できません
-                                </Typography>
-                            )}
-
-                            <Button
-                                sx={{ ...dialogButtonStyle }}
-                                onClick={() => {
-                                    if (selectedBook.isbn) {
-                                        window.open(
-                                            `https://search.rakuten.co.jp/search/mall/${selectedBook.isbn}/`,
-                                            '_blank'
-                                        );
-                                    }
-                                }}
-                                disabled={!selectedBook.isbn}
-                            >
-                                楽天で詳細情報を見る
-                            </Button>
+                                    楽天で詳細情報を見る
+                                </Button>
+                                <Button
+                                    variant="outlined"
+                                    sx={dialogButtonStyle}
+                                    onClick={() => setSearchDialogOpen(false)} // ダイアログ閉じる
+                                >
+                                    キャンセル
+                                </Button>
+                            </Box>
                         </Box>
                     )}
                 </DialogContent>
@@ -238,7 +274,7 @@ export const SearchForm = () => {
             {/* ------------------------検索フォーム------------------------ */}
             <Box sx={bigStyles} >
                 {/* タイトル*/}
-                < Typography
+                <Typography
                     variant="h3"
                     sx={{
                         color: '#8B3A2F',
@@ -248,10 +284,11 @@ export const SearchForm = () => {
                         paddingTop: '30px',
                         marginTop: '10px',
                         height: '70px'
-                    }}
+                    }
+                    }
                 >
                     書籍検索
-                </Typography >
+                </Typography>
 
                 <Typography
                     variant="h6"
@@ -346,7 +383,6 @@ export const SearchForm = () => {
                     </Box>
                 </form>
             </Box>
-
         </>
     );
-};    
+};

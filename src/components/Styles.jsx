@@ -8,6 +8,7 @@ export const dialogButtonStyle = {
     fontWeight: 'bold',
     fontFamily: '"Roboto", sans-serif',
     fontSize: '1.1rem',
+    border: 'none',
     borderRadius: '50px',
     padding: '8px 20px',
     '&:hover': { backgroundColor: '#D2691E' },
