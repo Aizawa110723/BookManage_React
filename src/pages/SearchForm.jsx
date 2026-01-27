@@ -195,7 +195,7 @@ export const SearchForm = () => {
                                             cursor: 'pointer',
                                             border: isSelected ? '2px solid #af1d03' : '1px solid #ccc',
                                             backgroundColor: isSelected ? '#F5D19A' : '#f5f5f5',
-                                            height: 320,              // 高さ固定
+                                            height: 320,   // 高さ固定
                                             display: 'flex',
                                             flexDirection: 'column',
                                         }}
@@ -224,7 +224,7 @@ export const SearchForm = () => {
                                             </Typography>
                                             <Typography variant="body2" noWrap>著者：{book.authors}</Typography>
                                             <Typography variant="body2" noWrap>出版社：{book.publisher}</Typography>
-                                            <Typography variant="body2" noWrap>出版日：{book.year}</Typography>
+                                            <Typography variant="body2" noWrap>出版年月日：{book.year}</Typography>
                                             <Typography variant="body2" noWrap>ジャンル：{book.genre}</Typography>
                                             <Typography variant="body2" noWrap>ISBN：{book.isbn || 'なし'}</Typography>
                                         </CardContent>

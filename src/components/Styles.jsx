@@ -171,7 +171,7 @@ export const navStyles = {
 export const bigStyles = {
     display: "flex",
     flexDirection: "column",
-    justifyContent: "center",
+    justifyContent: "flex-start",
     alignItems: "center",
     fontFamily: '"Roboto", sans-serif', // フォント変更
     fontWeight: "bold",
@@ -179,7 +179,8 @@ export const bigStyles = {
     borderRadius: "10px",
     border: "1px solid rgba(0, 0, 0, 0.1)",
     borderTop: "none",
-    height: '100vh',
+    height: 'auto', // bigStyles 内で高さを自動調整
+    minHeight: '100vh', // 少ない場合でも画面下まで背景を塗る
     margin: '0 auto', // 中央に配置
     backgroundColor: '#F5D19A',
     width: '90%',  // 幅を統一
@@ -426,9 +427,9 @@ export const getButtonStyles = (isActive) => ({
 // テーブルタイトルのセルの設定
 export const titleCells = {
     color: 'white',
-    padding: '20px',
+    padding: '8px',
     textAlign: 'center',
-    fontSize: '1.2rem',
+    fontSize: '1.1rem',
     fontWeight: 'bold',
     fontFamily: '"Roboto", sans-serif',
     whiteSpace: 'normal',
@@ -439,7 +440,7 @@ export const titleCells = {
 // 内容のセルの設定
 export const bodyCells = {
     color: '#8B3A2F',
-    padding: '18px',
+    padding: '10px',
     textAlign: 'center',
     fontSize: '1.0rem',
     fontWeight: 'bold',
