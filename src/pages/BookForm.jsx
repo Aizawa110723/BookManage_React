@@ -467,7 +467,12 @@ export const BookForm = () => {
 
 
             {/* ------------------------登録フォーム------------------------ */}
-            <Box sx={bigStyles}>
+            <Box
+                sx={bigStyles
+
+
+                }
+            >
                 {/* タイトル */}
                 <Typography
                     variant="h3"

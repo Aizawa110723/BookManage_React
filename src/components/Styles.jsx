@@ -180,7 +180,7 @@ export const bigStyles = {
     border: "1px solid rgba(0, 0, 0, 0.1)",
     borderTop: "none",
     height: 'auto', // bigStyles 内で高さを自動調整
-    minHeight: '100vh', // 少ない場合でも画面下まで背景を塗る
+    minHeight: '80vh', // 少ない場合でも画面下まで背景を塗る
     margin: '0 auto', // 中央に配置
     backgroundColor: '#F5D19A',
     width: '90%',  // 幅を統一
@@ -425,6 +425,7 @@ export const getButtonStyles = (isActive) => ({
 });
 
 // テーブルタイトルのセルの設定
+// テーブルタイトルのセルの設定（省略対応・高さ固定）
 export const titleCells = {
     color: 'white',
     padding: '8px',
@@ -432,22 +433,32 @@ export const titleCells = {
     fontSize: '1.1rem',
     fontWeight: 'bold',
     fontFamily: '"Roboto", sans-serif',
-    whiteSpace: 'normal',
-    wordWrap: 'break-word',
-    wordBreak: 'break-word'
+
+    // 文字が長いときの省略設定
+    overflow: 'hidden',
+    textOverflow: 'ellipsis',
+    whiteSpace: 'nowrap',
+
+    // 高さを揃える
+    height: 50,  // 任意の高さ。bodyCellsと揃えると統一感が出る
 };
 
 // 内容のセルの設定
 export const bodyCells = {
     color: '#8B3A2F',
-    padding: '10px',
+    padding: '18px',
     textAlign: 'center',
     fontSize: '1.0rem',
     fontWeight: 'bold',
     fontFamily: '"Roboto", sans-serif',
-    whiteSpace: 'normal',
-    wordWrap: 'break-word',
-    wordBreak: 'break-word',
+
+    // 文字が入りきらない場合の省略設定
+    overflow: 'hidden',
+    textOverflow: 'ellipsis',
+    whiteSpace: 'nowrap',
+
+    // 必要なら行の高さを揃える
+    height: 50,  // 任意の高さ
 };
 
 

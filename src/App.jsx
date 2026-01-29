@@ -37,7 +37,19 @@ export const App = () => {
                 </Typography>
               </Box>
 
-              <Box sx={{ ...bigStyles, height: '70vh', backgroundColor: '#F5D19A' }}>
+              <Box
+                sx={{
+                  ...bigStyles,
+                  height: '70vh',
+                  backgroundColor: '#F5D19A',
+                  justifyContent: 'flex-start',
+                  paddingTop: '120px',   // ★ 下げる
+                  paddingBottom: 0,
+                  minHeight: 'auto',
+                  gap: 2
+                }}
+              >
+
                 <Button component={Link} to="/BookForm" variant="outlined" sx={{ ...buttonStyle_a }}>
                   書籍登録
                 </Button>
